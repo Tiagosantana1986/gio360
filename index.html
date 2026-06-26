@@ -10,6 +10,7 @@ body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef3fb;color:#1
 button{cursor:pointer}
 input,select,textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:10px;color:#0b2e59;background:#fff;outline:none;font-size:14px}
 input:focus,select:focus,textarea:focus{border-color:#f2b300;box-shadow:0 0 0 3px rgba(242,179,0,.14)}
+input[readonly]{background:#f8fafc;color:#64748b;font-weight:800}
 textarea{min-height:70px}
 h1{margin:0 0 8px;color:#0b2e59}
 p{color:#64748b}
@@ -187,8 +188,8 @@ p{color:#64748b}
     <div class="grid">
       <label>Meta Geral<input id="metaInput" type="number" onchange="atualizarControle()"></label>
       <label>Município Base<input id="municipioBaseInput" onchange="atualizarControle()"></label>
-      <label>Receita Geral<input id="receitaInput" type="number" onchange="atualizarControle()"></label>
-      <label>Despesa Geral<input id="despesaInput" type="number" onchange="atualizarControle()"></label>
+      <label>Receita Geral<input id="receitaInput" type="number" readonly title="Valor calculado automaticamente pelos lançamentos financeiros"></label>
+      <label>Despesa Geral<input id="despesaInput" type="number" readonly title="Valor calculado automaticamente pelos lançamentos financeiros"></label>
     </div>
   </div>
   <div class="grid">
@@ -222,7 +223,7 @@ p{color:#64748b}
 </section>
 
 <section id="territorio" class="page">
-  <div class="page-head"><div><h1>Território</h1><p>Municípios, regiões e bairros precisam gerar inteligência para tomada de decisão.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="addMunicipio()">+ Município</button><button class="btn blue" onclick="addRegiao()">+ Região/Bairro</button></div></div>
+  <div class="page-head"><div><h1>Território</h1><p>O município é cadastro central: depois de cadastrado aqui, ele aparece automaticamente nos campos de Financeiro, Regiões, Base de Apoio e Agenda.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="addMunicipio()">+ Município</button><button class="btn blue" onclick="addRegiao()">+ Região/Bairro</button></div></div>
   <div class="card table-wrap"><h3>Municípios</h3><table class="table"><thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th><th>Projeção</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="listaMunicipios"></tbody></table></div>
   <div class="card table-wrap"><h3>Regiões / Bairros Operacionais</h3><table class="table"><thead><tr><th>Município</th><th>Região/Bairro</th><th>Responsável</th><th>Meta</th><th>Projeção</th><th>Prioridade</th><th>Status automático</th><th>Ação</th></tr></thead><tbody id="listaRegioes"></tbody></table></div>
 </section>
@@ -317,11 +318,11 @@ p{color:#64748b}
     <div class="help-card">
       <span class="help-badge">Financeiro</span>
       <h3>Financeiro</h3>
-      <p>Controla receitas, despesas, pagamentos e custo por voto.</p>
+      <p>Controla receitas e despesas. As categorias já aparecem em lista conforme o tipo do lançamento.</p>
       <ul>
         <li>Administrador visualiza tudo.</li>
         <li>Usuários comuns visualizam apenas valores vinculados ao próprio login.</li>
-        <li>O custo por voto é calculado automaticamente.</li>
+        <li>O custo por voto é calculado automaticamente.</li><li>Receita Geral e Despesa Geral do Painel são preenchidas automaticamente pelo Financeiro.</li>
       </ul>
     </div>
 
@@ -330,7 +331,7 @@ p{color:#64748b}
       <h3>Território</h3>
       <p>Organiza municípios, regiões e bairros. O objetivo não é apenas cadastrar locais, mas medir meta, projeção e prioridade.</p>
       <ul>
-        <li>Municípios possuem meta e projeção.</li>
+        <li>Municípios possuem meta e projeção.</li><li>Após cadastrar um município, ele aparece automaticamente nas demais abas.</li>
         <li>Regiões e bairros possuem responsável.</li>
         <li>O sistema classifica territórios automaticamente.</li>
       </ul>
@@ -494,14 +495,9 @@ function projecaoTotal(){
   return Math.max(m,p,u);
 }
 
-function receitasTotal(){return Number(db.receita||0)+db.financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
+function receitasTotal(){return totalReceitaFinanceiro();}
 
-function despesasTotal(){
-  return Number(db.despesa||0)
-    +db.financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0)
-    +db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0)
-    +db.usuarios.reduce((s,u)=>s+Number(u.pagamento||0),0);
-}
+function despesasTotal(){return totalDespesaFinanceiro();}
 
 function calcCustoVoto(){const p=projecaoTotal();return p?despesasTotal()/p:0;}
 function percentualMeta(){return db.meta?Math.min(projecaoTotal()/db.meta*100,100):0;}
@@ -590,30 +586,58 @@ function visibleFinanceiro(){
 function atualizarControle(){
   db.meta=Number(metaInput.value)||0;
   db.municipioBase=municipioBaseInput.value||"";
-  db.receita=Number(receitaInput.value)||0;
-  db.despesa=Number(despesaInput.value)||0;
   salvar();
   render();
 }
 
 function addMunicipio(){db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0,projecao:0,situacao:"Atenção"});salvar();render();}
-function addRegiao(){db.regioes.push({id:uid(),municipio:"",nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
-function addPessoa(){db.pessoas.push({id:uid(),nome:"",funcao:"Apoiador",municipio:"",regiao:"",potencial:0,valor:0});salvar();render();}
-function addAgenda(){db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:"",regiao:"",descricao:"",status:currentRole==="Administrador"?"Confirmado":"Pendente"});salvar();render();}
-function addFinanceiro(){db.financeiro.push({id:uid(),tipo:"despesa",categoria:"",descricao:"",municipio:"",usuarioLogin:"",valor:0});salvar();render();}
+function addRegiao(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
+function addPessoa(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.pessoas.push({id:uid(),nome:"",funcao:"Apoiador",municipio:mun,regiao:"",potencial:0,valor:0});salvar();render();}
+function addAgenda(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",descricao:"",status:currentRole==="Administrador"?"Confirmado":"Pendente"});salvar();render();}
+function addFinanceiro(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
 function addUsuario(){db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
 function delItem(tipo,i){if(!db[tipo])return;db[tipo].splice(i,1);salvar();render();}
 function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();}
 function confirmarAgenda(i){db.agenda[i].status="Confirmado";salvar();render();}
 function recusarAgenda(i){db.agenda[i].status="Recusado";salvar();render();}
 
+
+
+function totalReceitaFinanceiro(){
+  return db.financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+}
+function totalDespesaFinanceiro(){
+  return db.financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+}
+function categoriaOptions(tipo, selected=""){
+  const receitas = ["Doação","Fundo Partidário","Fundo Eleitoral","Recursos Próprios","Evento","Outros"];
+  const despesas = ["Administrativa","Pessoal","Campanha","Reunião","Outros"];
+  const lista = tipo === "receita" ? receitas : despesas;
+  return `<option value="">Selecione</option>` + lista.map(cat=>`<option value="${cat}" ${cat===selected?"selected":""}>${cat}</option>`).join("");
+}
+
+function municipioOptions(selected=""){
+  const municipios = db.municipios || [];
+  if(!municipios.length){
+    return `<option value="">Cadastre um município em Território</option>`;
+  }
+  return `<option value="">Selecione</option>` + municipios.map(m=>{
+    const nome = m.nome || "";
+    return `<option value="${nome}" ${nome===selected?"selected":""}>${nome}</option>`;
+  }).join("");
+}
+
+function municipioSelect(tipo,i,campo,valor){
+  return `<select onchange="setField('${tipo}',${i},'${campo}',this.value);render()">${municipioOptions(valor||"")}</select>`;
+}
+
 function render(){
   const proj=projecaoTotal(),perc=percentualMeta(),cv=calcCustoVoto(),ice=calcularICE(),alerts=gerarAlertas();
 
   metaInput.value=db.meta;
   municipioBaseInput.value=db.municipioBase||"";
-  receitaInput.value=db.receita;
-  despesaInput.value=db.despesa;
+  receitaInput.value=totalReceitaFinanceiro();
+  despesaInput.value=totalDespesaFinanceiro();
 
   indiceCompetitividade.textContent=ice;
   indiceCompetitividadeLabel.textContent=ice>=80?"Campanha forte":ice>=60?"Campanha em construção":ice>=40?"Campanha em atenção":"Campanha crítica";
@@ -651,10 +675,10 @@ function renderFinanceiro(){
     const i=db.financeiro.indexOf(f);
     const lock=currentRole!=="Administrador"?"disabled":"";
     return`<tr>
-      <td><select ${lock} onchange="setField('financeiro',${i},'tipo',this.value);render()"><option value="receita" ${f.tipo==="receita"?"selected":""}>Receita</option><option value="despesa" ${f.tipo==="despesa"?"selected":""}>Despesa</option></select></td>
-      <td><input ${lock} value="${f.categoria||""}" onchange="setField('financeiro',${i},'categoria',this.value)"></td>
+      <td><select ${lock} onchange="setField('financeiro',${i},'tipo',this.value);setField('financeiro',${i},'categoria','');render()"><option value="receita" ${f.tipo==="receita"?"selected":""}>Receita</option><option value="despesa" ${f.tipo==="despesa"?"selected":""}>Despesa</option></select></td>
+      <td><select ${lock} onchange="setField(\'financeiro\',${i},\'categoria\',this.value);render()">${categoriaOptions(f.tipo,f.categoria||"")}</select></td>
       <td><input ${lock} value="${f.descricao||""}" onchange="setField('financeiro',${i},'descricao',this.value)"></td>
-      <td><input ${lock} value="${f.municipio||""}" onchange="setField('financeiro',${i},'municipio',this.value)"></td>
+      <td>${currentRole==="Administrador"?municipioSelect("financeiro",i,"municipio",f.municipio):`<input disabled value="${f.municipio||""}">`}</td>
       <td><input ${lock} value="${f.usuarioLogin||""}" onchange="setField('financeiro',${i},'usuarioLogin',this.value)"></td>
       <td><input ${lock} type="number" value="${f.valor||0}" onchange="setField('financeiro',${i},'valor',this.value,true);render()"></td>
       <td>${currentRole==="Administrador"?`<button class="action-mini red" onclick="delItem('financeiro',${i})">Excluir</button>`:`<span class="badge blue">Somente leitura</span>`}</td>
@@ -675,7 +699,7 @@ function renderTerritorio(){
   </tr>`).join(""):emptyRow(8,"Nenhum município cadastrado.");
 
   listaRegioes.innerHTML=db.regioes.length?db.regioes.map((r,i)=>`<tr>
-    <td><input value="${r.municipio||""}" onchange="setField('regioes',${i},'municipio',this.value)"></td>
+    <td>${municipioSelect("regioes",i,"municipio",r.municipio)}</td>
     <td><input value="${r.nome||""}" onchange="setField('regioes',${i},'nome',this.value)"></td>
     <td><input value="${r.responsavel||""}" onchange="setField('regioes',${i},'responsavel',this.value)"></td>
     <td><input type="number" value="${r.meta||0}" onchange="setField('regioes',${i},'meta',this.value,true);render()"></td>
@@ -692,7 +716,7 @@ function renderBase(){
     return`<tr>
       <td><input value="${p.nome||""}" onchange="setField('pessoas',${i},'nome',this.value)"></td>
       <td><select onchange="setField('pessoas',${i},'funcao',this.value)"><option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Liderança"?"selected":""}>Liderança</option><option ${p.funcao==="Cabo Eleitoral"?"selected":""}>Cabo Eleitoral</option><option ${p.funcao==="Coordenador"?"selected":""}>Coordenador</option></select></td>
-      <td><input value="${p.municipio||""}" onchange="setField('pessoas',${i},'municipio',this.value)"></td>
+      <td>${municipioSelect("pessoas",i,"municipio",p.municipio)}</td>
       <td><input value="${p.regiao||""}" onchange="setField('pessoas',${i},'regiao',this.value)"></td>
       <td><input type="number" value="${p.potencial||0}" onchange="setField('pessoas',${i},'potencial',this.value,true);render()"></td>
       <td><input type="number" value="${p.valor||0}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
@@ -711,7 +735,7 @@ function renderAgenda(){
       <td><input type="date" value="${a.data||""}" onchange="setField('agenda',${i},'data',this.value)"></td>
       <td><input value="${a.hora||""}" onchange="setField('agenda',${i},'hora',this.value)"></td>
       <td><input value="${a.tipo||""}" onchange="setField('agenda',${i},'tipo',this.value)"></td>
-      <td><input value="${a.municipio||""}" onchange="setField('agenda',${i},'municipio',this.value)"></td>
+      <td>${municipioSelect("agenda",i,"municipio",a.municipio)}</td>
       <td><input value="${a.regiao||""}" onchange="setField('agenda',${i},'regiao',this.value)"></td>
       <td>${statusAgendaLabel(a.status)}</td>
       <td><input value="${a.descricao||""}" onchange="setField('agenda',${i},'descricao',this.value)"></td>
