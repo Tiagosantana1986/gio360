@@ -163,7 +163,8 @@ p{color:#64748b}
   <div class="user-box"><strong id="nomeUsuarioSide">Administrador</strong><small id="perfilUsuarioSide">Perfil: Administrador</small></div>
   <nav class="nav">
     <button class="active" data-page="painel" data-roles="Administrador,Operador,Liderança" onclick="openPage('painel',this)"><span>🏠</span>Painel Geral</button>
-    <button data-page="financeiro" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('financeiro',this)"><span>💰</span>Financeiro</button>
+    <button data-page="perfil" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('perfil',this)"><span>👤</span>Meu Perfil</button>
+    <button data-page="financeiro" data-roles="Administrador,Operador,Liderança" onclick="openPage('financeiro',this)"><span>💰</span>Financeiro</button>
     <button data-page="territorio" data-roles="Administrador,Operador,Liderança" onclick="openPage('territorio',this)"><span>📍</span>Território</button>
     <button data-page="base" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('base',this)"><span>👥</span>Base de Apoio</button>
     <button data-page="agenda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('agenda',this)"><span>📅</span>Agenda</button>
@@ -211,6 +212,26 @@ p{color:#64748b}
   </div>
 </section>
 
+
+<section id="perfil" class="page">
+  <div class="page-head">
+    <div>
+      <h1>Meu Perfil</h1>
+      <p>Área individual do usuário logado.</p>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="card kpi"><span>Nome</span><strong id="perfilNome">-</strong><small>usuário logado</small></div>
+    <div class="card kpi"><span>Perfil</span><strong id="perfilTipo">-</strong><small>permissão de acesso</small></div>
+    <div class="card kpi green"><span>Pessoas na minha árvore</span><strong id="perfilArvore">0</strong><small>possíveis eleitores cadastrados</small></div>
+    <div class="card kpi gold"><span>Reuniões solicitadas</span><strong id="perfilAgenda">0</strong><small>minhas agendas</small></div>
+  </div>
+  <div class="card">
+    <h3>Minhas permissões</h3>
+    <div id="perfilPermissoes"></div>
+  </div>
+</section>
+
 <section id="financeiro" class="page">
   <div class="page-head"><div><h1>Financeiro</h1><p>Administrador visualiza tudo. Demais perfis visualizam somente o financeiro vinculado ao próprio login.</p></div><button id="btnAddFinanceiro" class="btn gold" onclick="addFinanceiro()">+ Lançamento</button></div>
   <div class="grid">
@@ -229,7 +250,7 @@ p{color:#64748b}
 </section>
 
 <section id="base" class="page">
-  <div class="page-head"><div><h1>Base de Apoio</h1><p>Lideranças, apoiadores e cabos eleitorais. Pagamento e projeção alimentam custo por voto.</p></div><button class="btn gold" onclick="addPessoa()">+ Apoiador / Liderança</button></div>
+  <div class="page-head"><div><h1>Base de Apoio</h1><p>Lideranças, apoiadores, cabos eleitorais e possíveis eleitores. Apoiador visualiza e cadastra apenas pessoas da própria árvore.</p></div><button class="btn gold" onclick="addPessoa()">+ Apoiador / Liderança</button></div>
   <div class="card table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Função</th><th>Município</th><th>Região</th><th>Potencial</th><th>Valor Mensal</th><th>Custo/Voto</th><th>Ação</th></tr></thead><tbody id="listaPessoas"></tbody></table></div>
 </section>
 
@@ -288,7 +309,7 @@ p{color:#64748b}
         <li><strong>Administrador:</strong> acessa tudo e confirma agendas.</li>
         <li><strong>Operador:</strong> alimenta dados operacionais.</li>
         <li><strong>Liderança:</strong> acompanha território, base e agenda.</li>
-        <li><strong>Apoiador:</strong> solicita agenda e visualiza informações permitidas.</li>
+        <li><strong>Apoiador:</strong> acessa seu perfil, cadastra possíveis eleitores na própria árvore e solicita reuniões.</li>
       </ul>
     </div>
 
@@ -592,7 +613,7 @@ function atualizarControle(){
 
 function addMunicipio(){db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0,projecao:0,situacao:"Atenção"});salvar();render();}
 function addRegiao(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
-function addPessoa(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.pessoas.push({id:uid(),nome:"",funcao:"Apoiador",municipio:mun,regiao:"",potencial:0,valor:0});salvar();render();}
+function addPessoa(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.pessoas.push({id:uid(),nome:"",funcao:"Possível Eleitor",municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
 function addAgenda(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",descricao:"",status:currentRole==="Administrador"?"Confirmado":"Pendente"});salvar();render();}
 function addFinanceiro(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
 function addUsuario(){db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
@@ -650,6 +671,7 @@ function render(){
   textoProjecao.textContent=`A campanha está com ${n(proj)} votos projetados de uma meta de ${n(db.meta)} votos.`;
   listaAlertasPainel.innerHTML=alerts.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("");
 
+  renderPerfil();
   renderFinanceiro();
   renderTerritorio();
   renderBase();
@@ -657,6 +679,29 @@ function render(){
   renderInteligencia();
   renderRelatorio();
   renderUsuarios();
+}
+
+
+function renderPerfil(){
+  if(!currentUser) return;
+  const nome=currentUser.nome||currentUser.login||"-";
+  const minhaArvore=db.pessoas.filter(p=>p.criadoPor===(currentUser&&currentUser.login)).length;
+  const minhasAgendas=db.agenda.filter(a=>a.solicitadoPor===(currentUser?(currentUser.nome||currentUser.login):"Usuário")).length;
+  if(document.getElementById("perfilNome")) perfilNome.textContent=nome;
+  if(document.getElementById("perfilTipo")) perfilTipo.textContent=currentRole;
+  if(document.getElementById("perfilArvore")) perfilArvore.textContent=minhaArvore;
+  if(document.getElementById("perfilAgenda")) perfilAgenda.textContent=minhasAgendas;
+  if(document.getElementById("perfilPermissoes")){
+    let texto="";
+    if(currentRole==="Apoiador"){
+      texto=`<div class="auto-alert blue"><strong>Apoiador</strong>Você pode acessar seu perfil, cadastrar pessoas na sua árvore como possíveis eleitores e solicitar reuniões na agenda. Você não tem acesso aos dados financeiros da campanha.</div>`;
+    }else if(currentRole==="Administrador"){
+      texto=`<div class="auto-alert green"><strong>Administrador</strong>Você possui acesso completo ao sistema, incluindo financeiro, usuários, relatórios e aprovação de agendas.</div>`;
+    }else{
+      texto=`<div class="auto-alert yellow"><strong>${currentRole}</strong>Você possui acesso operacional conforme as permissões definidas pelo administrador.</div>`;
+    }
+    perfilPermissoes.innerHTML=texto;
+  }
 }
 
 function renderFinanceiro(){
@@ -711,19 +756,25 @@ function renderTerritorio(){
 }
 
 function renderBase(){
-  listaPessoas.innerHTML=db.pessoas.length?db.pessoas.map((p,i)=>{
+  const baseVisivel = currentRole==="Apoiador" ? db.pessoas.filter(p=>p.criadoPor===(currentUser&&currentUser.login)) : db.pessoas;
+  listaPessoas.innerHTML=baseVisivel.length?baseVisivel.map((p)=>{
+    const i=db.pessoas.indexOf(p);
     const custo=Number(p.potencial)>0?Number(p.valor||0)/Number(p.potencial):0;
+    const bloqueioFinanceiro = currentRole==="Apoiador" ? "disabled" : "";
+    const funcoes = currentRole==="Apoiador"
+      ? `<option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`
+      : `<option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Liderança"?"selected":""}>Liderança</option><option ${p.funcao==="Cabo Eleitoral"?"selected":""}>Cabo Eleitoral</option><option ${p.funcao==="Coordenador"?"selected":""}>Coordenador</option><option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
     return`<tr>
       <td><input value="${p.nome||""}" onchange="setField('pessoas',${i},'nome',this.value)"></td>
-      <td><select onchange="setField('pessoas',${i},'funcao',this.value)"><option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Liderança"?"selected":""}>Liderança</option><option ${p.funcao==="Cabo Eleitoral"?"selected":""}>Cabo Eleitoral</option><option ${p.funcao==="Coordenador"?"selected":""}>Coordenador</option></select></td>
+      <td><select onchange="setField('pessoas',${i},'funcao',this.value)">${funcoes}</select></td>
       <td>${municipioSelect("pessoas",i,"municipio",p.municipio)}</td>
       <td><input value="${p.regiao||""}" onchange="setField('pessoas',${i},'regiao',this.value)"></td>
       <td><input type="number" value="${p.potencial||0}" onchange="setField('pessoas',${i},'potencial',this.value,true);render()"></td>
-      <td><input type="number" value="${p.valor||0}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
-      <td><span class="badge blue">${money(custo)}</span></td>
+      <td><input ${bloqueioFinanceiro} type="number" value="${p.valor||0}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
+      <td><span class="badge blue">${currentRole==="Apoiador"?"Restrito":money(custo)}</span></td>
       <td><button class="action-mini red" onclick="delItem('pessoas',${i})">Excluir</button></td>
     </tr>`;
-  }).join(""):emptyRow(8,"Nenhuma pessoa cadastrada.");
+  }).join(""):emptyRow(8,currentRole==="Apoiador"?"Nenhuma pessoa cadastrada na sua árvore.":"Nenhuma pessoa cadastrada.");
 }
 
 function renderAgenda(){
@@ -739,7 +790,7 @@ function renderAgenda(){
       <td><input value="${a.regiao||""}" onchange="setField('agenda',${i},'regiao',this.value)"></td>
       <td>${statusAgendaLabel(a.status)}</td>
       <td><input value="${a.descricao||""}" onchange="setField('agenda',${i},'descricao',this.value)"></td>
-      <td>${currentRole==="Administrador"?`<button class="action-mini red" onclick="delItem('agenda',${i})">Excluir</button>`:`<span class="badge blue">Sem permissão</span>`}</td>
+      <td>${(currentRole==="Administrador" || a.solicitadoPor===(currentUser?(currentUser.nome||currentUser.login):"Usuário"))?`<button class="action-mini red" onclick="delItem('agenda',${i})">Excluir</button>`:`<span class="badge blue">Sem permissão</span>`}</td>
     </tr>`;
   }).join(""):emptyRow(9,"Nenhuma agenda registrada.");
 
