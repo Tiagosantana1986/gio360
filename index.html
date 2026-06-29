@@ -982,116 +982,6 @@ function addPessoa(){
   render();
 }
 
-/* FUNÇÕES ESSENCIAIS RESTAURADAS - v2.0.9 */
-function totalReceitaFinanceiro(){
-  return db.financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
-}
-
-function addFinanceiro(){
-  const mun=(db.municipios[0]&&db.municipios[0].nome)||"";
-  db.financeiro.push({
-    id:uid(),
-    tipo:"despesa",
-    categoria:"",
-    descricao:"",
-    municipio:mun,
-    usuarioLogin:"",
-    valor:0
-  });
-  salvar();
-  render();
-}
-
-function addAgenda(){
-  const mun=(db.municipios[0]&&db.municipios[0].nome)||"";
-  const statusInicial=currentRole==="Apoiador"?"Rascunho":"Pendente";
-  db.agenda.push({
-    id:uid(),
-    solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",
-    data:new Date().toISOString().slice(0,10),
-    hora:"",
-    tipo:"Reunião",
-    municipio:mun,
-    regiao:"",
-    local:"",
-    descricao:"",
-    status:statusInicial
-  });
-  salvar();
-  render();
-}
-
-function addUsuario(){
-  db.usuarios.push({
-    id:uid(),
-    nome:"",
-    login:"",
-    senha:"",
-    perfil:"Apoiador",
-    pagamento:0,
-    projecao:0
-  });
-  salvar();
-  render();
-}
-
-function delItem(tipo,i){
-  if(!db[tipo] || !db[tipo][i]) return;
-  db[tipo].splice(i,1);
-  salvar();
-  render();
-}
-
-function setField(tipo,i,campo,valor,numero=false){
-  if(!db[tipo] || !db[tipo][i]) return;
-  db[tipo][i][campo]=numero?(Number(valor)||0):valor;
-  salvar();
-}
-
-function enviarAgenda(i){
-  if(!db.agenda[i]) return;
-  db.agenda[i].status="Pendente";
-  salvar();
-  render();
-  alert("Solicitação de agenda enviada para aprovação do administrador.");
-}
-
-function confirmarAgenda(i){
-  if(!db.agenda[i]) return;
-  db.agenda[i].status="Confirmado";
-  salvar();
-  render();
-}
-
-function recusarAgenda(i){
-  if(!db.agenda[i]) return;
-  db.agenda[i].status="Recusado";
-  salvar();
-  render();
-}
-
-function realizarAgenda(i){
-  if(!db.agenda[i]) return;
-  db.agenda[i].status="Realizado";
-  salvar();
-  render();
-}
-
-function cancelarAgenda(i){
-  if(!db.agenda[i]) return;
-  db.agenda[i].status="Cancelado";
-  salvar();
-  render();
-}
-
-
-function totalPagamentoUsuarios(){
-  return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);
-}
-function totalValorBaseApoio(){
-  return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);
-}
-
 function totalDespesaFinanceiro(){
   return db.financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
 }
@@ -1920,6 +1810,34 @@ function responderAjuda(){
   respostaAjuda.textContent=resposta;
 }
 
+
+
+/* GIE360 CORE FIX - v2.1.5 */
+function totalReceitaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
+function totalDespesaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);}
+function totalPagamentoUsuarios(){return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);}
+function totalValorBaseApoio(){return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);}
+function receitasTotal(){return totalReceitaFinanceiro();}
+function despesasTotal(){return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();}
+function calcCustoVoto(){const proj=typeof projecaoTotal==="function"?projecaoTotal():0;return proj?despesasTotal()/proj:0;}
+function painelReceitas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);return lista.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
+function painelDespesas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);const financeiro=lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);const pessoas=nome?(db.pessoas||[]).filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0):totalValorBaseApoio();const usuarios=nome?(db.usuarios||[]).filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0):totalPagamentoUsuarios();return financeiro+pessoas+usuarios;}
+function salvar(){localStorage.setItem(STORAGE,JSON.stringify(db));}
+function atualizarSistema(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Sistema atualizado";setTimeout(()=>statusSave.textContent="",1600);}}
+function salvarManual(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao salvar/atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Salvo com sucesso";setTimeout(()=>statusSave.textContent="",1400);}}
+function addMunicipio(){db.municipios=db.municipios||[];db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0});salvar();render();}
+function addRegiao(){db.regioes=db.regioes||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
+function addPessoa(){db.pessoas=db.pessoas||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";let func="Possível Eleitor";if(currentRole==="Administrador"||currentRole==="Operador"||currentRole==="Liderança")func="Apoiador";db.pessoas.push({id:uid(),nome:"",telefone:"",funcao:func,municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
+function addAgenda(){db.agenda=db.agenda||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";const statusInicial=currentRole==="Apoiador"?"Rascunho":"Pendente";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",local:"",descricao:"",status:statusInicial});salvar();render();}
+function addFinanceiro(){db.financeiro=db.financeiro||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"Administrativa",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
+function addUsuario(){db.usuarios=db.usuarios||[];db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
+function delItem(tipo,i){if(!db[tipo]||!db[tipo][i])return;db[tipo].splice(i,1);salvar();render();}
+function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();}
+function enviarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
+function confirmarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Confirmado";salvar();render();}
+function recusarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Recusado";salvar();render();}
+function realizarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Realizado";salvar();render();}
+function cancelarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Cancelado";salvar();render();}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
