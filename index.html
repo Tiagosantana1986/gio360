@@ -1062,36 +1062,66 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
-  const proj=painelProjecao(),perc=painelPercentualMeta(),cv=painelCustoVoto(),ice=calcularICE(),alerts=gerarAlertas();
+  // Renderização protegida: um erro em um módulo não pode travar o sistema inteiro.
+  try{
+    if(typeof atualizarSelectMunicipioBase==="function") atualizarSelectMunicipioBase();
 
-  atualizarSelectMunicipioBase();
-  metaInput.value=painelMeta();
-  if(municipioBaseInput.tagName!=="SELECT") municipioBaseInput.value=db.municipioBase||"";
-  receitaInput.value=painelReceitas();
-  despesaInput.value=painelDespesas();
+    const proj=(typeof painelProjecao==="function")?painelProjecao():((typeof projecaoTotal==="function")?projecaoTotal():0);
+    const perc=(typeof painelPercentualMeta==="function")?painelPercentualMeta():((typeof percentualMeta==="function")?percentualMeta():0);
+    const cv=(typeof painelCustoVoto==="function")?painelCustoVoto():((typeof calcCustoVoto==="function")?calcCustoVoto():0);
+    const ice=(typeof calcularICE==="function")?calcularICE():0;
+    const alerts=(typeof gerarAlertas==="function")?gerarAlertas():[];
 
-  indiceCompetitividade.textContent=ice;
-  indiceCompetitividadeLabel.textContent=ice>=80?"Campanha forte":ice>=60?"Campanha em construção":ice>=40?"Campanha em atenção":"Campanha crítica";
-  projecaoAtual.textContent=n(proj);
-  percMeta.textContent=perc.toFixed(1).replace(".",",")+"% da meta";
-  custoVotoEl.innerText=money(cv);
-  criticos.textContent=alerts.filter(a=>a.tipo==="red").length;
-  badgePerc.textContent=perc.toFixed(1).replace(".",",")+"%";
-  progressBar.style.width=perc+"%";
-  textoProjecao.textContent=`${painelMunicipioNome()?("Município selecionado: "+painelMunicipioNome()+". "):"Visão geral da campanha. "}A campanha está com ${n(proj)} votos projetados de uma meta de ${n(painelMeta())} votos.`;
-  listaAlertasPainel.innerHTML=alerts.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("");
+    const metaValor=(typeof painelMeta==="function")?painelMeta():(db.meta||0);
+    const receitaValor=(typeof painelReceitas==="function")?painelReceitas():((typeof receitasTotal==="function")?receitasTotal():0);
+    const despesaValor=(typeof painelDespesas==="function")?painelDespesas():((typeof despesasTotal==="function")?despesasTotal():0);
 
-  renderPerfil();
-  renderResumoAdministrador();
-  renderFinanceiro();
-  renderTerritorio();
-  renderBase();
-  renderAgenda();
-  renderInteligencia();
-  renderRelatorio();
-  renderUsuarios();
+    if(document.getElementById("metaInput")) metaInput.value=metaValor;
+    if(document.getElementById("receitaInput")) receitaInput.value=receitaValor;
+    if(document.getElementById("despesaInput")) despesaInput.value=despesaValor;
+    if(document.getElementById("municipioBaseInput") && municipioBaseInput.tagName!=="SELECT") municipioBaseInput.value=db.municipioBase||"";
+
+    if(document.getElementById("indiceCompetitividade")) indiceCompetitividade.textContent=ice;
+    if(document.getElementById("indiceCompetitividadeLabel")) indiceCompetitividadeLabel.textContent=ice>=80?"Campanha forte":ice>=60?"Campanha em construção":ice>=40?"Campanha em atenção":"Campanha crítica";
+    if(document.getElementById("projecaoAtual")) projecaoAtual.textContent=n(proj);
+    if(document.getElementById("percMeta")) percMeta.textContent=perc.toFixed(1).replace(".",",")+"% da meta";
+    if(document.getElementById("custoVotoEl")) custoVotoEl.innerText=money(cv);
+    if(document.getElementById("criticos")) criticos.textContent=alerts.filter(a=>a.tipo==="red").length;
+    if(document.getElementById("badgePerc")) badgePerc.textContent=perc.toFixed(1).replace(".",",")+"%";
+    if(document.getElementById("progressBar")) progressBar.style.width=perc+"%";
+
+    if(document.getElementById("textoProjecao")){
+      const mun=(typeof painelMunicipioNome==="function" && painelMunicipioNome())?("Município selecionado: "+painelMunicipioNome()+". "):"Visão geral da campanha. ";
+      textoProjecao.textContent=mun+"A campanha está com "+n(proj)+" votos projetados de uma meta de "+n(metaValor)+" votos.";
+    }
+
+    if(document.getElementById("listaAlertasPainel")){
+      listaAlertasPainel.innerHTML=alerts.length
+        ? alerts.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("")
+        : `<div class="auto-alert green"><strong>Sem alertas críticos</strong>O sistema não identificou risco relevante neste momento.</div>`;
+    }
+  }catch(e){
+    console.error("Erro no Painel Geral:",e);
+  }
+
+  const modulos=[
+    ["Meu Perfil",()=>{if(typeof renderPerfil==="function")renderPerfil();}],
+    ["Resumo Administrador",()=>{if(typeof renderResumoAdministrador==="function")renderResumoAdministrador();}],
+    ["Financeiro",()=>{if(typeof renderFinanceiro==="function")renderFinanceiro();}],
+    ["Território",()=>{if(typeof renderTerritorio==="function")renderTerritorio();}],
+    ["Base de Apoio",()=>{if(typeof renderBase==="function")renderBase();}],
+    ["Agenda",()=>{if(typeof renderAgenda==="function")renderAgenda();}],
+    ["Imprimir Agenda",()=>{if(typeof renderAgendaImpressao==="function")renderAgendaImpressao();}],
+    ["Inteligência",()=>{if(typeof renderInteligencia==="function")renderInteligencia();}],
+    ["Relatórios",()=>{if(typeof renderRelatorio==="function")renderRelatorio();}],
+    ["Usuários",()=>{if(typeof renderUsuarios==="function")renderUsuarios();}],
+    ["Central de Ajuda",()=>{if(typeof renderAjuda==="function")renderAjuda();}]
+  ];
+
+  modulos.forEach(([nome,fn])=>{
+    try{fn();}catch(e){console.error("Erro no módulo "+nome+":",e);}
+  });
 }
-
 
 function renderPerfil(){
   if(!currentUser) return;
@@ -1820,6 +1850,34 @@ function totalValorBaseApoio(){return (db.pessoas||[]).reduce((s,p)=>s+Number(p.
 function receitasTotal(){return totalReceitaFinanceiro();}
 function despesasTotal(){return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();}
 function calcCustoVoto(){const proj=typeof projecaoTotal==="function"?projecaoTotal():0;return proj?despesasTotal()/proj:0;}
+function painelReceitas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);return lista.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
+function painelDespesas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);const financeiro=lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);const pessoas=nome?(db.pessoas||[]).filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0):totalValorBaseApoio();const usuarios=nome?(db.usuarios||[]).filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0):totalPagamentoUsuarios();return financeiro+pessoas+usuarios;}
+function salvar(){localStorage.setItem(STORAGE,JSON.stringify(db));}
+function atualizarSistema(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Sistema atualizado";setTimeout(()=>statusSave.textContent="",1600);}}
+function salvarManual(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao salvar/atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Salvo com sucesso";setTimeout(()=>statusSave.textContent="",1400);}}
+function addMunicipio(){db.municipios=db.municipios||[];db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0});salvar();render();}
+function addRegiao(){db.regioes=db.regioes||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
+function addPessoa(){db.pessoas=db.pessoas||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";let func="Possível Eleitor";if(currentRole==="Administrador"||currentRole==="Operador"||currentRole==="Liderança")func="Apoiador";db.pessoas.push({id:uid(),nome:"",telefone:"",funcao:func,municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
+function addAgenda(){db.agenda=db.agenda||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";const statusInicial=currentRole==="Apoiador"?"Rascunho":"Pendente";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",local:"",descricao:"",status:statusInicial});salvar();render();}
+function addFinanceiro(){db.financeiro=db.financeiro||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"Administrativa",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
+function addUsuario(){db.usuarios=db.usuarios||[];db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
+function delItem(tipo,i){if(!db[tipo]||!db[tipo][i])return;db[tipo].splice(i,1);salvar();render();}
+function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();}
+function enviarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
+function confirmarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Confirmado";salvar();render();}
+function recusarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Recusado";salvar();render();}
+function realizarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Realizado";salvar();render();}
+function cancelarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Cancelado";salvar();render();}
+
+
+/* GIE360 CORE FIX - v2.1.6 */
+function totalReceitaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
+function totalDespesaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);}
+function totalPagamentoUsuarios(){return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);}
+function totalValorBaseApoio(){return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);}
+function receitasTotal(){return totalReceitaFinanceiro();}
+function despesasTotal(){return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();}
+function calcCustoVoto(){const proj=(typeof projecaoTotal==="function")?projecaoTotal():0;return proj?despesasTotal()/proj:0;}
 function painelReceitas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);return lista.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
 function painelDespesas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);const financeiro=lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);const pessoas=nome?(db.pessoas||[]).filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0):totalValorBaseApoio();const usuarios=nome?(db.usuarios||[]).filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0):totalPagamentoUsuarios();return financeiro+pessoas+usuarios;}
 function salvar(){localStorage.setItem(STORAGE,JSON.stringify(db));}
