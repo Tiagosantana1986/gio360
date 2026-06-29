@@ -653,8 +653,8 @@ p{color:#64748b}
 </div>
 
 <script>
-const STORAGE="gie360_oficial_ajuda_v2";
-const AUTH="gie360_auth_oficial_ajuda_v2";
+const STORAGE="gie360_v2_0_4_data";
+const AUTH="gie360_v2_0_4_auth";
 
 let currentUser=null;
 let currentRole="Administrador";
@@ -679,18 +679,47 @@ function money(v){return"R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFracti
 function uid(){return Math.random().toString(36).slice(2,10);}
 function emptyRow(cols,msg){return`<tr><td colspan="${cols}" class="empty">${msg}</td></tr>`;}
 
+function normalizarPerfil(perfil){
+  const p = String(perfil||"").trim();
+  if(p==="Administrador") return "Administrador";
+  if(p==="Operador") return "Operador";
+  if(p==="Liderança") return "Liderança";
+  if(p==="Apoiador") return "Apoiador";
+  return "Apoiador";
+}
+
+function definirUsuarioLogado(usuario){
+  if(!usuario) return;
+  const login = usuario.login || "";
+  const atualizado = db.usuarios.find(u=>u.login===login) || usuario;
+  currentUser = atualizado;
+  currentRole = normalizarPerfil(atualizado.perfil);
+  localStorage.setItem(AUTH, JSON.stringify({login: atualizacaoLoginSeguro(atualizado)}));
+  nomeUsuarioSide.textContent = atualizado.nome || atualizado.login || "Usuário";
+  perfilUsuarioSide.textContent = "Perfil: " + currentRole;
+}
+
+function atualizacaoLoginSeguro(usuario){
+  return usuario && usuario.login ? usuario.login : "";
+}
+
+
 function doLogin(){
   const user=loginUser.value.trim();
   const pass=loginPass.value.trim();
-  const u=db.usuarios.find(x=>x.login===user&&x.senha===pass);
+  const u=db.usuarios.find(x=>String(x.login||"")===user&&String(x.senha||"")===pass);
   if(!u){loginMsg.textContent="Login ou senha inválidos. Use admin / 123.";return;}
+
   currentUser=u;
-  currentRole=u.perfil||"Operador";
-  localStorage.setItem(AUTH,JSON.stringify(u));
+  currentRole=normalizarPerfil(u.perfil);
+
+  localStorage.setItem(AUTH,JSON.stringify({login:u.login}));
+
   loginPage.style.display="none";
   app.style.display="block";
   nomeUsuarioSide.textContent=u.nome||u.login;
   perfilUsuarioSide.textContent="Perfil: "+currentRole;
+
   aplicarPermissoes();
   render();
 }
@@ -1440,17 +1469,27 @@ document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.disp
 const authSaved=localStorage.getItem(AUTH);
 if(authSaved){
   try{
-    currentUser=JSON.parse(authSaved);
-    const fresh=db.usuarios.find(u=>u.login===currentUser.login);
-    if(fresh)currentUser=fresh;
-    currentRole=currentUser.perfil||"Operador";
-    loginPage.style.display="none";
-    app.style.display="block";
-    nomeUsuarioSide.textContent=currentUser.nome||currentUser.login;
-    perfilUsuarioSide.textContent="Perfil: "+currentRole;
-    aplicarPermissoes();
-    render();
-  }catch(e){}
+    const saved=JSON.parse(authSaved);
+    const loginSalvo = saved.login || (saved.currentUser && saved.currentUser.login) || "";
+    const fresh=db.usuarios.find(u=>u.login===loginSalvo);
+
+    if(fresh){
+      currentUser=fresh;
+      currentRole=normalizarPerfil(fresh.perfil);
+
+      loginPage.style.display="none";
+      app.style.display="block";
+      nomeUsuarioSide.textContent=fresh.nome||fresh.login;
+      perfilUsuarioSide.textContent="Perfil: "+currentRole;
+
+      aplicarPermissoes();
+      render();
+    }else{
+      localStorage.removeItem(AUTH);
+    }
+  }catch(e){
+    localStorage.removeItem(AUTH);
+  }
 }
 </script>
 </body>
