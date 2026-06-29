@@ -265,14 +265,14 @@ p{color:#64748b}
 </section>
 
 <section id="territorio" class="page">
-  <div class="page-head"><div><h1>Território</h1><p>O município é cadastro central: depois de cadastrado aqui, ele aparece automaticamente nos campos de Financeiro, Regiões, Base de Apoio e Agenda.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="addMunicipio()">+ Município</button><button class="btn blue" onclick="addRegiao()">+ Região/Bairro</button></div></div>
-  <div class="card table-wrap"><h3>Municípios</h3><table class="table"><thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th><th>Projeção</th><th>Situação</th><th>Ação</th></tr></thead><tbody id="listaMunicipios"></tbody></table></div>
+  <div class="page-head"><div><h1>Território</h1><p>O município é cadastro central: cadastre município, população, eleitores e meta. A projeção oficial de votos virá exclusivamente da Base de Apoio.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="addMunicipio()">+ Município</button><button class="btn blue" onclick="addRegiao()">+ Região/Bairro</button></div></div>
+  <div class="card table-wrap"><h3>Municípios</h3><table class="table"><thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th><th>Ação</th></tr></thead><tbody id="listaMunicipios"></tbody></table></div>
   <div class="card table-wrap"><h3>Regiões / Bairros Operacionais</h3><table class="table"><thead><tr><th>Município</th><th>Região/Bairro</th><th>Responsável</th><th>Meta</th><th>Projeção</th><th>Prioridade</th><th>Status automático</th><th>Ação</th></tr></thead><tbody id="listaRegioes"></tbody></table></div>
 </section>
 
 <section id="base" class="page">
   <div class="page-head"><div><h1>Base de Apoio</h1><p>Lideranças, apoiadores, cabos eleitorais e possíveis eleitores. Apoiador visualiza e cadastra apenas pessoas da própria árvore.</p></div><button class="btn gold" onclick="addPessoa()">+ Apoiador / Liderança</button></div>
-  <div class="card table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Potencial</th><th>Ação</th></tr></thead><tbody id="listaPessoas"></tbody></table></div>
+  <div class="card table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Projeção de Votos</th><th>Valor Mensal</th><th>Ação</th></tr></thead><tbody id="listaPessoas"></tbody></table></div>
 </section>
 
 <section id="agenda" class="page">
@@ -372,7 +372,7 @@ p{color:#64748b}
       <p>É a tela principal do sistema. Mostra meta, projeção, custo por voto, riscos e o Índice de Competitividade Eleitoral.</p>
       <ul>
         <li>A meta geral define o objetivo de votos.</li>
-        <li>A projeção mostra o potencial cadastrado.</li>
+        <li>A projeção mostra o projeção de votos cadastrado.</li>
         <li>Os alertas mostram riscos e oportunidades.</li>
       </ul>
     </div>
@@ -405,7 +405,7 @@ p{color:#64748b}
       <h3>Território</h3>
       <p>Organiza municípios, regiões e bairros. O objetivo não é apenas cadastrar locais, mas medir meta, projeção e prioridade.</p>
       <ul>
-        <li>Municípios possuem meta e projeção.</li><li>Após cadastrar um município, ele aparece automaticamente nas demais abas.</li>
+        <li>Municípios possuem população, eleitores e meta.</li><li>Após cadastrar um município, ele aparece automaticamente nas demais abas.</li>
         <li>Regiões e bairros possuem responsável.</li>
         <li>O sistema classifica territórios automaticamente.</li>
       </ul>
@@ -416,8 +416,8 @@ p{color:#64748b}
       <h3>Base de Apoio</h3>
       <p>Cadastro de lideranças, apoiadores, cabos eleitorais e coordenadores.</p>
       <ul>
-        <li>Define potencial de votos por pessoa.</li>
-        <li>Registra telefone, município, região e potencial de votos.</li>
+        <li>Define projeção de votos por pessoa.</li>
+        <li>Registra telefone, município, região, Projeção de Votos e valor mensal quando houver custo.</li>
         <li>Permite organizar a árvore de apoio e possíveis eleitores.</li>
       </ul>
     </div>
@@ -563,15 +563,12 @@ function openPage(id,btn){
 }
 
 function projecaoTotal(){
-  const m=db.municipios.reduce((s,x)=>s+Number(x.projecao||0),0);
-  const p=db.pessoas.reduce((s,x)=>s+Number(x.potencial||0),0);
-  const u=db.usuarios.reduce((s,x)=>s+Number(x.projecao||0),0);
-  return Math.max(m,p,u);
+  return db.pessoas.reduce((s,p)=>s+Number(p.potencial||0),0);
 }
 
 function receitasTotal(){return totalReceitaFinanceiro();}
 
-function despesasTotal(){return totalDespesaFinanceiro();}
+function despesasTotal(){return totalDespesaFinanceiro()+db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0);}
 
 function calcCustoVoto(){const p=projecaoTotal();return p?despesasTotal()/p:0;}
 function percentualMeta(){return db.meta?Math.min(projecaoTotal()/db.meta*100,100):0;}
@@ -663,7 +660,7 @@ function atualizarControle(){
   render();
 }
 
-function addMunicipio(){db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0,projecao:0,situacao:"Atenção"});salvar();render();}
+function addMunicipio(){db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0});salvar();render();}
 function addRegiao(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
 function addPessoa(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.pessoas.push({id:uid(),nome:"",telefone:"",funcao:"Possível Eleitor",municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
 function addAgenda(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",descricao:"",status:"Pendente"});salvar();render();}
@@ -717,8 +714,10 @@ function painelMeta(){
   return db.municipios.reduce((s,x)=>s+Number(x.meta||0),0);
 }
 function painelProjecao(){
-  const m=painelMunicipioSelecionado();
-  if(m) return Number(m.projecao||0);
+  const nome=painelMunicipioNome();
+  if(nome){
+    return db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.potencial||0),0);
+  }
   return projecaoTotal();
 }
 function painelReceitas(){
@@ -729,7 +728,9 @@ function painelReceitas(){
 function painelDespesas(){
   const nome=painelMunicipioNome();
   const lista = nome ? db.financeiro.filter(f=>f.municipio===nome) : db.financeiro;
-  return lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const financeiro = lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const pessoas = nome ? db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0) : db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
+  return financeiro + pessoas;
 }
 function painelPercentualMeta(){
   const meta=painelMeta();
@@ -799,7 +800,7 @@ function renderPerfil(){
   if(document.getElementById("perfilAgenda")) perfilAgenda.textContent=minhasAgendas;
   if(document.getElementById("perfilListaArvore")){
     perfilListaArvore.innerHTML=minhaLista.length
-      ? `<div class="table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Município</th><th>Região</th><th>Potencial</th></tr></thead><tbody>${minhaLista.map(p=>`<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td>${p.municipio||"-"}</td><td>${p.regiao||"-"}</td><td>${p.potencial||0}</td></tr>`).join("")}</tbody></table></div>`
+      ? `<div class="table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Município</th><th>Região</th><th>Projeção de Votos</th></tr></thead><tbody>${minhaLista.map(p=>`<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td>${p.municipio||"-"}</td><td>${p.regiao||"-"}</td><td>${p.potencial||0}</td></tr>`).join("")}</tbody></table></div>`
       : `<p class="empty">Nenhuma pessoa cadastrada na sua árvore.</p>`;
   }
   if(document.getElementById("perfilPermissoes")){
@@ -861,15 +862,13 @@ function renderFinanceiro(){
 
 function renderTerritorio(){
   listaMunicipios.innerHTML=db.municipios.length?db.municipios.map((m,i)=>`<tr>
-    <td><input value="${m.nome||""}" onchange="setField('municipios',${i},'nome',this.value)"></td>
+    <td><input value="${m.nome||""}" onchange="setField('municipios',${i},'nome',this.value);render()"></td>
     <td><input value="${m.estado||"PR"}" onchange="setField('municipios',${i},'estado',this.value)"></td>
     <td><input type="number" value="${m.populacao||0}" onchange="setField('municipios',${i},'populacao',this.value,true)"></td>
     <td><input type="number" value="${m.eleitores||0}" onchange="setField('municipios',${i},'eleitores',this.value,true)"></td>
     <td><input type="number" value="${m.meta||0}" onchange="setField('municipios',${i},'meta',this.value,true);render()"></td>
-    <td><input type="number" value="${m.projecao||0}" onchange="setField('municipios',${i},'projecao',this.value,true);render()"></td>
-    <td><select onchange="setField('municipios',${i},'situacao',this.value);render()"><option ${m.situacao==="Forte"?"selected":""}>Forte</option><option ${m.situacao==="Atenção"?"selected":""}>Atenção</option><option ${m.situacao==="Crítico"?"selected":""}>Crítico</option></select></td>
     <td><button class="action-mini red" onclick="delItem('municipios',${i})">Excluir</button></td>
-  </tr>`).join(""):emptyRow(8,"Nenhum município cadastrado.");
+  </tr>`).join(""):emptyRow(6,"Nenhum município cadastrado.");
 
   listaRegioes.innerHTML=db.regioes.length?db.regioes.map((r,i)=>`<tr>
     <td>${municipioSelect("regioes",i,"municipio",r.municipio)}</td>
@@ -890,6 +889,7 @@ function renderBase(){
     const funcoes = currentRole==="Apoiador"
       ? `<option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`
       : `<option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Liderança"?"selected":""}>Liderança</option><option ${p.funcao==="Cabo Eleitoral"?"selected":""}>Cabo Eleitoral</option><option ${p.funcao==="Coordenador"?"selected":""}>Coordenador</option><option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
+    const valorBloqueado = currentRole==="Apoiador" ? "disabled" : "";
     return`<tr>
       <td><input value="${p.nome||""}" onchange="setField('pessoas',${i},'nome',this.value)"></td>
       <td><input value="${p.telefone||""}" placeholder="(00) 00000-0000" onchange="setField('pessoas',${i},'telefone',this.value)"></td>
@@ -897,9 +897,10 @@ function renderBase(){
       <td>${municipioSelect("pessoas",i,"municipio",p.municipio)}</td>
       <td><input value="${p.regiao||""}" onchange="setField('pessoas',${i},'regiao',this.value)"></td>
       <td><input type="number" value="${p.potencial||0}" onchange="setField('pessoas',${i},'potencial',this.value,true);render()"></td>
+      <td><input ${valorBloqueado} type="number" value="${p.valor||0}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
       <td><button class="action-mini red" onclick="delItem('pessoas',${i})">Excluir</button></td>
     </tr>`;
-  }).join(""):emptyRow(7,currentRole==="Apoiador"?"Nenhuma pessoa cadastrada na sua árvore.":"Nenhuma pessoa cadastrada.");
+  }).join(""):emptyRow(8,currentRole==="Apoiador"?"Nenhuma pessoa cadastrada na sua árvore.":"Nenhuma pessoa cadastrada.");
 }
 
 function renderAgenda(){
@@ -979,15 +980,13 @@ function renderRelatorio(){
   const listaMunicipios = db.municipios.length
     ? `<div style="margin-top:24px"><h2 style="color:#0b2e59">Dados Cadastrais dos Municípios</h2>
         <table class="table">
-          <thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th><th>Projeção</th><th>Situação</th></tr></thead>
+          <thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th></tr></thead>
           <tbody>${db.municipios.map(m=>`<tr>
             <td>${m.nome||"-"}</td>
             <td>${m.estado||"-"}</td>
             <td>${n(m.populacao||0)}</td>
             <td>${n(m.eleitores||0)}</td>
             <td>${n(m.meta||0)}</td>
-            <td>${n(m.projecao||0)}</td>
-            <td>${m.situacao||"-"}</td>
           </tr>`).join("")}</tbody>
         </table>
       </div>`
@@ -1013,7 +1012,7 @@ function renderRelatorio(){
   const listaPessoas = db.pessoas.length
     ? `<div style="margin-top:24px"><h2 style="color:#0b2e59">Pessoas Cadastradas na Base de Apoio</h2>
         <table class="table">
-          <thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Potencial</th><th>Cadastrado por</th></tr></thead>
+          <thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Projeção de Votos</th><th>Cadastrado por</th></tr></thead>
           <tbody>${db.pessoas.map(p=>`<tr>
             <td>${p.nome||"-"}</td>
             <td>${p.telefone||"-"}</td>
@@ -1083,7 +1082,7 @@ function renderRelatorio(){
     <div style="margin-top:24px"><h2 style="color:#0b2e59">Leitura Geral da Campanha</h2>
       <div class="report-note">
         <strong>Raio-X automático:</strong> A campanha possui ${db.municipios.length} município(s), ${db.regioes.length} região(ões)/bairro(s), ${db.pessoas.length} pessoa(s) na base de apoio, ${db.usuarios.length} usuário(s) cadastrado(s) e ${db.agenda.length} agenda(s). 
-        A projeção atual é de ${n(proj)} voto(s), representando ${perc.toFixed(1).replace(".",",")}% da meta geral de ${n(db.meta)} voto(s). 
+        A projeção atual é de ${n(proj)} voto(s), calculada pela soma das Projeções de Votos cadastradas na Base de Apoio, representando ${perc.toFixed(1).replace(".",",")}% da meta geral de ${n(db.meta)} voto(s). 
         O sistema identificou ${alerts.length} alerta(s) automático(s), sendo ${alerts.filter(a=>a.tipo==="red").length} crítico(s).
       </div>
     </div>`;
@@ -1099,7 +1098,7 @@ function renderRelatorio(){
     </div>
     <div class="report-grid">
       <div class="report-kpi"><span>Meta</span><strong>${n(db.meta)}</strong></div>
-      <div class="report-kpi"><span>Projeção</span><strong>${n(proj)}</strong></div>
+      <div class="report-kpi"><span>Projeção de Votos</span><strong>${n(proj)}</strong></div>
       <div class="report-kpi"><span>Índice de Competitividade Eleitoral</span><strong>${ice}</strong></div>
       <div class="report-kpi"><span>Atingimento da Meta</span><strong>${perc.toFixed(1).replace(".",",")}%</strong></div>
     </div>
@@ -1153,7 +1152,7 @@ function responderAjuda(){
   }else if(q.includes("território")||q.includes("territorio")||q.includes("bairro")||q.includes("região")||q.includes("regiao")){
     resposta="O módulo Território organiza municípios, regiões e bairros. Cada local pode ter meta, projeção, responsável e prioridade. O sistema avalia automaticamente se está forte, em atenção ou crítico.";
   }else if(q.includes("base")||q.includes("apoio")||q.includes("liderança")||q.includes("lideranca")||q.includes("apoiador")){
-    resposta="A Base de Apoio registra lideranças, apoiadores, cabos eleitorais e coordenadores. Cada pessoa pode ter potencial de votos e valor mensal, permitindo calcular custo individual por voto.";
+    resposta="A Base de Apoio registra lideranças, apoiadores, cabos eleitorais e coordenadores. Cada pessoa pode ter projeção de votos e valor mensal, permitindo calcular custo individual por voto.";
   }else if(q.includes("relatório")||q.includes("relatorio")||q.includes("pdf")){
     resposta="A área Relatórios gera um resumo executivo da campanha com meta, projeção, custo por voto, Índice de Competitividade Eleitoral e alertas automáticos. Use imprimir para salvar em PDF.";
   }else if(q.includes("usuário")||q.includes("usuario")||q.includes("senha")||q.includes("perfil")){
