@@ -254,29 +254,14 @@ p{color:#64748b}
 }
 
 
-/* IA CHAT GIE360 - CÓDIGO ÚNICO */
-.ia-chat-layout{display:grid;grid-template-columns:280px 1fr;gap:18px;min-height:620px}
-.ia-sidebar{background:#0b2e59;color:#fff;border-radius:22px;padding:16px;box-shadow:0 14px 34px rgba(15,23,42,.14)}
-.ia-sidebar h3{color:#fff;margin:0 0 12px}.ia-new{width:100%;margin-bottom:12px}
-.ia-conv-list{display:flex;flex-direction:column;gap:8px;max-height:470px;overflow:auto}
-.ia-conv-item{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px;cursor:pointer}
-.ia-conv-item.active{background:#f2b300;color:#0b2e59;font-weight:900}.ia-conv-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
-.ia-del{border:0;background:transparent;color:inherit;cursor:pointer;font-size:15px}
-.ia-main{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 14px 34px rgba(15,23,42,.07);overflow:hidden;display:flex;flex-direction:column}
-.ia-main-head{padding:18px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.ia-main-head h3{margin:0;color:#0b2e59}.ia-main-head p{margin:4px 0 0;color:#64748b;font-weight:700}
-.ia-status{font-size:12px;font-weight:900;background:#eff6ff;color:#0b2e59;border-radius:999px;padding:8px 10px}
-.ia-messages{height:470px;overflow:auto;background:#f8fafc;padding:18px}
-.ia-msg{max-width:88%;margin:0 0 12px;padding:13px 15px;border-radius:16px;line-height:1.55;white-space:pre-wrap}
+/* IA GIE360 SIMPLES E FUNCIONAL - v2.1.9 */
+.ia-box{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 14px 34px rgba(15,23,42,.07);overflow:hidden}
+.ia-head{background:#0b2e59;color:#fff;padding:18px 22px}.ia-head h3{color:#fff;margin:0}.ia-head p{color:#dbeafe;margin:6px 0 0}
+.ia-msgs{height:420px;overflow:auto;background:#f8fafc;padding:18px}
+.ia-msg{max-width:90%;margin:0 0 12px;padding:13px 15px;border-radius:16px;line-height:1.55;white-space:pre-wrap}
 .ia-msg.user{margin-left:auto;background:#0b2e59;color:#fff}.ia-msg.bot{background:#fff;border:1px solid #e2e8f0;color:#0f172a}
-.ia-input-bar{display:flex;gap:10px;padding:14px;border-top:1px solid #e2e8f0;background:#fff}.ia-input-bar input{flex:1}
-.ia-suggest{display:flex;flex-wrap:wrap;gap:8px;padding:0 14px 14px;background:#fff}
-.ia-suggest button{border:1px solid #dbe3ef;background:#fff;color:#0b2e59;border-radius:999px;padding:8px 12px;font-weight:900;cursor:pointer}
-.ia-context{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.ia-card-mini{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:13px;box-shadow:0 8px 18px rgba(15,23,42,.05)}
-.ia-card-mini span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900}
-.ia-card-mini strong{display:block;margin-top:6px;color:#0b2e59;font-size:21px}
-@media(max-width:1050px){.ia-chat-layout{grid-template-columns:1fr}.ia-context{grid-template-columns:repeat(2,1fr)}}
+.ia-form{display:flex;gap:10px;padding:14px;border-top:1px solid #e2e8f0}.ia-form input{flex:1}
+.ia-buttons{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px;background:#fff}.ia-buttons button{border:1px solid #dbe3ef;background:#fff;color:#0b2e59;border-radius:999px;padding:8px 12px;font-weight:900;cursor:pointer}
 
 </style>
 </head>
@@ -500,48 +485,34 @@ p{color:#64748b}
   <div class="page-head">
     <div>
       <h1>Inteligência GIE360</h1>
-      <p>IA interna do sistema, usando os dados cadastrados no GIE360 para orientar a campanha.</p>
+      <p>IA interna que responde com base nos dados cadastrados no sistema.</p>
     </div>
-    <button class="btn gold" onclick="iaNovaConversa()">+ Nova Conversa</button>
+    <button class="btn gold" onclick="iaNovaConversa()">Nova Conversa</button>
   </div>
 
-  <div class="ia-context">
-    <div class="ia-card-mini"><span>Meta</span><strong id="iaMeta">0</strong></div>
-    <div class="ia-card-mini"><span>Projeção</span><strong id="iaProjecao">0</strong></div>
-    <div class="ia-card-mini"><span>Custo/Voto</span><strong id="iaCusto">R$ 0,00</strong></div>
-    <div class="ia-card-mini"><span>Alertas</span><strong id="iaAlertasQtd">0</strong></div>
+  <div class="grid">
+    <div class="card kpi"><span>Meta</span><strong id="iaMeta">0</strong><small>meta analisada</small></div>
+    <div class="card kpi green"><span>Projeção</span><strong id="iaProj">0</strong><small>base de apoio</small></div>
+    <div class="card kpi gold"><span>Custo/Voto</span><strong id="iaCusto">R$ 0,00</strong><small>custo consolidado</small></div>
+    <div class="card kpi red"><span>Alertas</span><strong id="iaAlertas">0</strong><small>pontos de atenção</small></div>
   </div>
 
-  <div class="ia-chat-layout">
-    <aside class="ia-sidebar">
-      <h3>Conversas</h3>
-      <button class="btn gold ia-new" onclick="iaNovaConversa()">+ Nova conversa</button>
-      <div id="iaListaConversas" class="ia-conv-list"></div>
-    </aside>
-
-    <div class="ia-main">
-      <div class="ia-main-head">
-        <div>
-          <h3 id="iaTituloConversa">Nova conversa</h3>
-          <p>Faça perguntas como faria no ChatGPT, mas usando os dados do GIE360.</p>
-        </div>
-        <span class="ia-status">IA local integrada</span>
-      </div>
-
-      <div id="iaMensagens" class="ia-messages"></div>
-
-      <div class="ia-suggest">
-        <button onclick="iaPerguntaRapida('Como está minha campanha?')">Campanha geral</button>
-        <button onclick="iaPerguntaRapida('Quem está caro por voto?')">Custo por voto</button>
-        <button onclick="iaPerguntaRapida('Qual município está mais fraco?')">Município fraco</button>
-        <button onclick="iaPerguntaRapida('Monte um plano de ação para esta semana')">Plano de ação</button>
-        <button onclick="iaPerguntaRapida('Analise minha agenda')">Agenda</button>
-      </div>
-
-      <div class="ia-input-bar">
-        <input id="iaPergunta" placeholder="Digite sua pergunta para a IA do GIE360...">
-        <button class="btn gold" onclick="iaEnviarPergunta()">Enviar</button>
-      </div>
+  <div class="ia-box">
+    <div class="ia-head">
+      <h3>🤖 Consultor Estratégico GIE360</h3>
+      <p>Pergunte sobre campanha, financeiro, base de apoio, território, agenda ou plano de ação.</p>
+    </div>
+    <div id="iaMsgs" class="ia-msgs"></div>
+    <div class="ia-buttons">
+      <button onclick="iaPerguntaRapida('Como está minha campanha?')">Campanha geral</button>
+      <button onclick="iaPerguntaRapida('Analise o financeiro')">Financeiro</button>
+      <button onclick="iaPerguntaRapida('Analise a base de apoio')">Base de apoio</button>
+      <button onclick="iaPerguntaRapida('Analise minha agenda')">Agenda</button>
+      <button onclick="iaPerguntaRapida('Monte um plano de ação')">Plano de ação</button>
+    </div>
+    <div class="ia-form">
+      <input id="iaInput" placeholder="Digite sua pergunta...">
+      <button class="btn gold" onclick="iaEnviar()">Enviar</button>
     </div>
   </div>
 </section>
@@ -703,7 +674,7 @@ p{color:#64748b}
       <ul>
         <li>Não cadastre projeção sem fundamento.</li>
         <li>Atualize agenda e território com frequência.</li>
-        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li><li>Todo campo de custo alimenta a Despesa Geral: Financeiro, pagamento de Usuários e Valor Mensal da Base de Apoio.</li>
+        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li>
         <li>Não use o sistema para maquiar dados.</li>
       </ul>
     </div>
@@ -886,8 +857,17 @@ function projecaoTotal(){
 
 function receitasTotal(){return totalReceitaFinanceiro();}
 
-function despesasTotal(){
-  return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();
+function despesasTotal(){return totalDespesaFinanceiro()+db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0);}
+
+function calcCustoVoto(){const p=projecaoTotal();return p?despesasTotal()/p:0;}
+function percentualMeta(){return db.meta?Math.min(projecaoTotal()/db.meta*100,100):0;}
+
+function statusRegiao(r){
+  if(!Number(r.meta))return"Atenção";
+  const p=Number(r.projecao||0)/Number(r.meta)*100;
+  if(p>=75)return"Forte";
+  if(p>=40)return"Atenção";
+  return"Crítico";
 }
 
 function statusRegiaoBadge(r){
@@ -982,6 +962,108 @@ function addPessoa(){
   render();
 }
 
+/* FUNÇÕES ESSENCIAIS RESTAURADAS - v2.0.9 */
+function totalReceitaFinanceiro(){
+  return db.financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+}
+
+function addFinanceiro(){
+  const mun=(db.municipios[0]&&db.municipios[0].nome)||"";
+  db.financeiro.push({
+    id:uid(),
+    tipo:"despesa",
+    categoria:"",
+    descricao:"",
+    municipio:mun,
+    usuarioLogin:"",
+    valor:0
+  });
+  salvar();
+  render();
+}
+
+function addAgenda(){
+  const mun=(db.municipios[0]&&db.municipios[0].nome)||"";
+  const statusInicial=currentRole==="Apoiador"?"Rascunho":"Pendente";
+  db.agenda.push({
+    id:uid(),
+    solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",
+    data:new Date().toISOString().slice(0,10),
+    hora:"",
+    tipo:"Reunião",
+    municipio:mun,
+    regiao:"",
+    local:"",
+    descricao:"",
+    status:statusInicial
+  });
+  salvar();
+  render();
+}
+
+function addUsuario(){
+  db.usuarios.push({
+    id:uid(),
+    nome:"",
+    login:"",
+    senha:"",
+    perfil:"Apoiador",
+    pagamento:0,
+    projecao:0
+  });
+  salvar();
+  render();
+}
+
+function delItem(tipo,i){
+  if(!db[tipo] || !db[tipo][i]) return;
+  db[tipo].splice(i,1);
+  salvar();
+  render();
+}
+
+function setField(tipo,i,campo,valor,numero=false){
+  if(!db[tipo] || !db[tipo][i]) return;
+  db[tipo][i][campo]=numero?(Number(valor)||0):valor;
+  salvar();
+}
+
+function enviarAgenda(i){
+  if(!db.agenda[i]) return;
+  db.agenda[i].status="Pendente";
+  salvar();
+  render();
+  alert("Solicitação de agenda enviada para aprovação do administrador.");
+}
+
+function confirmarAgenda(i){
+  if(!db.agenda[i]) return;
+  db.agenda[i].status="Confirmado";
+  salvar();
+  render();
+}
+
+function recusarAgenda(i){
+  if(!db.agenda[i]) return;
+  db.agenda[i].status="Recusado";
+  salvar();
+  render();
+}
+
+function realizarAgenda(i){
+  if(!db.agenda[i]) return;
+  db.agenda[i].status="Realizado";
+  salvar();
+  render();
+}
+
+function cancelarAgenda(i){
+  if(!db.agenda[i]) return;
+  db.agenda[i].status="Cancelado";
+  salvar();
+  render();
+}
+
 function totalDespesaFinanceiro(){
   return db.financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
 }
@@ -1033,9 +1115,8 @@ function painelDespesas(){
   const nome=painelMunicipioNome();
   const lista = nome ? db.financeiro.filter(f=>f.municipio===nome) : db.financeiro;
   const financeiro = lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
-  const pessoas = nome ? db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0) : totalValorBaseApoio();
-  const usuarios = nome ? db.usuarios.filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0) : totalPagamentoUsuarios();
-  return financeiro + pessoas + usuarios;
+  const pessoas = nome ? db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0) : db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
+  return financeiro + pessoas;
 }
 function painelPercentualMeta(){
   const meta=painelMeta();
@@ -1062,67 +1143,36 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
-  try{atualizarPainelGeral();}catch(e){console.error('Erro ao atualizar Painel Geral:',e);}
-  // Renderização protegida: um erro em um módulo não pode travar o sistema inteiro.
-  try{
-    if(typeof atualizarSelectMunicipioBase==="function") atualizarSelectMunicipioBase();
+  const proj=painelProjecao(),perc=painelPercentualMeta(),cv=painelCustoVoto(),ice=calcularICE(),alerts=gerarAlertas();
 
-    const proj=(typeof painelProjecao==="function")?painelProjecao():((typeof projecaoTotal==="function")?projecaoTotal():0);
-    const perc=(typeof painelPercentualMeta==="function")?painelPercentualMeta():((typeof percentualMeta==="function")?percentualMeta():0);
-    const cv=(typeof painelCustoVoto==="function")?painelCustoVoto():((typeof calcCustoVoto==="function")?calcCustoVoto():0);
-    const ice=(typeof calcularICE==="function")?calcularICE():0;
-    const alerts=(typeof gerarAlertas==="function")?gerarAlertas():[];
+  atualizarSelectMunicipioBase();
+  metaInput.value=painelMeta();
+  if(municipioBaseInput.tagName!=="SELECT") municipioBaseInput.value=db.municipioBase||"";
+  receitaInput.value=painelReceitas();
+  despesaInput.value=painelDespesas();
 
-    const metaValor=(typeof painelMeta==="function")?painelMeta():(db.meta||0);
-    const receitaValor=(typeof painelReceitas==="function")?painelReceitas():((typeof receitasTotal==="function")?receitasTotal():0);
-    const despesaValor=(typeof painelDespesas==="function")?painelDespesas():((typeof despesasTotal==="function")?despesasTotal():0);
+  indiceCompetitividade.textContent=ice;
+  indiceCompetitividadeLabel.textContent=ice>=80?"Campanha forte":ice>=60?"Campanha em construção":ice>=40?"Campanha em atenção":"Campanha crítica";
+  projecaoAtual.textContent=n(proj);
+  percMeta.textContent=perc.toFixed(1).replace(".",",")+"% da meta";
+  custoVotoEl.innerText=money(cv);
+  criticos.textContent=alerts.filter(a=>a.tipo==="red").length;
+  badgePerc.textContent=perc.toFixed(1).replace(".",",")+"%";
+  progressBar.style.width=perc+"%";
+  textoProjecao.textContent=`${painelMunicipioNome()?("Município selecionado: "+painelMunicipioNome()+". "):"Visão geral da campanha. "}A campanha está com ${n(proj)} votos projetados de uma meta de ${n(painelMeta())} votos.`;
+  listaAlertasPainel.innerHTML=alerts.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("");
 
-    if(document.getElementById("metaInput")) metaInput.value=metaValor;
-    if(document.getElementById("receitaInput")) receitaInput.value=receitaValor;
-    if(document.getElementById("despesaInput")) despesaInput.value=despesaValor;
-    if(document.getElementById("municipioBaseInput") && municipioBaseInput.tagName!=="SELECT") municipioBaseInput.value=db.municipioBase||"";
-
-    if(document.getElementById("indiceCompetitividade")) indiceCompetitividade.textContent=ice;
-    if(document.getElementById("indiceCompetitividadeLabel")) indiceCompetitividadeLabel.textContent=ice>=80?"Campanha forte":ice>=60?"Campanha em construção":ice>=40?"Campanha em atenção":"Campanha crítica";
-    if(document.getElementById("projecaoAtual")) projecaoAtual.textContent=n(proj);
-    if(document.getElementById("percMeta")) percMeta.textContent=perc.toFixed(1).replace(".",",")+"% da meta";
-    if(document.getElementById("custoVotoEl")) custoVotoEl.innerText=money(cv);
-    if(document.getElementById("criticos")) criticos.textContent=alerts.filter(a=>a.tipo==="red").length;
-    if(document.getElementById("badgePerc")) badgePerc.textContent=perc.toFixed(1).replace(".",",")+"%";
-    if(document.getElementById("progressBar")) progressBar.style.width=perc+"%";
-
-    if(document.getElementById("textoProjecao")){
-      const mun=(typeof painelMunicipioNome==="function" && painelMunicipioNome())?("Município selecionado: "+painelMunicipioNome()+". "):"Visão geral da campanha. ";
-      textoProjecao.textContent=mun+"A campanha está com "+n(proj)+" votos projetados de uma meta de "+n(metaValor)+" votos.";
-    }
-
-    if(document.getElementById("listaAlertasPainel")){
-      listaAlertasPainel.innerHTML=alerts.length
-        ? alerts.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("")
-        : `<div class="auto-alert green"><strong>Sem alertas críticos</strong>O sistema não identificou risco relevante neste momento.</div>`;
-    }
-  }catch(e){
-    console.error("Erro no Painel Geral:",e);
-  }
-
-  const modulos=[
-    ["Meu Perfil",()=>{if(typeof renderPerfil==="function")renderPerfil();}],
-    ["Resumo Administrador",()=>{if(typeof renderResumoAdministrador==="function")renderResumoAdministrador();}],
-    ["Financeiro",()=>{if(typeof renderFinanceiro==="function")renderFinanceiro();}],
-    ["Território",()=>{if(typeof renderTerritorio==="function")renderTerritorio();}],
-    ["Base de Apoio",()=>{if(typeof renderBase==="function")renderBase();}],
-    ["Agenda",()=>{if(typeof renderAgenda==="function")renderAgenda();}],
-    ["Imprimir Agenda",()=>{if(typeof renderAgendaImpressao==="function")renderAgendaImpressao();}],
-    ["Inteligência",()=>{if(typeof renderInteligencia==="function")renderInteligencia();}],
-    ["Relatórios",()=>{if(typeof renderRelatorio==="function")renderRelatorio();}],
-    ["Usuários",()=>{if(typeof renderUsuarios==="function")renderUsuarios();}],
-    ["Central de Ajuda",()=>{if(typeof renderAjuda==="function")renderAjuda();}]
-  ];
-
-  modulos.forEach(([nome,fn])=>{
-    try{fn();}catch(e){console.error("Erro no módulo "+nome+":",e);}
-  });
+  renderPerfil();
+  renderResumoAdministrador();
+  renderFinanceiro();
+  renderTerritorio();
+  renderBase();
+  renderAgenda();
+  renderInteligencia();
+  renderRelatorio();
+  renderUsuarios();
 }
+
 
 function renderPerfil(){
   if(!currentUser) return;
@@ -1385,226 +1435,80 @@ function imprimirAgendaOficial(){
 }
 
 
-/* IA CHAT GIE360 - CÓDIGO ÚNICO */
-const IA_STORAGE="gie360_ia_conversas_v1";
-let iaConversas=[];
-let iaAtualId=null;
-
-function iaNL(){return String.fromCharCode(10);}
-function iaCarregar(){
-  try{iaConversas=JSON.parse(localStorage.getItem(IA_STORAGE)||"[]");}catch(e){iaConversas=[];}
-  if(!iaConversas.length){
-    iaConversas=[{id:uid(),titulo:"Campanha Geral",mensagens:[
-      {tipo:"bot",texto:"Olá. Eu sou a Inteligência GIE360. Posso analisar campanha, financeiro, território, base de apoio e agenda usando os dados cadastrados no sistema."}
-    ],criadoEm:new Date().toISOString()}];
-    iaSalvar();
-  }
-  if(!iaAtualId) iaAtualId=iaConversas[0].id;
-}
-function iaSalvar(){localStorage.setItem(IA_STORAGE,JSON.stringify(iaConversas));}
-function iaConversaAtual(){return iaConversas.find(c=>c.id===iaAtualId)||iaConversas[0];}
-function iaNovaConversa(){
-  const c={id:uid(),titulo:"Nova conversa",mensagens:[{tipo:"bot",texto:"Nova conversa iniciada. Pergunte algo sobre a campanha, financeiro, território, base de apoio, agenda ou estratégia."}],criadoEm:new Date().toISOString()};
-  iaConversas.unshift(c); iaAtualId=c.id; iaSalvar(); renderInteligencia();
-}
-function iaSelecionarConversa(id){iaAtualId=id;renderInteligencia();}
-function iaExcluirConversa(id){
-  if(!confirm("Excluir esta conversa?")) return;
-  iaConversas=iaConversas.filter(c=>c.id!==id);
-  if(!iaConversas.length){iaConversas=[{id:uid(),titulo:"Campanha Geral",mensagens:[{tipo:"bot",texto:"Conversa criada. Como posso ajudar sua campanha hoje?"}],criadoEm:new Date().toISOString()}];}
-  iaAtualId=iaConversas[0].id; iaSalvar(); renderInteligencia();
-}
+/* IA SIMPLES FUNCIONAL - v2.1.9 */
+let iaHistorico=[];
 function iaDados(){
-  const meta=(typeof painelMeta==="function")?painelMeta():Number(db.meta||0);
-  const proj=(typeof painelProjecao==="function")?painelProjecao():((typeof projecaoTotal==="function")?projecaoTotal():0);
-  const receitas=(typeof painelReceitas==="function")?painelReceitas():((typeof receitasTotal==="function")?receitasTotal():0);
-  const despesas=(typeof painelDespesas==="function")?painelDespesas():((typeof despesasTotal==="function")?despesasTotal():0);
-  const saldo=receitas-despesas;
-  const custo=proj>0?despesas/proj:0;
-  const perc=meta>0?Math.min((proj/meta)*100,100):0;
-  const mun=(typeof painelMunicipioNome==="function")?painelMunicipioNome():(db.municipioBase||"");
-  const pessoas=mun?(db.pessoas||[]).filter(p=>p.municipio===mun):(db.pessoas||[]);
-  const agendas=mun?(db.agenda||[]).filter(a=>a.municipio===mun):(db.agenda||[]);
-  const municipios=db.municipios||[];
-  const regioes=mun?(db.regioes||[]).filter(r=>r.municipio===mun):(db.regioes||[]);
-  const alerts=(typeof gerarAlertas==="function")?gerarAlertas():[];
-  return {meta,proj,receitas,despesas,saldo,custo,perc,mun,pessoas,agendas,municipios,regioes,alerts};
+  const meta = typeof painelMeta==="function" ? painelMeta() : Number(db.meta||0);
+  const proj = typeof painelProjecao==="function" ? painelProjecao() : projecaoTotal();
+  const receitas = typeof painelReceitas==="function" ? painelReceitas() : receitasTotal();
+  const despesas = typeof painelDespesas==="function" ? painelDespesas() : despesasTotal();
+  const saldo = receitas - despesas;
+  const custo = proj>0 ? despesas/proj : 0;
+  const perc = meta>0 ? Math.min((proj/meta)*100,100) : 0;
+  const mun = typeof painelMunicipioNome==="function" ? painelMunicipioNome() : "";
+  const pessoas = mun ? db.pessoas.filter(p=>p.municipio===mun) : db.pessoas;
+  const agendas = mun ? db.agenda.filter(a=>a.municipio===mun) : db.agenda;
+  const alertas = typeof gerarAlertas==="function" ? gerarAlertas() : [];
+  return {meta,proj,receitas,despesas,saldo,custo,perc,mun,pessoas,agendas,alertas};
 }
-function iaResumo(){
+function iaNovaConversa(){
+  iaHistorico=[];
+  renderInteligencia();
+}
+function iaAdd(tipo,texto){
+  iaHistorico.push({tipo,texto});
+  renderInteligencia();
+}
+function iaResposta(q){
   const d=iaDados();
-  let leitura="Ainda preciso de mais dados cadastrados para uma análise completa.";
-  if(d.perc>=85) leitura="A campanha está forte em relação à meta. O foco deve ser manter presença, proteger a base e validar entregas.";
-  else if(d.perc>=60) leitura="A campanha está competitiva, mas ainda precisa ampliar base e fortalecer territórios abaixo da meta.";
-  else if(d.perc>=35) leitura="A campanha está em atenção. É necessário acelerar cadastros, agendas e conversão da base em projeção.";
-  else if(d.meta>0) leitura="A campanha está crítica ou inicial. Priorize base de apoio, agenda e redução de custos sem projeção.";
-  return `📊 DIAGNÓSTICO DA CAMPANHA
-
-${d.mun?"Município analisado: "+d.mun:"Visão geral da campanha"}
-
-Meta: ${n(d.meta)} votos
-Projeção: ${n(d.proj)} votos
-Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
-Receitas: ${money(d.receitas)}
-Despesas: ${money(d.despesas)}
-Saldo: ${money(d.saldo)}
-Custo por voto: ${money(d.custo)}
-
-Base de apoio: ${d.pessoas.length} pessoa(s)
-Municípios: ${d.municipios.length}
-Regiões/Bairros: ${d.regioes.length}
-Agendas: ${d.agendas.length}
-
-Leitura da IA:
-${leitura}`;
+  q=(q||"").toLowerCase();
+  if(q.includes("financeiro")||q.includes("custo")||q.includes("gasto")||q.includes("dinheiro")){
+    return `💰 FINANCEIRO\n\nReceitas: ${money(d.receitas)}\nDespesas: ${money(d.despesas)}\nSaldo: ${money(d.saldo)}\nCusto por voto: ${money(d.custo)}\n\nA despesa geral considera financeiro, custo de usuários e valor mensal da base de apoio.`;
+  }
+  if(q.includes("base")||q.includes("apoiador")||q.includes("eleitor")||q.includes("voto")){
+    const sem=d.pessoas.filter(p=>Number(p.potencial||0)===0).length;
+    return `👥 BASE DE APOIO\n\nPessoas analisadas: ${d.pessoas.length}\nProjeção: ${n(d.proj)} votos\nCadastros sem projeção: ${sem}\n\nRecomendação: revise cadastros sem projeção e acompanhe custo mensal por pessoa.`;
+  }
+  if(q.includes("agenda")||q.includes("reunião")||q.includes("reuniao")){
+    const pend=d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length;
+    const conf=d.agendas.filter(a=>a.status==="Confirmado").length;
+    const real=d.agendas.filter(a=>a.status==="Realizado").length;
+    return `📅 AGENDA\n\nTotal: ${d.agendas.length}\nPendentes/Rascunho: ${pend}\nConfirmadas: ${conf}\nRealizadas: ${real}\n\nRecomendação: confirme pendências e transforme agendas em novos cadastros.`;
+  }
+  if(q.includes("plano")||q.includes("estratégia")||q.includes("estrategia")||q.includes("fazer")){
+    const faltam=Math.max(d.meta-d.proj,0);
+    return `🎯 PLANO DE AÇÃO\n\nFaltam ${n(faltam)} votos projetados.\n\n1. Atualizar cadastros sem projeção.\n2. Confirmar agendas pendentes.\n3. Revisar custos altos por voto.\n4. Reforçar municípios/regiões abaixo da meta.\n5. Atualizar o sistema após cada ação.`;
+  }
+  return `📊 DIAGNÓSTICO GERAL\n\n${d.mun?"Município: "+d.mun:"Visão geral"}\nMeta: ${n(d.meta)} votos\nProjeção: ${n(d.proj)} votos\nAtingimento: ${d.perc.toFixed(1).replace(".",",")}%\nReceitas: ${money(d.receitas)}\nDespesas: ${money(d.despesas)}\nSaldo: ${money(d.saldo)}\nCusto por voto: ${money(d.custo)}\n\nLeitura: ${d.perc>=80?"campanha forte.":d.perc>=50?"campanha competitiva, mas precisa reforço.":"campanha em atenção; priorize base e agenda."}`;
 }
-function iaFinanceiro(){
-  const d=iaDados(); const NL=iaNL();
-  const pessoasComCusto=d.pessoas.filter(p=>Number(p.valor||0)>0);
-  const ranking=pessoasComCusto.map(p=>{const votos=Number(p.potencial||0);const valor=Number(p.valor||0);return {nome:p.nome||"Sem nome",valor:valor,votos:votos,custo:votos>0?valor/votos:999999};}).sort((a,b)=>b.custo-a.custo).slice(0,6);
-  let lista="Nenhuma pessoa com custo mensal cadastrada.";
-  if(ranking.length){lista=ranking.map(x=>`- ${x.nome}: ${x.votos>0?money(x.custo):"custo sem projeção"} | Valor: ${money(x.valor)} | Projeção: ${n(x.votos)}`).join(NL);}
-  return `💰 ANÁLISE FINANCEIRA
-
-Receitas: ${money(d.receitas)}
-Despesas: ${money(d.despesas)}
-Saldo: ${money(d.saldo)}
-Custo por voto geral: ${money(d.custo)}
-
-Pessoas com custo mensal: ${pessoasComCusto.length}
-
-Maiores pontos de atenção:
-${lista}
-
-Recomendação:
-${d.custo>15?"Custo por voto alto. Revise pagamentos com baixa projeção e priorize lideranças com melhor entrega.":d.custo>8?"Custo intermediário. Acompanhe quem custa mais e entrega menos.":"Custo controlado ou ainda sem dados suficientes. Continue alimentando a base."}`;
-}
-function iaBase(){
-  const d=iaDados(); const NL=iaNL();
-  const semProj=d.pessoas.filter(p=>Number(p.potencial||0)===0);
-  const top=d.pessoas.map(p=>({nome:p.nome||"Sem nome",funcao:p.funcao||"-",municipio:p.municipio||"-",votos:Number(p.potencial||0),valor:Number(p.valor||0)})).sort((a,b)=>b.votos-a.votos).slice(0,8);
-  const lista=top.length?top.map(x=>`- ${x.nome} (${x.funcao}) | ${x.municipio} | ${n(x.votos)} votos | ${money(x.valor)}`).join(NL):"Ainda não há base cadastrada.";
-  return `👥 BASE DE APOIO
-
-Total de pessoas analisadas: ${d.pessoas.length}
-Pessoas sem projeção: ${semProj.length}
-
-Maiores projeções:
-${lista}
-
-Recomendação:
-${semProj.length>0?"Revise os cadastros sem Projeção de Votos. Eles impedem uma leitura real da campanha.":"A base está mais organizada porque as projeções estão preenchidas."}`;
-}
-function iaAgenda(){
-  const d=iaDados();
-  const pend=d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length;
-  const conf=d.agendas.filter(a=>a.status==="Confirmado").length;
-  const real=d.agendas.filter(a=>a.status==="Realizado").length;
-  const rec=d.agendas.filter(a=>a.status==="Recusado").length;
-  const canc=d.agendas.filter(a=>a.status==="Cancelado").length;
-  return `📅 AGENDA
-
-Total: ${d.agendas.length}
-Pendentes/Rascunho: ${pend}
-Confirmadas: ${conf}
-Realizadas: ${real}
-Recusadas: ${rec}
-Canceladas: ${canc}
-
-Recomendação:
-${pend>0?"Revise as agendas pendentes. Agenda parada reduz presença territorial.":"Não há pendências de agenda neste recorte."}
-${conf===0&&d.agendas.length>0?"Há movimentação, mas nenhuma agenda confirmada. Isso merece atenção.":""}`;
-}
-function iaMunicipio(){
-  const d=iaDados();
-  if(!d.mun){return ["📍 MUNICÍPIO BASE","","Nenhum município base foi selecionado no Painel Geral. Selecione um município para eu analisar esse território."].join(iaNL());}
-  return `📍 MUNICÍPIO BASE: ${d.mun}
-
-Meta: ${n(d.meta)}
-Projeção: ${n(d.proj)}
-Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
-Receitas: ${money(d.receitas)}
-Despesas: ${money(d.despesas)}
-Custo por voto: ${money(d.custo)}
-Pessoas cadastradas: ${d.pessoas.length}
-Regiões/Bairros: ${d.regioes.length}
-Agendas: ${d.agendas.length}
-
-Recomendação:
-${d.perc>=80?"Município forte. Mantenha presença e valide a base.":d.perc>=50?"Município competitivo. Reforce agenda e base de apoio.":d.perc>0?"Município abaixo do esperado. Priorize novas lideranças e agendas.":"Município sem projeção suficiente. Comece pela Base de Apoio e reuniões estratégicas."}`;
-}
-function iaPlano(){
-  const d=iaDados();
-  const faltam=Math.max(d.meta-d.proj,0);
-  const estimado=d.custo>0?faltam*d.custo:0;
-  const criticos=d.alerts.filter(a=>a.tipo==="red");
-  return `🎯 PLANO DE AÇÃO
-
-Faltam ${n(faltam)} votos projetados para atingir a meta.
-
-Próximos passos:
-1. Corrigir cadastros sem Projeção de Votos.
-2. Revisar pessoas com custo alto e baixa entrega.
-3. Confirmar agendas pendentes.
-4. Criar ações nos municípios/regiões abaixo da meta.
-5. Atualizar o sistema após cada ação de campo.
-
-Estimativa:
-${faltam>0&&d.custo>0?"Mantido o custo atual, o esforço financeiro estimado seria de "+money(estimado)+".":"Ainda não há custo suficiente para estimar investimento."}
-
-Alertas críticos:
-${criticos.length?criticos.map(a=>"- "+a.titulo+": "+a.texto).join(iaNL()):"Nenhum alerta crítico no momento."}`;
-}
-function iaGerarResposta(pergunta){
-  const q=pergunta.toLowerCase();
-  if(q.includes("financeiro")||q.includes("gasto")||q.includes("custo")||q.includes("dinheiro")||q.includes("caro")) return iaFinanceiro();
-  if(q.includes("base")||q.includes("apoiador")||q.includes("apoio")||q.includes("eleitor")||q.includes("voto")) return iaBase();
-  if(q.includes("agenda")||q.includes("reunião")||q.includes("reuniao")||q.includes("evento")) return iaAgenda();
-  if(q.includes("município")||q.includes("municipio")||q.includes("cidade")||q.includes("território")||q.includes("territorio")) return iaMunicipio();
-  if(q.includes("plano")||q.includes("estratégia")||q.includes("estrategia")||q.includes("melhorar")||q.includes("semana")||q.includes("fazer")) return iaPlano();
-  return iaResumo()+iaNL()+iaNL()+"Você também pode perguntar: quem está caro por voto, qual município está mais fraco, como está a agenda ou pedir um plano de ação.";
-}
-function iaEnviarPergunta(){
-  iaCarregar();
-  const input=document.getElementById("iaPergunta");
+function iaEnviar(){
+  const input=document.getElementById("iaInput");
   if(!input) return;
   const pergunta=(input.value||"").trim();
   if(!pergunta) return;
-  const conv=iaConversaAtual();
-  conv.mensagens.push({tipo:"user",texto:pergunta});
-  if(conv.titulo==="Nova conversa"){conv.titulo=pergunta.length>28?pergunta.slice(0,28)+"...":pergunta;}
-  conv.mensagens.push({tipo:"bot",texto:iaGerarResposta(pergunta)});
+  iaHistorico.push({tipo:"user",texto:pergunta});
+  iaHistorico.push({tipo:"bot",texto:iaResposta(pergunta)});
   input.value="";
-  iaSalvar();
   renderInteligencia();
 }
-function iaPerguntaRapida(texto){
-  const input=document.getElementById("iaPergunta");
-  if(input){input.value=texto;iaEnviarPergunta();}
-}
-function iaRenderConversas(){
-  const lista=document.getElementById("iaListaConversas");
-  if(!lista) return;
-  lista.innerHTML=iaConversas.map(c=>`<div class="ia-conv-item ${c.id===iaAtualId?"active":""}" onclick="iaSelecionarConversa('${c.id}')"><span class="ia-conv-title">${c.titulo||"Conversa"}</span><button class="ia-del" onclick="event.stopPropagation();iaExcluirConversa('${c.id}')">🗑️</button></div>`).join("");
-}
-function iaRenderMensagens(){
-  const box=document.getElementById("iaMensagens");
-  if(!box) return;
-  const conv=iaConversaAtual();
-  if(!conv) return;
-  box.innerHTML=conv.mensagens.map(m=>`<div class="ia-msg ${m.tipo}">${m.texto}</div>`).join("");
-  box.scrollTop=box.scrollHeight;
-  const titulo=document.getElementById("iaTituloConversa");
-  if(titulo) titulo.textContent=conv.titulo||"Conversa";
+function iaPerguntaRapida(txt){
+  const input=document.getElementById("iaInput");
+  if(input){input.value=txt;iaEnviar();}
 }
 function renderInteligencia(){
-  iaCarregar();
   const d=iaDados();
   if(document.getElementById("iaMeta")) iaMeta.textContent=n(d.meta);
-  if(document.getElementById("iaProjecao")) iaProjecao.textContent=n(d.proj);
+  if(document.getElementById("iaProj")) iaProj.textContent=n(d.proj);
   if(document.getElementById("iaCusto")) iaCusto.textContent=money(d.custo);
-  if(document.getElementById("iaAlertasQtd")) iaAlertasQtd.textContent=d.alerts.length;
-  iaRenderConversas();
-  iaRenderMensagens();
+  if(document.getElementById("iaAlertas")) iaAlertas.textContent=d.alertas.length;
+  const box=document.getElementById("iaMsgs");
+  if(box){
+    if(!iaHistorico.length){
+      iaHistorico.push({tipo:"bot",texto:"Olá. Eu sou a Inteligência GIE360. Pergunte sobre campanha, financeiro, base de apoio, agenda ou peça um plano de ação."});
+    }
+    box.innerHTML=iaHistorico.map(m=>`<div class="ia-msg ${m.tipo}">${m.texto}</div>`).join("");
+    box.scrollTop=box.scrollHeight;
+  }
 }
 
 function renderRelatorio(){
@@ -1776,18 +1680,7 @@ function renderRelatorio(){
     ${listaRegioes}
     ${listaUsuarios}
     ${listaPessoas}
-    <div style="margin-top:24px"><h2 style="color:#0b2e59">Composição das Despesas</h2>
-        <table class="table">
-          <thead><tr><th>Origem do Custo</th><th>Valor</th></tr></thead>
-          <tbody>
-            <tr><td>Despesas lançadas no Financeiro</td><td>${money(totalDespesaFinanceiro())}</td></tr>
-            <tr><td>Custos cadastrados em Usuários</td><td>${money(totalPagamentoUsuarios())}</td></tr>
-            <tr><td>Valores Mensais da Base de Apoio</td><td>${money(totalValorBaseApoio())}</td></tr>
-            <tr><td><strong>Despesa Geral Consolidada</strong></td><td><strong>${money(despesasTotal())}</strong></td></tr>
-          </tbody>
-        </table>
-      </div>
-      ${listaFinanceiro}
+    ${listaFinanceiro}
     ${listaAgenda}
   </div>`;
 }
@@ -1843,390 +1736,47 @@ function responderAjuda(){
 
 
 
-
-
-/* PAINEL GERAL FIX - v2.1.8 */
-function giePainelDados(){
-  const mun = (typeof painelMunicipioNome==="function") ? painelMunicipioNome() : (db.municipioBase||"");
-  const municipioObj = mun ? (db.municipios||[]).find(m=>m.nome===mun) : null;
-
-  const meta = municipioObj ? Number(municipioObj.meta||0) : (db.municipios||[]).reduce((s,m)=>s+Number(m.meta||0),0);
-  const proj = mun ? (db.pessoas||[]).filter(p=>p.municipio===mun).reduce((s,p)=>s+Number(p.potencial||0),0) : (db.pessoas||[]).reduce((s,p)=>s+Number(p.potencial||0),0);
-
-  const financeiro = mun ? (db.financeiro||[]).filter(f=>f.municipio===mun) : (db.financeiro||[]);
-  const receitas = financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
-  const despFinanceiro = financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
-  const despBase = mun ? (db.pessoas||[]).filter(p=>p.municipio===mun).reduce((s,p)=>s+Number(p.valor||0),0) : (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);
-  const despUsuarios = mun ? (db.usuarios||[]).filter(u=>u.municipio===mun).reduce((s,u)=>s+Number(u.pagamento||0),0) : (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);
-  const despesas = despFinanceiro + despBase + despUsuarios;
-  const saldo = receitas - despesas;
-  const custo = proj > 0 ? despesas/proj : 0;
-  const perc = meta > 0 ? Math.min((proj/meta)*100,100) : 0;
-
-  const pessoas = mun ? (db.pessoas||[]).filter(p=>p.municipio===mun) : (db.pessoas||[]);
-  const agendas = mun ? (db.agenda||[]).filter(a=>a.municipio===mun) : (db.agenda||[]);
-  const regioes = mun ? (db.regioes||[]).filter(r=>r.municipio===mun) : (db.regioes||[]);
-  const alertas = (typeof gerarAlertas==="function") ? gerarAlertas() : [];
-  const ice = (typeof calcularICE==="function") ? calcularICE() : 0;
-
-  return {mun,municipioObj,meta,proj,receitas,despesas,saldo,custo,perc,pessoas,agendas,regioes,alertas,ice,despFinanceiro,despBase,despUsuarios};
+/* GIE360 FIX SEGURO - v2.1.9 */
+function totalPagamentoUsuarios(){
+  return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);
+}
+function totalValorBaseApoio(){
+  return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);
+}
+function despesasTotal(){
+  return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();
+}
+function painelDespesas(){
+  const nome=painelMunicipioNome();
+  const lista = nome ? db.financeiro.filter(f=>f.municipio===nome) : db.financeiro;
+  const financeiro = lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const pessoas = nome ? db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0) : totalValorBaseApoio();
+  const usuarios = nome ? db.usuarios.filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0) : totalPagamentoUsuarios();
+  return financeiro+pessoas+usuarios;
+}
+function atualizarSistema(){
+  salvar();
+  render();
+  statusSave.textContent="Sistema atualizado";
+  setTimeout(()=>statusSave.textContent="",1600);
 }
 
-function gieSetText(id,valor){
-  const el=document.getElementById(id);
-  if(el) el.textContent=valor;
-}
-function gieSetValue(id,valor){
-  const el=document.getElementById(id);
-  if(el) el.value=valor;
-}
 
-function atualizarPainelGeral(){
-  const d=giePainelDados();
-
-  // Campos de controle
-  gieSetValue("metaInput", d.meta);
-  gieSetValue("receitaInput", d.receitas);
-  gieSetValue("despesaInput", d.despesas);
-
-  // KPIs usados em versões diferentes do GIE360
-  gieSetText("kpiMeta", n(d.meta));
-  gieSetText("kpiProj", n(d.proj));
-  gieSetText("kpiCusto", money(d.custo));
-  gieSetText("kpiICE", d.ice);
-
-  gieSetText("indiceCompetitividade", d.ice);
-  gieSetText("projecaoAtual", n(d.proj));
-  gieSetText("percMeta", d.perc.toFixed(1).replace(".",",")+"% da meta");
-  gieSetText("custoVotoEl", money(d.custo));
-  gieSetText("criticos", d.alertas.filter(a=>a.tipo==="red").length);
-
-  gieSetText("badgePerc", d.perc.toFixed(1).replace(".",",")+"%");
-  const progress=document.getElementById("progressBar");
-  if(progress) progress.style.width=d.perc+"%";
-
-  // Indicadores extras se existirem
-  gieSetText("painelReceitas", money(d.receitas));
-  gieSetText("painelDespesas", money(d.despesas));
-  gieSetText("painelSaldo", money(d.saldo));
-  gieSetText("painelPessoas", n(d.pessoas.length));
-  gieSetText("painelAgendas", n(d.agendas.length));
-  gieSetText("painelRegioes", n(d.regioes.length));
-
-  const texto=document.getElementById("textoProjecao");
-  if(texto){
-    const prefixo=d.mun?("Município selecionado: "+d.mun+". "):"Visão geral da campanha. ";
-    texto.textContent=prefixo+"A campanha está com "+n(d.proj)+" votos projetados de uma meta de "+n(d.meta)+" votos. Receita: "+money(d.receitas)+", despesa geral: "+money(d.despesas)+", saldo: "+money(d.saldo)+".";
-  }
-
-  const lista=document.getElementById("listaAlertasPainel");
-  if(lista){
-    lista.innerHTML=d.alertas.length
-      ? d.alertas.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("")
-      : `<div class="auto-alert green"><strong>Sem alertas críticos</strong>O sistema não identificou risco relevante neste momento.</div>`;
-  }
-}
-
-// Sobrescreve funções usadas pelo Painel para garantir cálculo consolidado
-function painelMeta(){ return giePainelDados().meta; }
-function painelProjecao(){ return giePainelDados().proj; }
-function painelReceitas(){ return giePainelDados().receitas; }
-function painelDespesas(){ return giePainelDados().despesas; }
-function painelPercentualMeta(){ return giePainelDados().perc; }
-function painelCustoVoto(){ return giePainelDados().custo; }
-
-/* RELATÓRIO E IA FIX - v2.1.7 */
+/* RELATÓRIO FIX FUNCIONAL - v2.1.9 */
 function gerarRelatorio(){
   try{
     if(typeof renderRelatorio==="function") renderRelatorio();
-    openPage("relatorios", document.querySelector('[data-page="relatorios"]'));
-    setTimeout(()=>window.print(),300);
+    window.print();
   }catch(e){
     console.error("Erro ao gerar relatório:",e);
     alert("Erro ao gerar relatório: "+e.message);
   }
 }
-
-function imprimirRelatorio(){
-  gerarRelatorio();
-}
-
-function gerarRelatorioTela(){
-  try{
-    if(typeof renderRelatorio==="function") renderRelatorio();
-    if(typeof statusSave!=="undefined" && statusSave){
-      statusSave.textContent="Relatório atualizado";
-      setTimeout(()=>statusSave.textContent="",1400);
-    }
-  }catch(e){
-    console.error("Erro ao atualizar relatório:",e);
-    alert("Erro ao atualizar relatório: "+e.message);
-  }
-}
-
-
-/* IA GIE360 FIX - v2.1.7 */
-const IA_STORAGE_FIX="gie360_ia_conversas_v2";
-let iaConversasFix=[];
-let iaAtualFix=null;
-
-function iaNL(){return String.fromCharCode(10);}
-function iaLoadFix(){
-  try{iaConversasFix=JSON.parse(localStorage.getItem(IA_STORAGE_FIX)||"[]");}catch(e){iaConversasFix=[];}
-  if(!iaConversasFix.length){
-    iaConversasFix=[{id:uid(),titulo:"Campanha Geral",mensagens:[{tipo:"bot",texto:"Olá. Eu sou a Inteligência GIE360. Posso analisar campanha, financeiro, território, base de apoio, agenda e plano de ação usando os dados cadastrados no sistema."}]}];
-    iaSaveFix();
-  }
-  if(!iaAtualFix) iaAtualFix=iaConversasFix[0].id;
-}
-function iaSaveFix(){localStorage.setItem(IA_STORAGE_FIX,JSON.stringify(iaConversasFix));}
-function iaConvFix(){return iaConversasFix.find(c=>c.id===iaAtualFix)||iaConversasFix[0];}
-
-function iaDados(){
-  const meta=(typeof painelMeta==="function")?painelMeta():Number(db.meta||0);
-  const proj=(typeof painelProjecao==="function")?painelProjecao():((typeof projecaoTotal==="function")?projecaoTotal():0);
-  const receitas=(typeof painelReceitas==="function")?painelReceitas():((typeof receitasTotal==="function")?receitasTotal():0);
-  const despesas=(typeof painelDespesas==="function")?painelDespesas():((typeof despesasTotal==="function")?despesasTotal():0);
-  const saldo=receitas-despesas;
-  const custo=proj>0?despesas/proj:0;
-  const perc=meta>0?Math.min((proj/meta)*100,100):0;
-  const mun=(typeof painelMunicipioNome==="function")?painelMunicipioNome():(db.municipioBase||"");
-  const pessoas=mun?(db.pessoas||[]).filter(p=>p.municipio===mun):(db.pessoas||[]);
-  const agendas=mun?(db.agenda||[]).filter(a=>a.municipio===mun):(db.agenda||[]);
-  const municipios=db.municipios||[];
-  const regioes=mun?(db.regioes||[]).filter(r=>r.municipio===mun):(db.regioes||[]);
-  const alerts=(typeof gerarAlertas==="function")?gerarAlertas():[];
-  return {meta,proj,receitas,despesas,saldo,custo,perc,mun,pessoas,agendas,municipios,regioes,alerts};
-}
-
-function iaRespostaTexto(pergunta){
-  const d=iaDados();
-  const q=(pergunta||"").toLowerCase();
-  const NL=iaNL();
-
-  function resumo(){
-    return `📊 DIAGNÓSTICO DA CAMPANHA
-
-${d.mun?"Município analisado: "+d.mun:"Visão geral da campanha"}
-
-Meta: ${n(d.meta)} votos
-Projeção: ${n(d.proj)} votos
-Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
-Receitas: ${money(d.receitas)}
-Despesas: ${money(d.despesas)}
-Saldo: ${money(d.saldo)}
-Custo por voto: ${money(d.custo)}
-
-Base de apoio: ${d.pessoas.length} pessoa(s)
-Municípios: ${d.municipios.length}
-Regiões/Bairros: ${d.regioes.length}
-Agendas: ${d.agendas.length}
-
-Leitura:
-${d.perc>=80?"Campanha forte. Mantenha presença e valide entregas.":d.perc>=50?"Campanha competitiva, mas ainda precisa reforçar base e território.":d.meta>0?"Campanha em atenção. Priorize cadastros, agendas e redução de custos sem projeção.":"Cadastre metas, base, financeiro e agenda para melhorar a análise."}`;
-  }
-
-  function financeiro(){
-    const pessoasComCusto=d.pessoas.filter(p=>Number(p.valor||0)>0);
-    const ranking=pessoasComCusto.map(p=>{const votos=Number(p.potencial||0), valor=Number(p.valor||0);return {nome:p.nome||"Sem nome", votos, valor, custo:votos>0?valor/votos:999999};}).sort((a,b)=>b.custo-a.custo).slice(0,6);
-    return `💰 FINANCEIRO
-
-Receitas: ${money(d.receitas)}
-Despesas totais: ${money(d.despesas)}
-Saldo: ${money(d.saldo)}
-Custo por voto: ${money(d.custo)}
-
-Custos de pessoas:
-${ranking.length?ranking.map(x=>`- ${x.nome}: ${x.votos>0?money(x.custo):"custo sem projeção"} | Valor: ${money(x.valor)} | Projeção: ${n(x.votos)}`).join(NL):"Nenhum custo individual cadastrado."}
-
-Recomendação:
-${d.custo>15?"Custo por voto alto. Revise custos sem projeção.":d.custo>8?"Custo intermediário. Acompanhe quem entrega menos.":"Custo controlado ou ainda sem dados suficientes."}`;
-  }
-
-  function base(){
-    const top=d.pessoas.map(p=>({nome:p.nome||"Sem nome",funcao:p.funcao||"-",votos:Number(p.potencial||0),valor:Number(p.valor||0),mun:p.municipio||"-"})).sort((a,b)=>b.votos-a.votos).slice(0,8);
-    return `👥 BASE DE APOIO
-
-Total analisado: ${d.pessoas.length}
-Sem projeção: ${d.pessoas.filter(p=>Number(p.potencial||0)===0).length}
-
-Maiores projeções:
-${top.length?top.map(x=>`- ${x.nome} (${x.funcao}) | ${x.mun} | ${n(x.votos)} votos | ${money(x.valor)}`).join(NL):"Ainda não há base cadastrada."}`;
-  }
-
-  function agenda(){
-    return `📅 AGENDA
-
-Total: ${d.agendas.length}
-Pendentes/Rascunho: ${d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length}
-Confirmadas: ${d.agendas.filter(a=>a.status==="Confirmado").length}
-Realizadas: ${d.agendas.filter(a=>a.status==="Realizado").length}
-Recusadas: ${d.agendas.filter(a=>a.status==="Recusado").length}
-Canceladas: ${d.agendas.filter(a=>a.status==="Cancelado").length}
-
-Recomendação:
-${d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length>0?"Revise as pendências de agenda.":"Agenda sem pendências neste momento."}`;
-  }
-
-  function municipio(){
-    if(!d.mun) return "📍 MUNICÍPIO BASE\n\nSelecione um Município Base no Painel Geral para eu analisar território específico.";
-    return `📍 MUNICÍPIO BASE: ${d.mun}
-
-Meta: ${n(d.meta)}
-Projeção: ${n(d.proj)}
-Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
-Custo por voto: ${money(d.custo)}
-Pessoas: ${d.pessoas.length}
-Regiões/Bairros: ${d.regioes.length}
-Agendas: ${d.agendas.length}`;
-  }
-
-  function plano(){
-    const faltam=Math.max(d.meta-d.proj,0);
-    return `🎯 PLANO DE AÇÃO
-
-Faltam ${n(faltam)} votos projetados para atingir a meta.
-
-1. Corrigir cadastros sem Projeção de Votos.
-2. Revisar pessoas com custo alto e baixa entrega.
-3. Confirmar agendas pendentes.
-4. Criar ações nos territórios abaixo da meta.
-5. Atualizar o sistema após cada ação de campo.
-
-Alertas:
-${d.alerts.length?d.alerts.slice(0,6).map(a=>"- "+a.titulo+": "+a.texto).join(NL):"Nenhum alerta crítico no momento."}`;
-  }
-
-  if(q.includes("financeiro")||q.includes("gasto")||q.includes("custo")||q.includes("dinheiro")||q.includes("caro")) return financeiro();
-  if(q.includes("base")||q.includes("apoiador")||q.includes("eleitor")||q.includes("voto")) return base();
-  if(q.includes("agenda")||q.includes("reunião")||q.includes("reuniao")||q.includes("evento")) return agenda();
-  if(q.includes("município")||q.includes("municipio")||q.includes("cidade")||q.includes("território")||q.includes("territorio")) return municipio();
-  if(q.includes("plano")||q.includes("estratégia")||q.includes("estrategia")||q.includes("melhorar")||q.includes("semana")||q.includes("fazer")) return plano();
-  return resumo();
-}
-
-function iaNovaConversa(){
-  iaLoadFix();
-  const c={id:uid(),titulo:"Nova conversa",mensagens:[{tipo:"bot",texto:"Nova conversa iniciada. Pergunte sobre campanha, financeiro, território, base, agenda ou estratégia."}]};
-  iaConversasFix.unshift(c);
-  iaAtualFix=c.id;
-  iaSaveFix();
-  renderInteligencia();
-}
-function iaSelecionarConversa(id){iaAtualFix=id;renderInteligencia();}
-function iaExcluirConversa(id){
-  if(!confirm("Excluir esta conversa?")) return;
-  iaLoadFix();
-  iaConversasFix=iaConversasFix.filter(c=>c.id!==id);
-  if(!iaConversasFix.length){iaConversasFix=[{id:uid(),titulo:"Campanha Geral",mensagens:[{tipo:"bot",texto:"Como posso ajudar sua campanha hoje?"}]}];}
-  iaAtualFix=iaConversasFix[0].id;
-  iaSaveFix();
-  renderInteligencia();
-}
-function iaEnviarPergunta(){
-  iaLoadFix();
-  const input=document.getElementById("iaPergunta");
-  if(!input) return;
-  const pergunta=(input.value||"").trim();
-  if(!pergunta) return;
-  const conv=iaConvFix();
-  conv.mensagens.push({tipo:"user",texto:pergunta});
-  if(conv.titulo==="Nova conversa"){conv.titulo=pergunta.length>28?pergunta.slice(0,28)+"...":pergunta;}
-  conv.mensagens.push({tipo:"bot",texto:iaRespostaTexto(pergunta)});
-  input.value="";
-  iaSaveFix();
-  renderInteligencia();
-}
-function iaPerguntaRapida(texto){
-  const input=document.getElementById("iaPergunta");
-  if(input){input.value=texto;iaEnviarPergunta();}
-}
-function renderInteligencia(){
-  iaLoadFix();
-  const d=iaDados();
-
-  if(document.getElementById("iaMeta")) iaMeta.textContent=n(d.meta);
-  if(document.getElementById("iaProjecao")) iaProjecao.textContent=n(d.proj);
-  if(document.getElementById("iaCusto")) iaCusto.textContent=money(d.custo);
-  if(document.getElementById("iaAlertasQtd")) iaAlertasQtd.textContent=d.alerts.length;
-
-  const lista=document.getElementById("iaListaConversas");
-  if(lista){
-    lista.innerHTML=iaConversasFix.map(c=>`<div class="ia-conv-item ${c.id===iaAtualFix?"active":""}" onclick="iaSelecionarConversa('${c.id}')"><span class="ia-conv-title">${c.titulo||"Conversa"}</span><button class="ia-del" onclick="event.stopPropagation();iaExcluirConversa('${c.id}')">🗑️</button></div>`).join("");
-  }
-
-  const conv=iaConvFix();
-  const titulo=document.getElementById("iaTituloConversa");
-  if(titulo&&conv) titulo.textContent=conv.titulo||"Conversa";
-
-  const box=document.getElementById("iaMensagens");
-  if(box&&conv){
-    box.innerHTML=conv.mensagens.map(m=>`<div class="ia-msg ${m.tipo}">${m.texto}</div>`).join("");
-    box.scrollTop=box.scrollHeight;
-  }
-}
-
-/* GIE360 CORE FIX - v2.1.5 */
-function totalReceitaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
-function totalDespesaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);}
-function totalPagamentoUsuarios(){return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);}
-function totalValorBaseApoio(){return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);}
-function receitasTotal(){return totalReceitaFinanceiro();}
-function despesasTotal(){return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();}
-function calcCustoVoto(){const proj=typeof projecaoTotal==="function"?projecaoTotal():0;return proj?despesasTotal()/proj:0;}
-function painelReceitas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);return lista.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
-function painelDespesas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);const financeiro=lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);const pessoas=nome?(db.pessoas||[]).filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0):totalValorBaseApoio();const usuarios=nome?(db.usuarios||[]).filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0):totalPagamentoUsuarios();return financeiro+pessoas+usuarios;}
-function salvar(){localStorage.setItem(STORAGE,JSON.stringify(db));}
-function atualizarSistema(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Sistema atualizado";setTimeout(()=>statusSave.textContent="",1600);}}
-function salvarManual(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao salvar/atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Salvo com sucesso";setTimeout(()=>statusSave.textContent="",1400);}}
-function addMunicipio(){db.municipios=db.municipios||[];db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0});salvar();render();}
-function addRegiao(){db.regioes=db.regioes||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
-function addPessoa(){db.pessoas=db.pessoas||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";let func="Possível Eleitor";if(currentRole==="Administrador"||currentRole==="Operador"||currentRole==="Liderança")func="Apoiador";db.pessoas.push({id:uid(),nome:"",telefone:"",funcao:func,municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
-function addAgenda(){db.agenda=db.agenda||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";const statusInicial=currentRole==="Apoiador"?"Rascunho":"Pendente";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",local:"",descricao:"",status:statusInicial});salvar();render();}
-function addFinanceiro(){db.financeiro=db.financeiro||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"Administrativa",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
-function addUsuario(){db.usuarios=db.usuarios||[];db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
-function delItem(tipo,i){if(!db[tipo]||!db[tipo][i])return;db[tipo].splice(i,1);salvar();render();}
-function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();try{atualizarPainelGeral();}catch(e){}}
-function enviarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
-function confirmarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Confirmado";salvar();render();}
-function recusarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Recusado";salvar();render();}
-function realizarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Realizado";salvar();render();}
-function cancelarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Cancelado";salvar();render();}
-
-
-/* GIE360 CORE FIX - v2.1.6 */
-function totalReceitaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
-function totalDespesaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);}
-function totalPagamentoUsuarios(){return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);}
-function totalValorBaseApoio(){return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);}
-function receitasTotal(){return totalReceitaFinanceiro();}
-function despesasTotal(){return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();}
-function calcCustoVoto(){const proj=(typeof projecaoTotal==="function")?projecaoTotal():0;return proj?despesasTotal()/proj:0;}
-function painelReceitas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);return lista.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
-function painelDespesas(){const nome=(typeof painelMunicipioNome==="function")?painelMunicipioNome():"";const lista=nome?(db.financeiro||[]).filter(f=>f.municipio===nome):(db.financeiro||[]);const financeiro=lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);const pessoas=nome?(db.pessoas||[]).filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0):totalValorBaseApoio();const usuarios=nome?(db.usuarios||[]).filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0):totalPagamentoUsuarios();return financeiro+pessoas+usuarios;}
-function salvar(){localStorage.setItem(STORAGE,JSON.stringify(db));}
-function atualizarSistema(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Sistema atualizado";setTimeout(()=>statusSave.textContent="",1600);}}
-function salvarManual(){salvar();try{render();}catch(e){console.error(e);alert("Erro ao salvar/atualizar: "+e.message);}if(typeof statusSave!=="undefined"&&statusSave){statusSave.textContent="Salvo com sucesso";setTimeout(()=>statusSave.textContent="",1400);}}
-function addMunicipio(){db.municipios=db.municipios||[];db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0});salvar();render();}
-function addRegiao(){db.regioes=db.regioes||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
-function addPessoa(){db.pessoas=db.pessoas||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";let func="Possível Eleitor";if(currentRole==="Administrador"||currentRole==="Operador"||currentRole==="Liderança")func="Apoiador";db.pessoas.push({id:uid(),nome:"",telefone:"",funcao:func,municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
-function addAgenda(){db.agenda=db.agenda||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";const statusInicial=currentRole==="Apoiador"?"Rascunho":"Pendente";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",local:"",descricao:"",status:statusInicial});salvar();render();}
-function addFinanceiro(){db.financeiro=db.financeiro||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"Administrativa",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
-function addUsuario(){db.usuarios=db.usuarios||[];db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
-function delItem(tipo,i){if(!db[tipo]||!db[tipo][i])return;db[tipo].splice(i,1);salvar();render();}
-function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();try{atualizarPainelGeral();}catch(e){}}
-function enviarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
-function confirmarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Confirmado";salvar();render();}
-function recusarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Recusado";salvar();render();}
-function realizarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Realizado";salvar();render();}
-function cancelarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Cancelado";salvar();render();}
+function imprimirRelatorio(){gerarRelatorio();}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
-setTimeout(()=>{const ip=document.getElementById("iaPergunta"); if(ip&&!ip.dataset.iaPerguntaEnterFix217){ip.dataset.iaPerguntaEnterFix217="1";ip.addEventListener("keydown",e=>{if(e.key==="Enter")iaEnviarPergunta();});}},500);
-
-
-setTimeout(()=>{const ip=document.getElementById("iaPergunta"); if(ip && !ip.dataset.iaEnterLigado){ip.dataset.iaEnterLigado="1"; ip.addEventListener("keydown",e=>{if(e.key==="Enter")iaEnviarPergunta();});}},500);
+setTimeout(()=>{const ip=document.getElementById("iaInput"); if(ip&&!ip.dataset.iaInputEnter219){ip.dataset.iaInputEnter219="1";ip.addEventListener("keydown",e=>{if(e.key==="Enter")iaEnviar();});}},500);
 
 
 migrarDadosAntigosSeNecessario();
