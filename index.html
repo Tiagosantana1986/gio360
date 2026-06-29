@@ -547,7 +547,7 @@ p{color:#64748b}
 </section>
 
 <section id="relatorios" class="page">
-  <div class="page-head"><div><h1>Relatórios</h1><p>Relatório executivo profissional com interpretação dos dados.</p></div><button class="btn gold" onclick="imprimirRelatorio()">Gerar PDF / Imprimir</button></div>
+  <div class="page-head"><div><h1>Relatórios</h1><p>Relatório executivo profissional com interpretação dos dados.</p></div><button class="btn gold" onclick="gerarRelatorio()">Gerar PDF / Imprimir</button></div>
   <div id="relatorio" class="report"></div>
 </section>
 
@@ -1842,6 +1842,238 @@ function responderAjuda(){
 
 
 
+
+/* RELATÓRIO E IA FIX - v2.1.7 */
+function gerarRelatorio(){
+  try{
+    if(typeof renderRelatorio==="function") renderRelatorio();
+    openPage("relatorios", document.querySelector('[data-page="relatorios"]'));
+    setTimeout(()=>window.print(),300);
+  }catch(e){
+    console.error("Erro ao gerar relatório:",e);
+    alert("Erro ao gerar relatório: "+e.message);
+  }
+}
+
+function imprimirRelatorio(){
+  gerarRelatorio();
+}
+
+function gerarRelatorioTela(){
+  try{
+    if(typeof renderRelatorio==="function") renderRelatorio();
+    if(typeof statusSave!=="undefined" && statusSave){
+      statusSave.textContent="Relatório atualizado";
+      setTimeout(()=>statusSave.textContent="",1400);
+    }
+  }catch(e){
+    console.error("Erro ao atualizar relatório:",e);
+    alert("Erro ao atualizar relatório: "+e.message);
+  }
+}
+
+
+/* IA GIE360 FIX - v2.1.7 */
+const IA_STORAGE_FIX="gie360_ia_conversas_v2";
+let iaConversasFix=[];
+let iaAtualFix=null;
+
+function iaNL(){return String.fromCharCode(10);}
+function iaLoadFix(){
+  try{iaConversasFix=JSON.parse(localStorage.getItem(IA_STORAGE_FIX)||"[]");}catch(e){iaConversasFix=[];}
+  if(!iaConversasFix.length){
+    iaConversasFix=[{id:uid(),titulo:"Campanha Geral",mensagens:[{tipo:"bot",texto:"Olá. Eu sou a Inteligência GIE360. Posso analisar campanha, financeiro, território, base de apoio, agenda e plano de ação usando os dados cadastrados no sistema."}]}];
+    iaSaveFix();
+  }
+  if(!iaAtualFix) iaAtualFix=iaConversasFix[0].id;
+}
+function iaSaveFix(){localStorage.setItem(IA_STORAGE_FIX,JSON.stringify(iaConversasFix));}
+function iaConvFix(){return iaConversasFix.find(c=>c.id===iaAtualFix)||iaConversasFix[0];}
+
+function iaDados(){
+  const meta=(typeof painelMeta==="function")?painelMeta():Number(db.meta||0);
+  const proj=(typeof painelProjecao==="function")?painelProjecao():((typeof projecaoTotal==="function")?projecaoTotal():0);
+  const receitas=(typeof painelReceitas==="function")?painelReceitas():((typeof receitasTotal==="function")?receitasTotal():0);
+  const despesas=(typeof painelDespesas==="function")?painelDespesas():((typeof despesasTotal==="function")?despesasTotal():0);
+  const saldo=receitas-despesas;
+  const custo=proj>0?despesas/proj:0;
+  const perc=meta>0?Math.min((proj/meta)*100,100):0;
+  const mun=(typeof painelMunicipioNome==="function")?painelMunicipioNome():(db.municipioBase||"");
+  const pessoas=mun?(db.pessoas||[]).filter(p=>p.municipio===mun):(db.pessoas||[]);
+  const agendas=mun?(db.agenda||[]).filter(a=>a.municipio===mun):(db.agenda||[]);
+  const municipios=db.municipios||[];
+  const regioes=mun?(db.regioes||[]).filter(r=>r.municipio===mun):(db.regioes||[]);
+  const alerts=(typeof gerarAlertas==="function")?gerarAlertas():[];
+  return {meta,proj,receitas,despesas,saldo,custo,perc,mun,pessoas,agendas,municipios,regioes,alerts};
+}
+
+function iaRespostaTexto(pergunta){
+  const d=iaDados();
+  const q=(pergunta||"").toLowerCase();
+  const NL=iaNL();
+
+  function resumo(){
+    return `📊 DIAGNÓSTICO DA CAMPANHA
+
+${d.mun?"Município analisado: "+d.mun:"Visão geral da campanha"}
+
+Meta: ${n(d.meta)} votos
+Projeção: ${n(d.proj)} votos
+Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
+Receitas: ${money(d.receitas)}
+Despesas: ${money(d.despesas)}
+Saldo: ${money(d.saldo)}
+Custo por voto: ${money(d.custo)}
+
+Base de apoio: ${d.pessoas.length} pessoa(s)
+Municípios: ${d.municipios.length}
+Regiões/Bairros: ${d.regioes.length}
+Agendas: ${d.agendas.length}
+
+Leitura:
+${d.perc>=80?"Campanha forte. Mantenha presença e valide entregas.":d.perc>=50?"Campanha competitiva, mas ainda precisa reforçar base e território.":d.meta>0?"Campanha em atenção. Priorize cadastros, agendas e redução de custos sem projeção.":"Cadastre metas, base, financeiro e agenda para melhorar a análise."}`;
+  }
+
+  function financeiro(){
+    const pessoasComCusto=d.pessoas.filter(p=>Number(p.valor||0)>0);
+    const ranking=pessoasComCusto.map(p=>{const votos=Number(p.potencial||0), valor=Number(p.valor||0);return {nome:p.nome||"Sem nome", votos, valor, custo:votos>0?valor/votos:999999};}).sort((a,b)=>b.custo-a.custo).slice(0,6);
+    return `💰 FINANCEIRO
+
+Receitas: ${money(d.receitas)}
+Despesas totais: ${money(d.despesas)}
+Saldo: ${money(d.saldo)}
+Custo por voto: ${money(d.custo)}
+
+Custos de pessoas:
+${ranking.length?ranking.map(x=>`- ${x.nome}: ${x.votos>0?money(x.custo):"custo sem projeção"} | Valor: ${money(x.valor)} | Projeção: ${n(x.votos)}`).join(NL):"Nenhum custo individual cadastrado."}
+
+Recomendação:
+${d.custo>15?"Custo por voto alto. Revise custos sem projeção.":d.custo>8?"Custo intermediário. Acompanhe quem entrega menos.":"Custo controlado ou ainda sem dados suficientes."}`;
+  }
+
+  function base(){
+    const top=d.pessoas.map(p=>({nome:p.nome||"Sem nome",funcao:p.funcao||"-",votos:Number(p.potencial||0),valor:Number(p.valor||0),mun:p.municipio||"-"})).sort((a,b)=>b.votos-a.votos).slice(0,8);
+    return `👥 BASE DE APOIO
+
+Total analisado: ${d.pessoas.length}
+Sem projeção: ${d.pessoas.filter(p=>Number(p.potencial||0)===0).length}
+
+Maiores projeções:
+${top.length?top.map(x=>`- ${x.nome} (${x.funcao}) | ${x.mun} | ${n(x.votos)} votos | ${money(x.valor)}`).join(NL):"Ainda não há base cadastrada."}`;
+  }
+
+  function agenda(){
+    return `📅 AGENDA
+
+Total: ${d.agendas.length}
+Pendentes/Rascunho: ${d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length}
+Confirmadas: ${d.agendas.filter(a=>a.status==="Confirmado").length}
+Realizadas: ${d.agendas.filter(a=>a.status==="Realizado").length}
+Recusadas: ${d.agendas.filter(a=>a.status==="Recusado").length}
+Canceladas: ${d.agendas.filter(a=>a.status==="Cancelado").length}
+
+Recomendação:
+${d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length>0?"Revise as pendências de agenda.":"Agenda sem pendências neste momento."}`;
+  }
+
+  function municipio(){
+    if(!d.mun) return "📍 MUNICÍPIO BASE\n\nSelecione um Município Base no Painel Geral para eu analisar território específico.";
+    return `📍 MUNICÍPIO BASE: ${d.mun}
+
+Meta: ${n(d.meta)}
+Projeção: ${n(d.proj)}
+Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
+Custo por voto: ${money(d.custo)}
+Pessoas: ${d.pessoas.length}
+Regiões/Bairros: ${d.regioes.length}
+Agendas: ${d.agendas.length}`;
+  }
+
+  function plano(){
+    const faltam=Math.max(d.meta-d.proj,0);
+    return `🎯 PLANO DE AÇÃO
+
+Faltam ${n(faltam)} votos projetados para atingir a meta.
+
+1. Corrigir cadastros sem Projeção de Votos.
+2. Revisar pessoas com custo alto e baixa entrega.
+3. Confirmar agendas pendentes.
+4. Criar ações nos territórios abaixo da meta.
+5. Atualizar o sistema após cada ação de campo.
+
+Alertas:
+${d.alerts.length?d.alerts.slice(0,6).map(a=>"- "+a.titulo+": "+a.texto).join(NL):"Nenhum alerta crítico no momento."}`;
+  }
+
+  if(q.includes("financeiro")||q.includes("gasto")||q.includes("custo")||q.includes("dinheiro")||q.includes("caro")) return financeiro();
+  if(q.includes("base")||q.includes("apoiador")||q.includes("eleitor")||q.includes("voto")) return base();
+  if(q.includes("agenda")||q.includes("reunião")||q.includes("reuniao")||q.includes("evento")) return agenda();
+  if(q.includes("município")||q.includes("municipio")||q.includes("cidade")||q.includes("território")||q.includes("territorio")) return municipio();
+  if(q.includes("plano")||q.includes("estratégia")||q.includes("estrategia")||q.includes("melhorar")||q.includes("semana")||q.includes("fazer")) return plano();
+  return resumo();
+}
+
+function iaNovaConversa(){
+  iaLoadFix();
+  const c={id:uid(),titulo:"Nova conversa",mensagens:[{tipo:"bot",texto:"Nova conversa iniciada. Pergunte sobre campanha, financeiro, território, base, agenda ou estratégia."}]};
+  iaConversasFix.unshift(c);
+  iaAtualFix=c.id;
+  iaSaveFix();
+  renderInteligencia();
+}
+function iaSelecionarConversa(id){iaAtualFix=id;renderInteligencia();}
+function iaExcluirConversa(id){
+  if(!confirm("Excluir esta conversa?")) return;
+  iaLoadFix();
+  iaConversasFix=iaConversasFix.filter(c=>c.id!==id);
+  if(!iaConversasFix.length){iaConversasFix=[{id:uid(),titulo:"Campanha Geral",mensagens:[{tipo:"bot",texto:"Como posso ajudar sua campanha hoje?"}]}];}
+  iaAtualFix=iaConversasFix[0].id;
+  iaSaveFix();
+  renderInteligencia();
+}
+function iaEnviarPergunta(){
+  iaLoadFix();
+  const input=document.getElementById("iaPergunta");
+  if(!input) return;
+  const pergunta=(input.value||"").trim();
+  if(!pergunta) return;
+  const conv=iaConvFix();
+  conv.mensagens.push({tipo:"user",texto:pergunta});
+  if(conv.titulo==="Nova conversa"){conv.titulo=pergunta.length>28?pergunta.slice(0,28)+"...":pergunta;}
+  conv.mensagens.push({tipo:"bot",texto:iaRespostaTexto(pergunta)});
+  input.value="";
+  iaSaveFix();
+  renderInteligencia();
+}
+function iaPerguntaRapida(texto){
+  const input=document.getElementById("iaPergunta");
+  if(input){input.value=texto;iaEnviarPergunta();}
+}
+function renderInteligencia(){
+  iaLoadFix();
+  const d=iaDados();
+
+  if(document.getElementById("iaMeta")) iaMeta.textContent=n(d.meta);
+  if(document.getElementById("iaProjecao")) iaProjecao.textContent=n(d.proj);
+  if(document.getElementById("iaCusto")) iaCusto.textContent=money(d.custo);
+  if(document.getElementById("iaAlertasQtd")) iaAlertasQtd.textContent=d.alerts.length;
+
+  const lista=document.getElementById("iaListaConversas");
+  if(lista){
+    lista.innerHTML=iaConversasFix.map(c=>`<div class="ia-conv-item ${c.id===iaAtualFix?"active":""}" onclick="iaSelecionarConversa('${c.id}')"><span class="ia-conv-title">${c.titulo||"Conversa"}</span><button class="ia-del" onclick="event.stopPropagation();iaExcluirConversa('${c.id}')">🗑️</button></div>`).join("");
+  }
+
+  const conv=iaConvFix();
+  const titulo=document.getElementById("iaTituloConversa");
+  if(titulo&&conv) titulo.textContent=conv.titulo||"Conversa";
+
+  const box=document.getElementById("iaMensagens");
+  if(box&&conv){
+    box.innerHTML=conv.mensagens.map(m=>`<div class="ia-msg ${m.tipo}">${m.texto}</div>`).join("");
+    box.scrollTop=box.scrollHeight;
+  }
+}
+
 /* GIE360 CORE FIX - v2.1.5 */
 function totalReceitaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);}
 function totalDespesaFinanceiro(){return (db.financeiro||[]).filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);}
@@ -1898,6 +2130,9 @@ function realizarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].stat
 function cancelarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Cancelado";salvar();render();}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
+
+setTimeout(()=>{const ip=document.getElementById("iaPergunta"); if(ip&&!ip.dataset.iaPerguntaEnterFix217){ip.dataset.iaPerguntaEnterFix217="1";ip.addEventListener("keydown",e=>{if(e.key==="Enter")iaEnviarPergunta();});}},500);
+
 
 setTimeout(()=>{const ip=document.getElementById("iaPergunta"); if(ip && !ip.dataset.iaEnterLigado){ip.dataset.iaEnterLigado="1"; ip.addEventListener("keydown",e=>{if(e.key==="Enter")iaEnviarPergunta();});}},500);
 
