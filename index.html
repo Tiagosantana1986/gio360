@@ -359,6 +359,28 @@ p{color:#64748b}
 @media(max-width:1100px){.user-form-grid,.user-form-grid.three{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.user-form-grid,.user-form-grid.three{grid-template-columns:1fr}}
 
+
+/* CADASTRO USUÁRIOS PROFISSIONAL - v2.2.5 */
+.user-form-card{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:24px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:22px}
+.user-form-card h3{margin:0 0 8px;color:#0b2e59;font-size:22px}
+.user-form-card p{margin:0 0 18px;color:#64748b;font-weight:700}
+.user-form-title{margin:22px 0 12px;color:#0b2e59;font-weight:900;border-left:5px solid #f2b300;padding-left:10px}
+.user-form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.user-form-grid.three{grid-template-columns:repeat(3,1fr)}
+.user-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900;margin-bottom:6px}
+.user-field input,.user-field select,.user-field textarea{width:100%;padding:13px 14px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#0f172a;font-weight:700}
+.user-field textarea{min-height:76px;resize:vertical}
+.user-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:20px}
+.user-list-card{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);overflow:auto}
+.user-list{width:100%;border-collapse:collapse}
+.user-list th,.user-list td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}
+.user-list th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+.user-badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#eff6ff;color:#0b2e59}
+.user-badge.green{background:#dcfce7;color:#166534}.user-badge.red{background:#fee2e2;color:#991b1b}.user-badge.gold{background:#fef3c7;color:#92400e}
+.user-hint{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:12px;color:#475569;font-weight:700;margin-bottom:16px}
+@media(max-width:1100px){.user-form-grid,.user-form-grid.three{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.user-form-grid,.user-form-grid.three{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -885,50 +907,22 @@ p{color:#64748b}
   <div class="user-list-card">
     <h3>Usuários Cadastrados</h3>
     <table class="user-list">
-      <thead><tr><th>Nome</th><th>Telefone</th><th>Município</th><th>Login</th><th>Perfil</th><th>Status</th><th>Pagamento</th><th>Projeção</th><th>Custo/Voto</th><th>Ações</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th>Município</th>
+          <th>Login</th>
+          <th>Perfil</th>
+          <th>Status</th>
+          <th>Pagamento</th>
+          <th>Projeção</th>
+          <th>Custo/Voto</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
       <tbody id="listaUsuarios"></tbody>
     </table>
-  </div>
-</section>
-        <li>Aponta custos altos.</li>
-        <li>Mostra territórios fracos.</li>
-        <li>Indica pendências de agenda.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Relatórios</span>
-      <h3>Relatórios</h3>
-      <p>Gera relatório executivo com indicadores principais e leitura automática.</p>
-      <ul>
-        <li>Pode ser impresso ou salvo em PDF.</li>
-        <li>Resume meta, projeção, custo por voto e alertas.</li>
-        <li>Ajuda na prestação de contas gerencial da campanha.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Usuários</span>
-      <h3>Usuários</h3>
-      <p>Área exclusiva do administrador para cadastrar acessos e permissões.</p>
-      <ul>
-        <li>Define login e senha.</li>
-        <li>Define perfil de acesso.</li>
-        <li>Permite lançar pagamento e projeção individual.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Boas práticas</span>
-      <h3>Como usar corretamente</h3>
-      <p>O GIE360 funciona melhor quando os dados são alimentados com responsabilidade.</p>
-      <ul>
-        <li>Não cadastre projeção sem fundamento.</li>
-        <li>Atualize agenda e território com frequência.</li>
-        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li>
-        <li>Não use o sistema para maquiar dados.</li>
-      </ul>
-    </div>
   </div>
 </section>
 
@@ -1394,6 +1388,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{garantirCamposUsuarios225();preencherSelectUsuario225();}catch(e){}
   try{garantirCamposUsuarios224();preencherSelectUsuario224();}catch(e){}
   try{garantirCamposAvancados();}catch(e){console.error('Campos avançados:',e);}
   try{atualizarSelectMunicipioBase();}catch(e){console.error('Select Município Base:',e);}
@@ -2451,6 +2446,113 @@ function renderUsuarios(){
     const statusCls=(u.status||"Ativo")==="Ativo"?"green":"red";
     const perfilCls=(u.perfil||"")==="Administrador"?"gold":"";
     return `<tr><td><strong>${u.nome||"-"}</strong><br><small>${u.email||""}</small></td><td>${u.telefone||"-"}</td><td>${u.municipio||"-"}<br><small>${u.regiao||""}</small></td><td>${u.login||"-"}</td><td><span class="user-badge ${perfilCls}">${u.perfil||"-"}</span></td><td><span class="user-badge ${statusCls}">${u.status||"Ativo"}</span></td><td>${money(u.pagamento||0)}</td><td>${n(u.projecao||0)}</td><td>${custo>0?money(custo):"R$ 0,00"}</td><td><button class="action-mini red" onclick="delItem('usuarios',${i})">Excluir</button></td></tr>`;
+  }).join(""):emptyRow(10,"Nenhum usuário cadastrado.");
+}
+
+
+/* CADASTRO USUÁRIOS FIXADO - v2.2.5 */
+function garantirCamposUsuarios225(){
+  db.usuarios=db.usuarios||[];
+  db.usuarios.forEach(u=>{
+    if(u.cpf===undefined) u.cpf="";
+    if(u.telefone===undefined) u.telefone="";
+    if(u.email===undefined) u.email="";
+    if(u.municipio===undefined) u.municipio="";
+    if(u.regiao===undefined) u.regiao="";
+    if(u.status===undefined) u.status="Ativo";
+    if(u.entrada===undefined) u.entrada="";
+    if(u.observacoes===undefined) u.observacoes="";
+    if(u.pagamento===undefined) u.pagamento=0;
+    if(u.projecao===undefined) u.projecao=0;
+  });
+}
+function preencherSelectUsuario225(){
+  const sel=document.getElementById("userMunicipio");
+  if(!sel) return;
+  const atual=sel.value||"";
+  const opts=['<option value="">Selecione</option>'].concat((db.municipios||[]).map(m=>`<option value="${m.nome||""}">${m.nome||"Município sem nome"}</option>`)).join("");
+  if(sel.innerHTML!==opts) sel.innerHTML=opts;
+  if(atual) sel.value=atual;
+}
+function limparFormularioUsuario(){
+  ["userNome","userCpf","userTelefone","userEmail","userRegiao","userLogin","userSenha","userPagamento","userProjecao","userObservacoes","userEntrada"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=(id==="userPagamento"||id==="userProjecao")?0:"";
+  });
+  const municipio=document.getElementById("userMunicipio"); if(municipio) municipio.value="";
+  const status=document.getElementById("userStatus"); if(status) status.value="Ativo";
+  const perfil=document.getElementById("userPerfil"); if(perfil) perfil.value="Apoiador";
+}
+function salvarFormularioUsuario(){
+  db.usuarios=db.usuarios||[];
+  const nome=(document.getElementById("userNome")?.value||"").trim();
+  const login=(document.getElementById("userLogin")?.value||"").trim();
+  const senha=(document.getElementById("userSenha")?.value||"").trim();
+  if(!nome){alert("Informe o nome completo do usuário.");return;}
+  if(!login){alert("Informe o login do usuário.");return;}
+  if(!senha){alert("Informe a senha do usuário.");return;}
+  if(db.usuarios.some(u=>String(u.login||"").trim()===login)){alert("Já existe um usuário com esse login.");return;}
+
+  db.usuarios.push({
+    id:uid(),
+    nome:nome,
+    cpf:document.getElementById("userCpf")?.value||"",
+    telefone:document.getElementById("userTelefone")?.value||"",
+    email:document.getElementById("userEmail")?.value||"",
+    municipio:document.getElementById("userMunicipio")?.value||"",
+    regiao:document.getElementById("userRegiao")?.value||"",
+    status:document.getElementById("userStatus")?.value||"Ativo",
+    perfil:document.getElementById("userPerfil")?.value||"Apoiador",
+    login:login,
+    senha:senha,
+    entrada:document.getElementById("userEntrada")?.value||"",
+    pagamento:Number(document.getElementById("userPagamento")?.value||0),
+    projecao:Number(document.getElementById("userProjecao")?.value||0),
+    observacoes:document.getElementById("userObservacoes")?.value||""
+  });
+
+  salvar();
+  limparFormularioUsuario();
+  render();
+}
+function addUsuario(){
+  const nome=document.getElementById("userNome");
+  if(nome){
+    nome.focus();
+    if(typeof statusSave!=="undefined"&&statusSave){
+      statusSave.textContent="Preencha o formulário e clique em Salvar Usuário";
+      setTimeout(()=>statusSave.textContent="",1800);
+    }
+    return;
+  }
+  db.usuarios=db.usuarios||[];
+  db.usuarios.push({id:uid(),nome:"",cpf:"",telefone:"",email:"",municipio:"",regiao:"",login:"",senha:"",perfil:"Apoiador",status:"Ativo",pagamento:0,projecao:0,entrada:"",observacoes:""});
+  salvar();render();
+}
+function renderUsuarios(){
+  if(!document.getElementById("usuarios")) return;
+  garantirCamposUsuarios225();
+  preencherSelectUsuario225();
+
+  const lista=document.getElementById("listaUsuarios");
+  if(!lista) return;
+
+  lista.innerHTML=(db.usuarios||[]).length?(db.usuarios||[]).map((u,i)=>{
+    const custo=Number(u.projecao||0)>0?Number(u.pagamento||0)/Number(u.projecao||0):0;
+    const statusCls=(u.status||"Ativo")==="Ativo"?"green":"red";
+    const perfilCls=(u.perfil||"")==="Administrador"?"gold":"";
+    return `<tr>
+      <td><strong>${u.nome||"-"}</strong><br><small>${u.email||""}</small></td>
+      <td>${u.telefone||"-"}</td>
+      <td>${u.municipio||"-"}<br><small>${u.regiao||""}</small></td>
+      <td>${u.login||"-"}</td>
+      <td><span class="user-badge ${perfilCls}">${u.perfil||"-"}</span></td>
+      <td><span class="user-badge ${statusCls}">${u.status||"Ativo"}</span></td>
+      <td>${money(u.pagamento||0)}</td>
+      <td>${n(u.projecao||0)}</td>
+      <td>${custo>0?money(custo):"R$ 0,00"}</td>
+      <td><button class="action-mini red" onclick="delItem('usuarios',${i})">Excluir</button></td>
+    </tr>`;
   }).join(""):emptyRow(10,"Nenhum usuário cadastrado.");
 }
 
