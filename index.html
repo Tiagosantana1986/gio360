@@ -703,7 +703,7 @@ p{color:#64748b}
       <ul>
         <li>Não cadastre projeção sem fundamento.</li>
         <li>Atualize agenda e território com frequência.</li>
-        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li>
+        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li><li>Todo campo de custo alimenta a Despesa Geral: Financeiro, pagamento de Usuários e Valor Mensal da Base de Apoio.</li>
         <li>Não use o sistema para maquiar dados.</li>
       </ul>
     </div>
@@ -886,17 +886,8 @@ function projecaoTotal(){
 
 function receitasTotal(){return totalReceitaFinanceiro();}
 
-function despesasTotal(){return totalDespesaFinanceiro()+db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0);}
-
-function calcCustoVoto(){const p=projecaoTotal();return p?despesasTotal()/p:0;}
-function percentualMeta(){return db.meta?Math.min(projecaoTotal()/db.meta*100,100):0;}
-
-function statusRegiao(r){
-  if(!Number(r.meta))return"Atenção";
-  const p=Number(r.projecao||0)/Number(r.meta)*100;
-  if(p>=75)return"Forte";
-  if(p>=40)return"Atenção";
-  return"Crítico";
+function despesasTotal(){
+  return totalDespesaFinanceiro()+totalPagamentoUsuarios()+totalValorBaseApoio();
 }
 
 function statusRegiaoBadge(r){
@@ -1093,6 +1084,14 @@ function cancelarAgenda(i){
   render();
 }
 
+
+function totalPagamentoUsuarios(){
+  return (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);
+}
+function totalValorBaseApoio(){
+  return (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);
+}
+
 function totalDespesaFinanceiro(){
   return db.financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
 }
@@ -1144,8 +1143,9 @@ function painelDespesas(){
   const nome=painelMunicipioNome();
   const lista = nome ? db.financeiro.filter(f=>f.municipio===nome) : db.financeiro;
   const financeiro = lista.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
-  const pessoas = nome ? db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0) : db.pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
-  return financeiro + pessoas;
+  const pessoas = nome ? db.pessoas.filter(p=>p.municipio===nome).reduce((s,p)=>s+Number(p.valor||0),0) : totalValorBaseApoio();
+  const usuarios = nome ? db.usuarios.filter(u=>u.municipio===nome).reduce((s,u)=>s+Number(u.pagamento||0),0) : totalPagamentoUsuarios();
+  return financeiro + pessoas + usuarios;
 }
 function painelPercentualMeta(){
   const meta=painelMeta();
@@ -1855,7 +1855,18 @@ function renderRelatorio(){
     ${listaRegioes}
     ${listaUsuarios}
     ${listaPessoas}
-    ${listaFinanceiro}
+    <div style="margin-top:24px"><h2 style="color:#0b2e59">Composição das Despesas</h2>
+        <table class="table">
+          <thead><tr><th>Origem do Custo</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td>Despesas lançadas no Financeiro</td><td>${money(totalDespesaFinanceiro())}</td></tr>
+            <tr><td>Custos cadastrados em Usuários</td><td>${money(totalPagamentoUsuarios())}</td></tr>
+            <tr><td>Valores Mensais da Base de Apoio</td><td>${money(totalValorBaseApoio())}</td></tr>
+            <tr><td><strong>Despesa Geral Consolidada</strong></td><td><strong>${money(despesasTotal())}</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      ${listaFinanceiro}
     ${listaAgenda}
   </div>`;
 }
