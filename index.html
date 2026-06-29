@@ -653,8 +653,8 @@ p{color:#64748b}
 </div>
 
 <script>
-const STORAGE="gie360_v2_0_4_data";
-const AUTH="gie360_v2_0_4_auth";
+const STORAGE="gie360_v2_0_5_data";
+const AUTH="gie360_v2_0_5_auth";
 
 let currentUser=null;
 let currentRole="Administrador";
@@ -678,9 +678,8 @@ function n(v){return Number(v||0).toLocaleString("pt-BR");}
 function money(v){return"R$ "+Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
 function uid(){return Math.random().toString(36).slice(2,10);}
 function emptyRow(cols,msg){return`<tr><td colspan="${cols}" class="empty">${msg}</td></tr>`;}
-
 function normalizarPerfil(perfil){
-  const p = String(perfil||"").trim();
+  const p=String(perfil||"").trim();
   if(p==="Administrador") return "Administrador";
   if(p==="Operador") return "Operador";
   if(p==="Liderança") return "Liderança";
@@ -688,35 +687,24 @@ function normalizarPerfil(perfil){
   return "Apoiador";
 }
 
-function definirUsuarioLogado(usuario){
-  if(!usuario) return;
-  const login = usuario.login || "";
-  const atualizado = db.usuarios.find(u=>u.login===login) || usuario;
-  currentUser = atualizado;
-  currentRole = normalizarPerfil(atualizado.perfil);
-  localStorage.setItem(AUTH, JSON.stringify({login: atualizacaoLoginSeguro(atualizado)}));
-  nomeUsuarioSide.textContent = atualizado.nome || atualizado.login || "Usuário";
-  perfilUsuarioSide.textContent = "Perfil: " + currentRole;
-}
-
-function atualizacaoLoginSeguro(usuario){
-  return usuario && usuario.login ? usuario.login : "";
-}
-
-
 function doLogin(){
   const user=loginUser.value.trim();
   const pass=loginPass.value.trim();
-  const u=db.usuarios.find(x=>String(x.login||"")===user&&String(x.senha||"")===pass);
-  if(!u){loginMsg.textContent="Login ou senha inválidos. Use admin / 123.";return;}
+
+  const u=db.usuarios.find(x=>String(x.login||"")===user && String(x.senha||"")===pass);
+  if(!u){
+    loginMsg.textContent="Login ou senha inválidos.";
+    return;
+  }
 
   currentUser=u;
   currentRole=normalizarPerfil(u.perfil);
 
-  localStorage.setItem(AUTH,JSON.stringify({login:u.login}));
+  localStorage.setItem(AUTH, JSON.stringify({login:u.login}));
 
   loginPage.style.display="none";
   app.style.display="block";
+
   nomeUsuarioSide.textContent=u.nome||u.login;
   perfilUsuarioSide.textContent="Perfil: "+currentRole;
 
@@ -1093,7 +1081,7 @@ function renderBase(){
       <td>${municipioSelect("pessoas",i,"municipio",p.municipio)}</td>
       <td><input value="${p.regiao||""}" onchange="setField('pessoas',${i},'regiao',this.value)"></td>
       <td><input type="number" value="${p.potencial||0}" onchange="setField('pessoas',${i},'potencial',this.value,true);render()"></td>
-      <td><input ${valorBloqueado} type="number" value="${p.valor||0}" title="${(currentRole==="Apoiador"||currentRole==="Operador")?"Valor mensal restrito ao administrador/liderança":"Valor mensal"}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
+      <td><input ${valorBloqueado} type="number" value="${p.valor||0}" title="${(currentRole==="Apoiador"||currentRole==="Operador")?"Valor mensal restrito":"Valor mensal"}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
       <td><button class="action-mini red" onclick="delItem('pessoas',${i})">Excluir</button></td>
     </tr>`;
   }).join(""):emptyRow(8,currentRole==="Apoiador"?"Nenhuma pessoa cadastrada na sua árvore.":"Nenhuma pessoa cadastrada.");
@@ -1470,7 +1458,7 @@ const authSaved=localStorage.getItem(AUTH);
 if(authSaved){
   try{
     const saved=JSON.parse(authSaved);
-    const loginSalvo = saved.login || (saved.currentUser && saved.currentUser.login) || "";
+    const loginSalvo=saved.login||"";
     const fresh=db.usuarios.find(u=>u.login===loginSalvo);
 
     if(fresh){
@@ -1479,6 +1467,7 @@ if(authSaved){
 
       loginPage.style.display="none";
       app.style.display="block";
+
       nomeUsuarioSide.textContent=fresh.nome||fresh.login;
       perfilUsuarioSide.textContent="Perfil: "+currentRole;
 
