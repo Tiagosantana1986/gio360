@@ -315,6 +315,28 @@ p{color:#64748b}
 .smart-item strong{display:block;margin-top:5px;color:#0f172a}
 @media(max-width:900px){.smart-grid{grid-template-columns:1fr 1fr}}
 
+
+/* FORMULÁRIOS BONITOS - v2.2.3 */
+.form-card{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:22px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:22px}
+.form-card h3{margin:0 0 14px;color:#0b2e59}
+.form-section-title{margin:22px 0 12px;color:#0b2e59;font-weight:900;border-left:5px solid #f2b300;padding-left:10px}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.form-grid.three{grid-template-columns:repeat(3,1fr)}
+.form-grid.two{grid-template-columns:repeat(2,1fr)}
+.form-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900;margin-bottom:6px}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#0f172a;font-weight:700}
+.form-field textarea{min-height:76px;resize:vertical}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.form-hint{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:12px;color:#475569;font-weight:700;margin-bottom:16px}
+.list-card{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);overflow:auto}
+.simple-list{width:100%;border-collapse:collapse}
+.simple-list th,.simple-list td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}
+.simple-list th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+.tag{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#eff6ff;color:#0b2e59}
+.tag.green{background:#dcfce7;color:#166534}.tag.gold{background:#fef3c7;color:#92400e}.tag.red{background:#fee2e2;color:#991b1b}
+@media(max-width:1100px){.form-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.form-grid,.form-grid.two,.form-grid.three{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -511,8 +533,62 @@ p{color:#64748b}
 </section>
 
 <section id="base" class="page">
-  <div class="page-head"><div><h1>Base de Apoio</h1><p>Lideranças, apoiadores, cabos eleitorais e possíveis eleitores. Apoiador visualiza e cadastra apenas pessoas da própria árvore.</p></div><button class="btn gold" onclick="addPessoa()">+ Apoiador / Liderança</button></div>
-  <div class="card table-wrap"><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Projeção de Votos</th><th>Valor Mensal</th><th>Ação</th></tr></thead><tbody id="listaPessoas"></tbody></table></div>
+  <div class="page-head">
+    <div>
+      <h1>Base de Apoio</h1>
+      <p>Cadastro completo de lideranças, apoiadores, cabos eleitorais e possíveis eleitores.</p>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Cadastro da Base de Apoio</h3>
+    <div class="form-hint">Preencha os dados abaixo e clique em salvar cadastro. O sistema atualizará automaticamente projeção, custo por voto e Painel Geral.</div>
+
+    <div class="form-section-title">Dados Pessoais</div>
+    <div class="form-grid">
+      <div class="form-field"><label>Nome completo</label><input id="baseNome"></div>
+      <div class="form-field"><label>CPF</label><input id="baseCpf"></div>
+      <div class="form-field"><label>Telefone / WhatsApp</label><input id="baseTelefone"></div>
+      <div class="form-field"><label>E-mail</label><input id="baseEmail"></div>
+      <div class="form-field"><label>Sexo</label><select id="baseSexo"><option></option><option>Feminino</option><option>Masculino</option><option>Outro</option></select></div>
+      <div class="form-field"><label>Data de nascimento</label><input id="baseNascimento" type="date"></div>
+      <div class="form-field"><label>Status</label><select id="baseStatus"><option>Ativo</option><option>Inativo</option><option>Em negociação</option><option>Perdido</option></select></div>
+      <div class="form-field"><label>Função</label><select id="baseFuncao"><option>Apoiador</option><option>Liderança</option><option>Cabo Eleitoral</option><option>Coordenador</option><option>Possível Eleitor</option><option>Influenciador</option><option>Empresário</option><option>Voluntário</option><option>Outros</option></select></div>
+    </div>
+
+    <div class="form-section-title">Localização</div>
+    <div class="form-grid">
+      <div class="form-field"><label>Município</label><select id="baseMunicipio"></select></div>
+      <div class="form-field"><label>Região</label><input id="baseRegiao"></div>
+      <div class="form-field"><label>Bairro</label><input id="baseBairro"></div>
+      <div class="form-field"><label>Endereço</label><input id="baseEndereco"></div>
+    </div>
+
+    <div class="form-section-title">Dados Eleitorais e Campanha</div>
+    <div class="form-grid">
+      <div class="form-field"><label>Potencial de votos</label><input id="basePotencial" type="number" value="0"></div>
+      <div class="form-field"><label>Valor mensal</label><input id="baseValor" type="number" value="0"></div>
+      <div class="form-field"><label>Responsável</label><select id="baseResponsavel"></select></div>
+      <div class="form-field"><label>Origem</label><select id="baseOrigem"><option></option><option>Indicação</option><option>WhatsApp</option><option>Instagram</option><option>Facebook</option><option>Evento</option><option>Reunião</option><option>Visita</option><option>Ligação</option><option>Outros</option></select></div>
+      <div class="form-field"><label>Influência</label><select id="baseInfluencia"><option>Baixa</option><option selected>Média</option><option>Alta</option><option>Muito Alta</option><option>Estratégica</option></select></div>
+      <div class="form-field"><label>Último contato</label><input id="baseUltimoContato" type="date"></div>
+      <div class="form-field" style="grid-column:span 2"><label>Observações</label><textarea id="baseObservacoes"></textarea></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn light" onclick="limparFormularioBase()">Limpar</button>
+      <button class="btn gold" onclick="salvarFormularioBase()">Salvar Cadastro</button>
+    </div>
+  </div>
+
+  <div class="list-card">
+    <h3>Cadastros Realizados</h3>
+    <table class="simple-list">
+      <thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Potencial</th><th>Valor</th><th>Custo/Voto</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody id="listaPessoas"></tbody>
+    </table>
+  </div>
+  <div id="fichaPessoaBox"></div>
 </section>
 
 <section id="agenda" class="page">
@@ -2135,6 +2211,97 @@ function abrirFichaPessoa(i){
         <div class="smart-item"><span>Observações</span><strong>${p.observacoes||"-"}</strong></div>
       </div>
     </div>`;
+}
+
+
+/* FORMULÁRIOS BONITOS - v2.2.3 */
+function preencherSelectsFormularios(){
+  const munOpts=['<option value="">Selecione</option>'].concat((db.municipios||[]).map(m=>`<option value="${m.nome||""}">${m.nome||"Município sem nome"}</option>`)).join("");
+  ["baseMunicipio","userMunicipio"].forEach(id=>{const el=document.getElementById(id); if(el&&el.innerHTML!==munOpts) el.innerHTML=munOpts;});
+  const userOpts=['<option value="">Selecione</option>'].concat((db.usuarios||[]).map(u=>`<option value="${u.nome||u.login||""}">${u.nome||u.login||"Usuário"}</option>`)).join("");
+  const resp=document.getElementById("baseResponsavel"); if(resp&&resp.innerHTML!==userOpts) resp.innerHTML=userOpts;
+}
+function limparFormularioBase(){
+  ["baseNome","baseCpf","baseTelefone","baseEmail","baseNascimento","baseRegiao","baseBairro","baseEndereco","basePotencial","baseValor","baseUltimoContato","baseObservacoes"].forEach(id=>{const el=document.getElementById(id); if(el) el.value=(id==="basePotencial"||id==="baseValor")?0:"";});
+  ["baseSexo","baseMunicipio","baseResponsavel","baseOrigem"].forEach(id=>{const el=document.getElementById(id); if(el) el.value="";});
+  const st=document.getElementById("baseStatus"); if(st) st.value="Ativo";
+  const fn=document.getElementById("baseFuncao"); if(fn) fn.value=currentRole==="Apoiador"?"Possível Eleitor":"Apoiador";
+  const inf=document.getElementById("baseInfluencia"); if(inf) inf.value="Média";
+}
+function salvarFormularioBase(){
+  db.pessoas=db.pessoas||[];
+  const valorEl=document.getElementById("baseValor");
+  const valor=(currentRole==="Administrador")?Number(valorEl?valorEl.value:0):0;
+  db.pessoas.push({
+    id:uid(),
+    nome:document.getElementById("baseNome")?.value||"",
+    cpf:document.getElementById("baseCpf")?.value||"",
+    telefone:document.getElementById("baseTelefone")?.value||"",
+    email:document.getElementById("baseEmail")?.value||"",
+    sexo:document.getElementById("baseSexo")?.value||"",
+    nascimento:document.getElementById("baseNascimento")?.value||"",
+    funcao:document.getElementById("baseFuncao")?.value||"Possível Eleitor",
+    municipio:document.getElementById("baseMunicipio")?.value||"",
+    regiao:document.getElementById("baseRegiao")?.value||"",
+    bairro:document.getElementById("baseBairro")?.value||"",
+    endereco:document.getElementById("baseEndereco")?.value||"",
+    potencial:Number(document.getElementById("basePotencial")?.value||0),
+    valor:valor,
+    status:document.getElementById("baseStatus")?.value||"Ativo",
+    responsavel:document.getElementById("baseResponsavel")?.value||(currentUser?(currentUser.nome||currentUser.login):""),
+    origem:document.getElementById("baseOrigem")?.value||"",
+    influencia:document.getElementById("baseInfluencia")?.value||"Média",
+    ultimoContato:document.getElementById("baseUltimoContato")?.value||"",
+    observacoes:document.getElementById("baseObservacoes")?.value||"",
+    criadoPor:currentUser?(currentUser.login):""
+  });
+  salvar(); limparFormularioBase(); render();
+}
+function limparFormularioUsuario(){
+  ["userNome","userCpf","userTelefone","userEmail","userRegiao","userLogin","userSenha","userPagamento","userProjecao","userObservacoes"].forEach(id=>{const el=document.getElementById(id); if(el) el.value=(id==="userPagamento"||id==="userProjecao")?0:"";});
+  const mun=document.getElementById("userMunicipio"); if(mun) mun.value="";
+  const st=document.getElementById("userStatus"); if(st) st.value="Ativo";
+  const pf=document.getElementById("userPerfil"); if(pf) pf.value="Apoiador";
+}
+function salvarFormularioUsuario(){
+  db.usuarios=db.usuarios||[];
+  db.usuarios.push({
+    id:uid(),
+    nome:document.getElementById("userNome")?.value||"",
+    cpf:document.getElementById("userCpf")?.value||"",
+    telefone:document.getElementById("userTelefone")?.value||"",
+    email:document.getElementById("userEmail")?.value||"",
+    municipio:document.getElementById("userMunicipio")?.value||"",
+    regiao:document.getElementById("userRegiao")?.value||"",
+    login:document.getElementById("userLogin")?.value||"",
+    senha:document.getElementById("userSenha")?.value||"",
+    perfil:document.getElementById("userPerfil")?.value||"Apoiador",
+    status:document.getElementById("userStatus")?.value||"Ativo",
+    pagamento:Number(document.getElementById("userPagamento")?.value||0),
+    projecao:Number(document.getElementById("userProjecao")?.value||0),
+    observacoes:document.getElementById("userObservacoes")?.value||""
+  });
+  salvar(); limparFormularioUsuario(); render();
+}
+function renderBase(){
+  if(!document.getElementById("listaPessoas")) return;
+  if(typeof garantirCamposAvancados==="function") garantirCamposAvancados();
+  preencherSelectsFormularios();
+  const lista=currentRole==="Apoiador"?(db.pessoas||[]).filter(p=>p.criadoPor===(currentUser&&currentUser.login)):(db.pessoas||[]);
+  listaPessoas.innerHTML=lista.length?lista.map(p=>{
+    const i=db.pessoas.indexOf(p);
+    const votos=Number(p.potencial||0), valor=Number(p.valor||0), custo=votos>0?valor/votos:0;
+    return `<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td><span class="tag">${p.funcao||"-"}</span></td><td>${p.municipio||"-"}</td><td>${n(votos)}</td><td>${money(valor)}</td><td>${custo>0?money(custo):"Sem projeção"}</td><td><span class="tag ${p.status==="Ativo"?"green":p.status==="Perdido"?"red":"gold"}">${p.status||"Ativo"}</span></td><td><button class="action-mini blue" onclick="abrirFichaPessoa(${i})">Ficha</button><button class="action-mini red" onclick="delItem('pessoas',${i})">Excluir</button></td></tr>`;
+  }).join(""):emptyRow(9,"Nenhum cadastro realizado.");
+}
+function renderUsuarios(){
+  if(!document.getElementById("listaUsuarios")) return;
+  if(typeof garantirCamposAvancados==="function") garantirCamposAvancados();
+  preencherSelectsFormularios();
+  listaUsuarios.innerHTML=(db.usuarios||[]).length?(db.usuarios||[]).map((u,i)=>{
+    const custo=Number(u.projecao||0)>0?Number(u.pagamento||0)/Number(u.projecao||0):0;
+    return `<tr><td>${u.nome||"-"}</td><td>${u.telefone||"-"}</td><td>${u.municipio||"-"}</td><td>${u.login||"-"}</td><td><span class="tag">${u.perfil||"-"}</span></td><td><span class="tag ${u.status==="Ativo"?"green":"red"}">${u.status||"Ativo"}</span></td><td>${money(u.pagamento||0)}</td><td>${n(u.projecao||0)}</td><td>${custo>0?money(custo):"R$ 0,00"}</td><td><button class="action-mini red" onclick="delItem('usuarios',${i})">Excluir</button></td></tr>`;
+  }).join(""):emptyRow(10,"Nenhum usuário cadastrado.");
 }
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
