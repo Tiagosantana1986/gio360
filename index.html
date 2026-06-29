@@ -149,6 +149,47 @@ p{color:#64748b}
 @media(max-width:1050px){.sidebar{position:relative;width:100%}.app{display:block}.main{margin-left:0;width:100%}.grid,.two,.report-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.content{padding:18px}.grid,.two,.report-grid{grid-template-columns:1fr}.page-head{display:block}}
 @media print{body *{visibility:hidden!important}#relatorio,#relatorio *{visibility:visible!important}#relatorio{position:absolute;left:0;top:0;width:100%;box-shadow:none!important;border:0!important}.sidebar,.topbar,.page-head .btn,.footer{display:none!important}@page{size:A4;margin:12mm}}
+
+/* CORREÇÃO DE IMPRESSÃO - AGENDA */
+@media print{
+  body{
+    background:#ffffff !important;
+    color:#000000 !important;
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+  .agenda-print-cover{
+    background:#0b2e59 !important;
+    color:#ffffff !important;
+    border-bottom:4px solid #f2b300 !important;
+  }
+  .agenda-print-cover h1,
+  .agenda-print-cover h2,
+  .agenda-print-cover p{
+    color:#ffffff !important;
+    opacity:1 !important;
+    font-weight:700 !important;
+  }
+  .agenda-print-title{
+    color:#0b2e59 !important;
+    font-weight:800 !important;
+  }
+  #agendaPrintArea table,
+  #agendaPrintArea th,
+  #agendaPrintArea td{
+    color:#000000 !important;
+    opacity:1 !important;
+  }
+  #agendaPrintArea th{
+    background:#e5e7eb !important;
+    color:#0b2e59 !important;
+    font-weight:900 !important;
+  }
+  #agendaPrintArea td{
+    font-weight:600 !important;
+  }
+}
+
 </style>
 </head>
 
