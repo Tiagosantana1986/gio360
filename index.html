@@ -922,9 +922,10 @@ p{color:#64748b}
       <div class="user-field" style="grid-column:span 2"><label>Observações</label><textarea id="userObservacoes" placeholder="Informações importantes sobre o usuário"></textarea></div>
     </div>
 
+    <input type="hidden" id="userEditIndex" value="">
     <div class="user-actions">
       <button class="btn light" onclick="limparFormularioUsuario()">Limpar</button>
-      <button class="btn gold" onclick="salvarFormularioUsuario()">Salvar Usuário</button>
+      <button class="btn gold" id="btnSalvarUsuario" onclick="salvarFormularioUsuario()">Salvar Usuário</button>
     </div>
   </div>
 
@@ -2552,6 +2553,126 @@ function renderBancoDados(){
   if(fonte==="agenda") rows=(db.agenda||[]).filter(a=>(!mun||a.municipio===mun)&&(!filtro||String(a.status||a.tipo||"").toLowerCase().includes(filtro))&&(!busca||String(a.local||a.descricao||"").toLowerCase().includes(busca))).map(a=>[a.data,a.hora,a.tipo,a.municipio,a.local,a.status,a.descricao]);
   if(fonte==="municipios") rows=(db.municipios||[]).filter(m=>(!mun||m.nome===mun)&&(!busca||String(m.nome||"").toLowerCase().includes(busca))).map(m=>[m.nome,m.estado,n(m.populacao||0),n(m.eleitores||0),n(m.meta||0)]);
   bdResultado.innerHTML=`<table class="pro-table"><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c||"-"}</td>`).join("")}</tr>`).join("")||"<tr><td>Nenhum resultado encontrado.</td></tr>"}</tbody></table>`;
+}
+
+
+/* EDITAR USUÁRIO - v2.3.1 */
+function editarUsuario(i){
+  const u=(db.usuarios||[])[i];
+  if(!u){alert("Usuário não encontrado.");return;}
+  if(typeof openPage==="function"){
+    const btn=document.querySelector('[data-page="usuarios"]');
+    openPage("usuarios",btn);
+  }
+  preencherSelectUsuario226?.();
+  preencherSelectUsuario224?.();
+  preencherSelectUsuario225?.();
+
+  const set=(id,val)=>{const el=document.getElementById(id); if(el) el.value=val||"";};
+  set("userNome",u.nome);
+  set("userCpf",u.cpf);
+  set("userTelefone",u.telefone);
+  set("userEmail",u.email);
+  set("userMunicipio",u.municipio);
+  set("userRegiao",u.regiao);
+  set("userStatus",u.status||"Ativo");
+  set("userPerfil",u.perfil||"Apoiador");
+  set("userLogin",u.login);
+  set("userSenha",u.senha);
+  set("userEntrada",u.entrada);
+  set("userPagamento",u.pagamento||0);
+  set("userProjecao",u.projecao||0);
+  set("userObservacoes",u.observacoes);
+  set("userEditIndex",String(i));
+
+  const btn=document.getElementById("btnSalvarUsuario");
+  if(btn) btn.textContent="Atualizar Usuário";
+  const nome=document.getElementById("userNome");
+  if(nome) nome.focus();
+}
+
+function limparFormularioUsuario(){
+  ["userNome","userCpf","userTelefone","userEmail","userRegiao","userLogin","userSenha","userPagamento","userProjecao","userObservacoes","userEntrada"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=(id==="userPagamento"||id==="userProjecao")?0:"";
+  });
+  const municipio=document.getElementById("userMunicipio"); if(municipio) municipio.value="";
+  const status=document.getElementById("userStatus"); if(status) status.value="Ativo";
+  const perfil=document.getElementById("userPerfil"); if(perfil) perfil.value="Apoiador";
+  const edit=document.getElementById("userEditIndex"); if(edit) edit.value="";
+  const btn=document.getElementById("btnSalvarUsuario"); if(btn) btn.textContent="Salvar Usuário";
+}
+
+function salvarFormularioUsuario(){
+  db.usuarios=db.usuarios||[];
+  const nome=(document.getElementById("userNome")?.value||"").trim();
+  const login=(document.getElementById("userLogin")?.value||"").trim();
+  const senha=(document.getElementById("userSenha")?.value||"").trim();
+  const editRaw=document.getElementById("userEditIndex")?.value||"";
+  const editIndex=editRaw===""?-1:Number(editRaw);
+
+  if(!nome){alert("Informe o nome completo do usuário.");return;}
+  if(!login){alert("Informe o login do usuário.");return;}
+  if(!senha){alert("Informe a senha do usuário.");return;}
+
+  const loginExiste=db.usuarios.some((u,idx)=>idx!==editIndex && String(u.login||"").trim()===login);
+  if(loginExiste){alert("Já existe um usuário com esse login.");return;}
+
+  const dados={
+    id: editIndex>=0 && db.usuarios[editIndex] ? db.usuarios[editIndex].id : uid(),
+    nome:nome,
+    cpf:document.getElementById("userCpf")?.value||"",
+    telefone:document.getElementById("userTelefone")?.value||"",
+    email:document.getElementById("userEmail")?.value||"",
+    municipio:document.getElementById("userMunicipio")?.value||"",
+    regiao:document.getElementById("userRegiao")?.value||"",
+    status:document.getElementById("userStatus")?.value||"Ativo",
+    perfil:document.getElementById("userPerfil")?.value||"Apoiador",
+    login:login,
+    senha:senha,
+    entrada:document.getElementById("userEntrada")?.value||"",
+    pagamento:Number(document.getElementById("userPagamento")?.value||0),
+    projecao:Number(document.getElementById("userProjecao")?.value||0),
+    observacoes:document.getElementById("userObservacoes")?.value||""
+  };
+
+  if(editIndex>=0 && db.usuarios[editIndex]){
+    db.usuarios[editIndex]=dados;
+  }else{
+    db.usuarios.push(dados);
+  }
+
+  salvar();
+  limparFormularioUsuario();
+  render();
+}
+
+function renderUsuarios(){
+  if(!document.getElementById("listaUsuarios")) return;
+  if(typeof garantirCamposUsuarios226==="function") garantirCamposUsuarios226();
+  if(typeof garantirCamposUsuarios225==="function") garantirCamposUsuarios225();
+  if(typeof garantirCamposUsuarios224==="function") garantirCamposUsuarios224();
+  if(typeof preencherSelectUsuario226==="function") preencherSelectUsuario226();
+  if(typeof preencherSelectUsuario225==="function") preencherSelectUsuario225();
+  if(typeof preencherSelectUsuario224==="function") preencherSelectUsuario224();
+
+  listaUsuarios.innerHTML=(db.usuarios||[]).length?(db.usuarios||[]).map((u,i)=>{
+    const custo=Number(u.projecao||0)>0?Number(u.pagamento||0)/Number(u.projecao||0):0;
+    const statusCls=(u.status||"Ativo")==="Ativo"?"green":"red";
+    const perfilCls=(u.perfil||"")==="Administrador"?"gold":"";
+    return `<tr>
+      <td><strong>${u.nome||"-"}</strong><br><small>${u.email||""}</small></td>
+      <td>${u.telefone||"-"}</td>
+      <td>${u.municipio||"-"}<br><small>${u.regiao||""}</small></td>
+      <td>${u.login||"-"}</td>
+      <td><span class="user-badge ${perfilCls}">${u.perfil||"-"}</span></td>
+      <td><span class="user-badge ${statusCls}">${u.status||"Ativo"}</span></td>
+      <td>${money(u.pagamento||0)}</td>
+      <td>${n(u.projecao||0)}</td>
+      <td>${custo>0?money(custo):"R$ 0,00"}</td>
+      <td><button class="action-mini blue" onclick="editarUsuario(${i})">Editar</button><button class="action-mini red" onclick="delItem('usuarios',${i})">Excluir</button></td>
+    </tr>`;
+  }).join(""):emptyRow(10,"Nenhum usuário cadastrado.");
 }
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
