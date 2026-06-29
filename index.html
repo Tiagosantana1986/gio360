@@ -473,6 +473,42 @@ p{color:#64748b}
   .report-table th,.report-table td{border:1px solid #ddd!important;color:#000!important}
 }
 
+
+/* RELATÓRIO PROFISSIONAL - v2.3.5 */
+.report-pro{background:#fff;color:#0f172a;font-family:Arial,Helvetica,sans-serif}
+.report-cover{border:1px solid #dbe3ef;border-radius:26px;overflow:hidden;margin-bottom:22px;background:#fff}
+.report-cover-top{background:linear-gradient(135deg,#0b2e59,#123f75);color:#fff;padding:34px}
+.report-cover-top h1{margin:0;font-size:34px;color:#fff}
+.report-cover-top p{margin:8px 0 0;color:#dbeafe;font-weight:700}
+.report-cover-info{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:4px solid #f2b300}
+.report-cover-info div{padding:16px;border-right:1px solid #e2e8f0}
+.report-cover-info span{display:block;font-size:10px;text-transform:uppercase;color:#64748b;font-weight:900}
+.report-cover-info strong{display:block;margin-top:6px;color:#0b2e59}
+.report-exec{background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;padding:18px;margin:18px 0;line-height:1.55}
+.report-exec h2{margin:0 0 10px;color:#0b2e59}
+.report-kpis-pro{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.report-kpi-pro{border:1px solid #e2e8f0;border-radius:18px;padding:15px;background:#fff;box-shadow:0 6px 16px rgba(15,23,42,.04)}
+.report-kpi-pro span{display:block;font-size:10px;text-transform:uppercase;color:#64748b;font-weight:900}
+.report-kpi-pro strong{display:block;margin-top:8px;font-size:23px;color:#0b2e59}
+.report-kpi-pro.green strong{color:#16a34a}.report-kpi-pro.red strong{color:#dc2626}.report-kpi-pro.gold strong{color:#b77900}.report-kpi-pro.orange strong{color:#f97316}
+.report-section-pro{margin-top:24px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:18px}
+.report-section-pro h2{margin:0 0 12px;color:#0b2e59;border-left:6px solid #f2b300;padding-left:10px;font-size:20px}
+.report-table-pro{width:100%;border-collapse:collapse;margin-top:8px}
+.report-table-pro th,.report-table-pro td{border-bottom:1px solid #e5e7eb;padding:9px;text-align:left;font-size:12px;vertical-align:top}
+.report-table-pro th{background:#f8fafc;color:#0b2e59;text-transform:uppercase;font-size:10px}
+.report-sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:38px}
+.report-sign div{border-top:1px solid #334155;text-align:center;padding-top:8px;font-weight:700;color:#334155}
+.report-footer{margin-top:28px;text-align:center;color:#64748b;font-size:11px}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff!important}
+  body *{visibility:hidden!important}
+  #relatorioCompleto,#relatorioCompleto *{visibility:visible!important}
+  #relatorioCompleto{position:absolute!important;left:0!important;top:0!important;width:100%!important}
+  .report-cover,.report-section-pro,.report-kpi-pro{break-inside:avoid}
+  .report-table-pro tr{break-inside:avoid}
+}
+
 </style>
 </head>
 
@@ -3034,38 +3070,163 @@ function imprimirRelatorioGerado(){
 <meta charset="utf-8">
 <title>Relatório GIE360</title>
 <style>
-  @page{size:A4;margin:12mm}
-  *{box-sizing:border-box}
-  body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#111;margin:0;padding:0}
-  .report-box{padding:0;margin:0}
-  .report-title{font-size:28px;color:#0b2e59;margin:0 0 6px}
-  .report-sub{color:#475569;font-weight:700;margin-bottom:18px}
-  .report-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
-  .report-kpi{border:1px solid #ddd;border-radius:10px;padding:10px;background:#f8fafc;break-inside:avoid}
-  .report-kpi span{display:block;font-size:10px;text-transform:uppercase;color:#64748b;font-weight:900}
-  .report-kpi strong{display:block;margin-top:6px;font-size:18px;color:#0b2e59}
-  .report-section{margin-top:20px}
-  .report-section h2{font-size:18px;color:#0b2e59;margin:0 0 8px;border-left:5px solid #f2b300;padding-left:8px}
-  .report-table{width:100%;border-collapse:collapse;margin-top:6px;font-size:11px}
-  .report-table th,.report-table td{border:1px solid #ddd;padding:6px;text-align:left;vertical-align:top}
-  .report-table th{background:#f1f5f9;color:#0b2e59;text-transform:uppercase;font-size:9px}
-  tr{page-break-inside:avoid}
+@page{size:A4;margin:12mm}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#0f172a;margin:0}
+.report-cover{border:1px solid #dbe3ef;border-radius:20px;overflow:hidden;margin-bottom:18px}
+.report-cover-top{background:#0b2e59;color:#fff;padding:28px}
+.report-cover-top h1{margin:0;font-size:28px;color:#fff}.report-cover-top p{margin:8px 0 0;color:#dbeafe;font-weight:700}
+.report-cover-info{display:grid;grid-template-columns:repeat(4,1fr);border-top:4px solid #f2b300}
+.report-cover-info div{padding:12px;border-right:1px solid #e2e8f0}.report-cover-info span{display:block;font-size:9px;text-transform:uppercase;color:#64748b;font-weight:900}.report-cover-info strong{display:block;margin-top:5px;color:#0b2e59}
+.report-exec{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin:14px 0;line-height:1.45}.report-exec h2{margin:0 0 8px;color:#0b2e59}
+.report-kpis-pro{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.report-kpi-pro{border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#fff;break-inside:avoid}.report-kpi-pro span{display:block;font-size:9px;text-transform:uppercase;color:#64748b;font-weight:900}.report-kpi-pro strong{display:block;margin-top:5px;font-size:18px;color:#0b2e59}
+.report-section-pro{margin-top:18px;border:1px solid #e2e8f0;border-radius:12px;padding:12px;break-inside:auto}.report-section-pro h2{margin:0 0 8px;color:#0b2e59;border-left:5px solid #f2b300;padding-left:8px;font-size:17px}
+.report-table-pro{width:100%;border-collapse:collapse;margin-top:6px;font-size:10px}.report-table-pro th,.report-table-pro td{border:1px solid #ddd;padding:5px;text-align:left;vertical-align:top}.report-table-pro th{background:#f8fafc;color:#0b2e59;text-transform:uppercase;font-size:8px}tr{page-break-inside:avoid}
+.report-sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px}.report-sign div{border-top:1px solid #334155;text-align:center;padding-top:8px;font-weight:700}.report-footer{text-align:center;color:#64748b;font-size:10px;margin-top:20px}
 </style>
-</head>
-<body>
-${alvo.innerHTML}
-<script>
-  window.onload=function(){
-    setTimeout(function(){window.focus();window.print();},250);
-  };
-<\/script>
-</body>
-</html>`);
+</head><body>${alvo.innerHTML}<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},250)};<\/script></body></html>`);
   w.document.close();
 }
 
 // Compatibility aliases
 function imprimirRelatorio(){imprimirRelatorioGerado();}
+
+
+/* RELATÓRIO PROFISSIONAL - v2.3.5 */
+function dataHojeRel235(){
+  const d=new Date();
+  return d.toLocaleDateString("pt-BR");
+}
+function brData235(d){
+  if(!d) return "-";
+  const p=String(d).split("-");
+  return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;
+}
+function getRel235(id,p=""){const e=document.getElementById(id);return e?e.value:p;}
+function periodoOk235(data,ini,fim){if(!data)return true;if(ini&&data<ini)return false;if(fim&&data>fim)return false;return true;}
+function money235(v){return typeof money==="function"?money(v):("R$ "+Number(v||0).toFixed(2));}
+function n235(v){return typeof n==="function"?n(v):String(v||0);}
+function fillRelSelect235(){
+  const sel=document.getElementById("relMunicipio");
+  if(!sel)return;
+  const atual=sel.value||"";
+  const opts=['<option value="">Todos os municípios</option>'].concat((db.municipios||[]).map(m=>`<option value="${m.nome||""}">${m.nome||"Município sem nome"}</option>`)).join("");
+  if(sel.innerHTML!==opts)sel.innerHTML=opts;
+  if(atual)sel.value=atual;
+}
+function montarRelatorioGIE360(){
+  fillRelSelect235();
+  const tipo=getRel235("relTipo","Raio-X Completo");
+  const mun=getRel235("relMunicipio","");
+  const ini=getRel235("relInicio","");
+  const fim=getRel235("relFim","");
+  const pessoas=(db.pessoas||[]).filter(p=>(!mun||p.municipio===mun));
+  const usuarios=(db.usuarios||[]).filter(u=>(!mun||u.municipio===mun));
+  const municipios=(db.municipios||[]).filter(m=>(!mun||m.nome===mun));
+  const financeiro=(db.financeiro||[]).filter(f=>(!mun||f.municipio===mun)&&periodoOk235(f.data,ini,fim));
+  const agenda=(db.agenda||[]).filter(a=>(!mun||a.municipio===mun)&&periodoOk235(a.data,ini,fim));
+
+  const receita=financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despFin=financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despBase=pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
+  const despUsuarios=usuarios.reduce((s,u)=>s+Number(u.pagamento||0),0);
+  const despesa=despFin+despBase+despUsuarios;
+  const saldo=receita-despesa;
+  const proj=pessoas.reduce((s,p)=>s+Number(p.potencial||0),0);
+  const meta=municipios.reduce((s,m)=>s+Number(m.meta||0),0);
+  const custo=proj>0?despesa/proj:0;
+  const perc=meta>0?Math.min((proj/meta)*100,100):0;
+  const faltam=Math.max(meta-proj,0);
+
+  const diagnostico = perc>=85 ? "A campanha apresenta cenário forte em relação à meta. O foco deve ser manutenção da base, presença territorial e validação das entregas."
+    : perc>=60 ? "A campanha está competitiva, porém ainda precisa ampliar a base e reforçar territórios abaixo da meta."
+    : perc>=35 ? "A campanha está em atenção. É necessário acelerar cadastros, agendas e conversão da base em projeção real."
+    : "A campanha está em estágio inicial ou crítico. A prioridade deve ser ampliar base, organizar território e controlar custos.";
+
+  const topPessoas=[...pessoas].sort((a,b)=>Number(b.potencial||0)-Number(a.potencial||0)).slice(0,12);
+  const linhasBase=topPessoas.map(p=>`<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td>${p.funcao||"-"}</td><td>${p.municipio||"-"}</td><td>${p.responsavel||"-"}</td><td>${n235(p.potencial||0)}</td><td>${money235(p.valor||0)}</td><td>${Number(p.potencial||0)>0?money235(Number(p.valor||0)/Number(p.potencial||0)):"-"}</td></tr>`).join("")||`<tr><td colspan="8">Nenhum cadastro encontrado.</td></tr>`;
+
+  const linhasFin=financeiro.map(f=>`<tr><td>${brData235(f.data)}</td><td>${f.tipo||"-"}</td><td>${f.categoria||"-"}</td><td>${f.descricao||"-"}</td><td>${f.municipio||"-"}</td><td>${f.status||"-"}</td><td>${money235(f.valor||0)}</td></tr>`).join("")||`<tr><td colspan="7">Nenhum lançamento encontrado.</td></tr>`;
+
+  const linhasAgenda=agenda.map(a=>`<tr><td>${brData235(a.data)}</td><td>${a.hora||"-"}</td><td>${a.tipo||"-"}</td><td>${a.municipio||"-"}</td><td>${a.local||"-"}</td><td>${a.status||"-"}</td></tr>`).join("")||`<tr><td colspan="6">Nenhuma agenda encontrada.</td></tr>`;
+
+  const linhasMunicipios=municipios.map(m=>{
+    const p=(db.pessoas||[]).filter(x=>x.municipio===m.nome).reduce((s,x)=>s+Number(x.potencial||0),0);
+    const mt=Number(m.meta||0);
+    const pc=mt>0?Math.min((p/mt)*100,100):0;
+    return `<tr><td>${m.nome||"-"}</td><td>${m.estado||"PR"}</td><td>${n235(m.eleitores||0)}</td><td>${n235(mt)}</td><td>${n235(p)}</td><td>${pc.toFixed(1).replace(".",",")}%</td></tr>`;
+  }).join("")||`<tr><td colspan="6">Nenhum município encontrado.</td></tr>`;
+
+  return `<div class="report-pro">
+    <div class="report-cover">
+      <div class="report-cover-top">
+        <h1>Relatório Executivo GIE360</h1>
+        <p>Raio-X estratégico da campanha com dados financeiros, território, base de apoio e agenda.</p>
+      </div>
+      <div class="report-cover-info">
+        <div><span>Tipo</span><strong>${tipo}</strong></div>
+        <div><span>Município</span><strong>${mun||"Todos"}</strong></div>
+        <div><span>Período</span><strong>${brData235(ini)} a ${brData235(fim)}</strong></div>
+        <div><span>Emissão</span><strong>${dataHojeRel235()}</strong></div>
+      </div>
+    </div>
+
+    <div class="report-exec">
+      <h2>Resumo Executivo</h2>
+      <p>${diagnostico}</p>
+      <p><strong>Meta:</strong> ${n235(meta)} votos | <strong>Projeção:</strong> ${n235(proj)} votos | <strong>Faltam:</strong> ${n235(faltam)} votos | <strong>Custo por voto:</strong> ${money235(custo)}</p>
+    </div>
+
+    <div class="report-kpis-pro">
+      <div class="report-kpi-pro green"><span>Receitas</span><strong>${money235(receita)}</strong></div>
+      <div class="report-kpi-pro red"><span>Despesas</span><strong>${money235(despesa)}</strong></div>
+      <div class="report-kpi-pro green"><span>Saldo</span><strong>${money235(saldo)}</strong></div>
+      <div class="report-kpi-pro gold"><span>Meta</span><strong>${n235(meta)}</strong></div>
+      <div class="report-kpi-pro"><span>Projeção</span><strong>${n235(proj)}</strong></div>
+      <div class="report-kpi-pro"><span>% da Meta</span><strong>${perc.toFixed(1).replace(".",",")}%</strong></div>
+      <div class="report-kpi-pro orange"><span>Custo/Voto</span><strong>${money235(custo)}</strong></div>
+      <div class="report-kpi-pro"><span>Agendas</span><strong>${n235(agenda.length)}</strong></div>
+    </div>
+
+    <div class="report-section-pro">
+      <h2>Composição das Despesas</h2>
+      <table class="report-table-pro"><thead><tr><th>Origem</th><th>Valor</th></tr></thead><tbody>
+        <tr><td>Despesas lançadas no Financeiro</td><td>${money235(despFin)}</td></tr>
+        <tr><td>Valores mensais da Base de Apoio</td><td>${money235(despBase)}</td></tr>
+        <tr><td>Pagamentos de Usuários</td><td>${money235(despUsuarios)}</td></tr>
+        <tr><td><strong>Despesa Geral Consolidada</strong></td><td><strong>${money235(despesa)}</strong></td></tr>
+      </tbody></table>
+    </div>
+
+    ${(tipo==="Raio-X Completo"||tipo==="Território")?`<div class="report-section-pro"><h2>Território</h2><table class="report-table-pro"><thead><tr><th>Município</th><th>Estado</th><th>Eleitores</th><th>Meta</th><th>Projeção</th><th>%</th></tr></thead><tbody>${linhasMunicipios}</tbody></table></div>`:""}
+    ${(tipo==="Raio-X Completo"||tipo==="Base de Apoio")?`<div class="report-section-pro"><h2>Base de Apoio - Principais Cadastros</h2><table class="report-table-pro"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Responsável</th><th>Potencial</th><th>Valor</th><th>Custo/Voto</th></tr></thead><tbody>${linhasBase}</tbody></table></div>`:""}
+    ${(tipo==="Raio-X Completo"||tipo==="Financeiro")?`<div class="report-section-pro"><h2>Lançamentos Financeiros</h2><table class="report-table-pro"><thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Município</th><th>Status</th><th>Valor</th></tr></thead><tbody>${linhasFin}</tbody></table></div>`:""}
+    ${(tipo==="Raio-X Completo"||tipo==="Agenda")?`<div class="report-section-pro"><h2>Agenda</h2><table class="report-table-pro"><thead><tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Local</th><th>Status</th></tr></thead><tbody>${linhasAgenda}</tbody></table></div>`:""}
+
+    <div class="report-section-pro">
+      <h2>Recomendações da Inteligência</h2>
+      <ul>
+        <li>Atualizar cadastros sem projeção de votos para melhorar a precisão do painel.</li>
+        <li>Revisar pessoas com custo mensal e baixa projeção.</li>
+        <li>Priorizar agendas nos municípios ou regiões abaixo de 60% da meta.</li>
+        <li>Acompanhar semanalmente o custo por voto e o saldo financeiro.</li>
+      </ul>
+    </div>
+
+    <div class="report-sign"><div>Coordenação da Campanha</div><div>Responsável pelo Relatório</div></div>
+    <div class="report-footer">GIE360 — Sistema de Gestão e Inteligência Eleitoral</div>
+  </div>`;
+}
+
+function gerarPreviaRelatorio(){
+  const alvo=document.getElementById("relatorioCompleto");
+  if(!alvo){alert("Área do relatório não encontrada.");return;}
+  alvo.innerHTML=montarRelatorioGIE360();
+  const st=document.getElementById("relatorioStatus");
+  if(st) st.innerHTML="Relatório profissional gerado na tela. Agora você pode imprimir ou salvar em PDF.";
+}
+function renderRelatorio(){gerarPreviaRelatorio();}
+function gerarRelatorio(){gerarPreviaRelatorio();}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
