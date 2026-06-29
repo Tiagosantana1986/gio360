@@ -94,7 +94,7 @@ p{color:#64748b}
 .auto-alert.green{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
 .auto-alert.blue{background:#eff6ff;color:#0b2e59;border-color:#bfdbfe}
 .status-pill{display:inline-block;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
-.status-pendente{background:#fef3c7;color:#92400e}
+.status-pendente{background:#fef3c7;color:#92400e}.status-rascunho{background:#f3f4f6;color:#374151}
 .status-confirmado{background:#dcfce7;color:#166534}
 .status-realizado{background:#dbeafe;color:#0b2e59}
 .status-cancelado,.status-recusado{background:#fee2e2;color:#991b1b}
@@ -279,7 +279,7 @@ p{color:#64748b}
   <div class="page-head">
     <div>
       <h1>Agenda</h1>
-      <p>Solicitações ficam separadas da Agenda Confirmada. Somente o administrador confirma ou recusa.</p>
+      <p>Apoiador preenche a agenda e clica em Enviar Solicitação. Depois disso, o administrador confirma ou recusa.</p>
     </div>
     <button class="btn gold" onclick="addAgenda()">+ Solicitar Agenda</button>
   </div>
@@ -293,7 +293,7 @@ p{color:#64748b}
 
   <div class="card table-wrap">
     <h3>Solicitação de Agenda</h3>
-    <p>Pedidos feitos pelos usuários. Se confirmados pelo administrador, entram automaticamente na Agenda Confirmada.</p>
+    <p>Pedidos feitos pelos usuários. O apoiador usa o botão Enviar Solicitação para confirmar o envio ao administrador.</p>
     <table class="table">
       <thead>
         <tr>
@@ -611,6 +611,7 @@ function statusRegiaoBadge(r){
 
 function statusAgendaClass(s){
   s=(s||"").toLowerCase();
+  if(s==="rascunho")return"status-rascunho";
   if(s==="confirmado")return"status-confirmado";
   if(s==="realizado")return"status-realizado";
   if(s==="cancelado"||s==="recusado")return"status-cancelado";
@@ -686,11 +687,12 @@ function atualizarControle(){
 function addMunicipio(){db.municipios.push({id:uid(),nome:"",estado:"PR",populacao:0,eleitores:0,meta:0});salvar();render();}
 function addRegiao(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.regioes.push({id:uid(),municipio:mun,nome:"",responsavel:"",meta:0,projecao:0,prioridade:"Média"});salvar();render();}
 function addPessoa(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.pessoas.push({id:uid(),nome:"",telefone:"",funcao:"Possível Eleitor",municipio:mun,regiao:"",potencial:0,valor:0,criadoPor:currentUser?(currentUser.login):""});salvar();render();}
-function addAgenda(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",local:"",descricao:"",status:"Pendente"});salvar();render();}
+function addAgenda(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";const st=currentRole==="Apoiador"?"Rascunho":"Pendente";db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:new Date().toISOString().slice(0,10),hora:"",tipo:"Reunião",municipio:mun,regiao:"",local:"",descricao:"",status:st});salvar();render();}
 function addFinanceiro(){const mun=(db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
 function addUsuario(){db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
 function delItem(tipo,i){if(!db[tipo])return;db[tipo].splice(i,1);salvar();render();}
 function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();}
+function enviarAgenda(i){db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
 function confirmarAgenda(i){db.agenda[i].status="Confirmado";salvar();render();}
 function recusarAgenda(i){db.agenda[i].status="Recusado";salvar();render();}
 function realizarAgenda(i){db.agenda[i].status="Realizado";salvar();render();}
@@ -933,17 +935,17 @@ function renderAgenda(){
   if(document.getElementById("agendaRealizadas")) agendaRealizadas.textContent=db.agenda.filter(a=>a.status==="Realizado").length;
 
   const solicitacoes = currentRole==="Administrador"
-    ? db.agenda.filter(a=>a.status==="Pendente" || a.status==="Recusado")
+    ? db.agenda.filter(a=>a.status==="Pendente" || a.status==="Recusado" || (a.status==="Rascunho" && a.solicitadoPor===(currentUser?(currentUser.nome||currentUser.login):"Usuário")))
     : db.agenda.filter(a=>
         a.solicitadoPor===(currentUser?(currentUser.nome||currentUser.login):"Usuário") &&
-        (a.status==="Pendente" || a.status==="Recusado")
+        (a.status==="Pendente" || a.status==="Recusado" || a.status==="Rascunho")
       );
 
   listaSolicitacoesAgenda.innerHTML = solicitacoes.length ? solicitacoes.map(a=>{
     const i=db.agenda.indexOf(a);
     const isOwner = a.solicitadoPor===(currentUser?(currentUser.nome||currentUser.login):"Usuário");
-    const canEdit = a.status==="Pendente" && (currentRole==="Administrador" || isOwner);
-    const canDelete = currentRole==="Administrador" || (isOwner && a.status==="Pendente");
+    const canEdit = (a.status==="Pendente" || a.status==="Rascunho") && (currentRole==="Administrador" || isOwner);
+    const canDelete = currentRole==="Administrador" || (isOwner && (a.status==="Pendente" || a.status==="Rascunho"));
 
     const campos = canEdit ? `
       <td>${a.solicitadoPor||"-"}</td>
@@ -965,6 +967,9 @@ function renderAgenda(){
       <td>${a.descricao||"-"}</td>`;
 
     let acoes = "";
+    if(isOwner && a.status==="Rascunho"){
+      acoes += `<button class="action-mini blue" onclick="enviarAgenda(${i})">Enviar Solicitação</button> `;
+    }
     if(currentRole==="Administrador" && a.status==="Pendente"){
       acoes += `<button class="action-mini blue" onclick="confirmarAgenda(${i})">Confirmar</button> <button class="action-mini red" onclick="recusarAgenda(${i})">Recusar</button> `;
     }
@@ -1123,7 +1128,7 @@ function renderRelatorio(){
         <h3 style="color:#0b2e59">Solicitações de Agenda</h3>
         <table class="table">
           <thead><tr><th>Solicitante</th><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Região</th><th>Local</th><th>Status</th><th>Descrição</th></tr></thead>
-          <tbody>${db.agenda.filter(a=>a.status==="Pendente"||a.status==="Recusado").map(a=>`<tr>
+          <tbody>${db.agenda.filter(a=>a.status==="Pendente"||a.status==="Recusado"||a.status==="Rascunho").map(a=>`<tr>
             <td>${a.solicitadoPor||"-"}</td><td>${a.data||"-"}</td><td>${a.hora||"-"}</td><td>${a.tipo||"-"}</td><td>${a.municipio||"-"}</td><td>${a.regiao||"-"}</td><td>${a.local||"-"}</td><td>${a.status||"Pendente"}</td><td>${a.descricao||"-"}</td>
           </tr>`).join("") || `<tr><td colspan="9">Nenhuma solicitação pendente ou recusada.</td></tr>`}</tbody>
         </table>
