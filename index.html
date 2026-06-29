@@ -253,6 +253,35 @@ p{color:#64748b}
   }
 }
 
+
+/* IA INTEGRADA */
+.ia-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+.ia-chat{background:#fff;border:1px solid #dbe3ef;border-radius:22px;box-shadow:0 14px 34px rgba(15,23,42,.07);overflow:hidden}
+.ia-chat-head{background:#0b2e59;color:#fff;padding:20px 22px}
+.ia-chat-head h3{margin:0;color:#fff}
+.ia-chat-head p{margin:6px 0 0;color:#dbeafe}
+.ia-messages{height:430px;overflow:auto;padding:18px;background:#f8fafc}
+.ia-msg{max-width:92%;margin:0 0 12px;padding:13px 15px;border-radius:16px;line-height:1.55;white-space:pre-wrap}
+.ia-msg.user{margin-left:auto;background:#0b2e59;color:#fff}
+.ia-msg.bot{background:#fff;border:1px solid #e2e8f0;color:#0f172a}
+.ia-input{display:flex;gap:10px;padding:14px;background:#fff;border-top:1px solid #e2e8f0}
+.ia-input input{flex:1}
+.ia-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ia-action{border:1px solid #dbe3ef;background:#fff;border-radius:16px;padding:14px;text-align:left;color:#0b2e59;font-weight:900;box-shadow:0 8px 18px rgba(15,23,42,.05)}
+.ia-action small{display:block;color:#64748b;font-weight:700;margin-top:4px}
+.ia-diagnostic{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+.ia-mini{background:#fff;border:1px solid #dbe3ef;border-radius:18px;padding:15px;box-shadow:0 8px 18px rgba(15,23,42,.05)}
+.ia-mini span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900}
+.ia-mini strong{display:block;margin-top:8px;color:#0b2e59;font-size:23px}
+.ia-panel{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:18px}
+.ia-panel h3{margin-top:0;color:#0b2e59}
+.ia-note{border-radius:14px;padding:12px;margin-bottom:10px;line-height:1.45;border:1px solid #e2e8f0}
+.ia-note.red{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+.ia-note.yellow{background:#fffbeb;color:#92400e;border-color:#fde68a}
+.ia-note.green{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
+.ia-note.blue{background:#eff6ff;color:#0b2e59;border-color:#bfdbfe}
+@media(max-width:1050px){.ia-wrap,.ia-diagnostic{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -472,8 +501,53 @@ p{color:#64748b}
 </section>
 
 <section id="inteligencia" class="page">
-  <div class="page-head"><div><h1>Inteligência</h1><p>Diagnóstico automático da campanha com base nos dados alimentados pela equipe.</p></div></div>
-  <div class="card"><pre id="textoInteligencia" style="white-space:pre-wrap;line-height:1.7;color:#0B2E59;font-weight:700"></pre></div>
+  <div class="page-head">
+    <div>
+      <h1>Inteligência GIE360</h1>
+      <p>Consultor estratégico integrado aos dados da campanha. Faça perguntas ou use análises prontas.</p>
+    </div>
+    <button class="btn gold" onclick="iaAnalisarCampanha()">Analisar Agora</button>
+  </div>
+
+  <div class="ia-diagnostic">
+    <div class="ia-mini"><span>Meta</span><strong id="iaMeta">0</strong></div>
+    <div class="ia-mini"><span>Projeção</span><strong id="iaProjecao">0</strong></div>
+    <div class="ia-mini"><span>Custo por voto</span><strong id="iaCusto">R$ 0,00</strong></div>
+    <div class="ia-mini"><span>Alertas críticos</span><strong id="iaCriticos">0</strong></div>
+  </div>
+
+  <div class="ia-wrap">
+    <div class="ia-chat">
+      <div class="ia-chat-head">
+        <h3>🤖 Consultor Estratégico GIE360</h3>
+        <p>Pergunte sobre campanha, município, base de apoio, financeiro, agenda, custo por voto ou plano de ação.</p>
+      </div>
+      <div id="iaMensagens" class="ia-messages"></div>
+      <div class="ia-input">
+        <input id="iaPergunta" placeholder="Exemplo: o que devo fazer para melhorar a campanha?">
+        <button class="btn gold" onclick="iaResponderPergunta()">Enviar</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ia-panel">
+        <h3>Análises rápidas</h3>
+        <div class="ia-actions">
+          <button class="ia-action" onclick="iaRespostaRapida('campanha')">Analisar campanha<small>Resumo geral e riscos</small></button>
+          <button class="ia-action" onclick="iaRespostaRapida('municipio')">Município base<small>Leitura do município selecionado</small></button>
+          <button class="ia-action" onclick="iaRespostaRapida('financeiro')">Financeiro<small>Receitas, despesas e custo</small></button>
+          <button class="ia-action" onclick="iaRespostaRapida('base')">Base de apoio<small>Pessoas, projeção e custo</small></button>
+          <button class="ia-action" onclick="iaRespostaRapida('agenda')">Agenda<small>Pendências e confirmadas</small></button>
+          <button class="ia-action" onclick="iaRespostaRapida('plano')">Plano de ação<small>Próximos passos práticos</small></button>
+        </div>
+      </div>
+
+      <div class="ia-panel">
+        <h3>Alertas inteligentes</h3>
+        <div id="iaAlertas"></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="relatorios" class="page">
@@ -1393,12 +1467,250 @@ function imprimirAgendaOficial(){
   setTimeout(()=>window.print(),200);
 }
 
+
+function iaDados(){
+  const meta = typeof painelMeta==="function" ? painelMeta() : Number(db.meta||0);
+  const proj = typeof painelProjecao==="function" ? painelProjecao() : projecaoTotal();
+  const receitas = typeof painelReceitas==="function" ? painelReceitas() : receitasTotal();
+  const despesas = typeof painelDespesas==="function" ? painelDespesas() : despesasTotal();
+  const saldo = receitas - despesas;
+  const custo = proj>0 ? despesas/proj : 0;
+  const perc = meta>0 ? Math.min((proj/meta)*100,100) : 0;
+  const mun = typeof painelMunicipioNome==="function" ? painelMunicipioNome() : (db.municipioBase||"");
+  const pessoas = mun ? db.pessoas.filter(p=>p.municipio===mun) : db.pessoas;
+  const agendas = mun ? db.agenda.filter(a=>a.municipio===mun) : db.agenda;
+  const municipios = db.municipios||[];
+  const regioes = mun ? db.regioes.filter(r=>r.municipio===mun) : db.regioes;
+  const alerts = gerarAlertas();
+  return {meta,proj,receitas,despesas,saldo,custo,perc,mun,pessoas,agendas,municipios,regioes,alerts};
+}
+
+function iaAdicionarMensagem(tipo,texto){
+  const box=document.getElementById("iaMensagens");
+  if(!box) return;
+  const div=document.createElement("div");
+  div.className="ia-msg "+tipo;
+  div.textContent=texto;
+  box.appendChild(div);
+  box.scrollTop=box.scrollHeight;
+}
+
+function iaResumoCampanha(){
+  const d=iaDados();
+  return `📊 DIAGNÓSTICO GERAL DA CAMPANHA
+
+${d.mun?`Município analisado: ${d.mun}`:"Visão geral da campanha"}
+
+Meta: ${n(d.meta)} votos
+Projeção atual: ${n(d.proj)} votos
+Atingimento da meta: ${d.perc.toFixed(1).replace(".",",")}%
+Receitas: ${money(d.receitas)}
+Despesas: ${money(d.despesas)}
+Saldo: ${money(d.saldo)}
+Custo por voto: ${money(d.custo)}
+
+Base de apoio: ${d.pessoas.length} pessoa(s)
+Municípios cadastrados: ${d.municipios.length}
+Regiões/Bairros: ${d.regioes.length}
+Agendas: ${d.agendas.length}
+
+Leitura da IA:
+${d.perc>=85?"A campanha está em posição forte em relação à meta. O foco deve ser manutenção, presença territorial e proteção da base já cadastrada.":d.perc>=60?"A campanha está competitiva, mas ainda precisa ampliar a base e fortalecer os territórios abaixo da meta.":d.perc>=35?"A campanha está em atenção. É necessário acelerar cadastros, agendas e conversão da base em projeção real.":"A campanha está em estágio crítico ou inicial. Priorize cadastro de base, agendas estratégicas e redução de custos sem projeção."}`;
+}
+
+function iaAnaliseFinanceira(){
+  const d=iaDados();
+  const pessoasComCusto=d.pessoas.filter(p=>Number(p.valor||0)>0);
+  const caros=pessoasComCusto
+    .map(p=>({p,c:Number(p.potencial||0)>0?Number(p.valor||0)/Number(p.potencial||0):999999}))
+    .sort((a,b)=>b.c-a.c)
+    .slice(0,5);
+
+  return `💰 ANÁLISE FINANCEIRA
+
+Receitas: ${money(d.receitas)}
+Despesas: ${money(d.despesas)}
+Saldo: ${money(d.saldo)}
+Custo por voto geral: ${money(d.custo)}
+
+Pessoas com custo mensal: ${pessoasComCusto.length}
+
+${caros.length?`Maiores custos por voto:
+${caros.map(x=>`- ${x.p.nome||"Sem nome"}: ${Number(x.p.potencial||0)>0?money(x.c):"custo sem projeção"} | Valor: ${money(x.p.valor||0)} | Projeção: ${n(x.p.potencial||0)}`).join("
+")}`:"Não há pessoas com custo mensal cadastradas."}
+
+Leitura da IA:
+${d.custo===0?"Ainda não há custo suficiente para calcular eficiência financeira.":d.custo<=8?"O custo por voto está saudável. Mantenha controle e acompanhe quem entrega melhor resultado.":d.custo<=15?"O custo por voto está em nível médio. Vale revisar pessoas com custo alto e baixa projeção.":"O custo por voto está alto. Recomendo revisar pagamentos, cortar custos sem projeção e reforçar lideranças com melhor retorno."}`;
+}
+
+function iaAnaliseBase(){
+  const d=iaDados();
+  const projBase=d.pessoas.reduce((s,p)=>s+Number(p.potencial||0),0);
+  const semProjecao=d.pessoas.filter(p=>Number(p.potencial||0)===0);
+  const top=d.pessoas
+    .map(p=>({nome:p.nome||"Sem nome", funcao:p.funcao||"-", municipio:p.municipio||"-", votos:Number(p.potencial||0), valor:Number(p.valor||0)}))
+    .sort((a,b)=>b.votos-a.votos)
+    .slice(0,8);
+
+  return `👥 ANÁLISE DA BASE DE APOIO
+
+Pessoas cadastradas: ${d.pessoas.length}
+Projeção total da base: ${n(projBase)} votos
+Pessoas sem projeção: ${semProjecao.length}
+
+Principais nomes por projeção:
+${top.length?top.map(x=>`- ${x.nome} (${x.funcao}) | ${x.municipio} | ${n(x.votos)} votos | ${money(x.valor)}`).join("
+"):"Ainda não há base cadastrada."}
+
+Leitura da IA:
+${semProjecao.length>0?`Existem ${semProjecao.length} cadastro(s) sem projeção de votos. Isso reduz a qualidade da análise. Recomendo revisar esses registros.`:"A base está com projeções preenchidas, o que melhora a leitura estratégica."}
+${projBase<d.meta?"A projeção da base ainda está abaixo da meta. É necessário ampliar apoiadores e possíveis eleitores.":"A projeção da base já alcança ou supera a meta. Agora o foco deve ser validar qualidade, presença e conversão."}`;
+}
+
+function iaAnaliseAgenda(){
+  const d=iaDados();
+  const pend=d.agendas.filter(a=>a.status==="Pendente"||a.status==="Rascunho").length;
+  const conf=d.agendas.filter(a=>a.status==="Confirmado").length;
+  const real=d.agendas.filter(a=>a.status==="Realizado").length;
+  const rec=d.agendas.filter(a=>a.status==="Recusado").length;
+  const canc=d.agendas.filter(a=>a.status==="Cancelado").length;
+
+  return `📅 ANÁLISE DA AGENDA
+
+Total de agendas: ${d.agendas.length}
+Pendentes/Rascunho: ${pend}
+Confirmadas: ${conf}
+Realizadas: ${real}
+Recusadas: ${rec}
+Canceladas: ${canc}
+
+Leitura da IA:
+${pend>0?`Há ${pend} solicitação(ões) aguardando decisão ou envio. Recomendo revisar e confirmar as agendas estratégicas.`:"Não há pendências de agenda no momento."}
+${conf===0&&d.agendas.length>0?"Existe movimentação registrada, mas nenhuma agenda confirmada. Isso pode travar a operação de campo.":""}
+${real>0?"Já existem agendas realizadas, o que ajuda a validar presença territorial.":""}`;
+}
+
+function iaPlanoAcao(){
+  const d=iaDados();
+  const faltam=Math.max(d.meta-d.proj,0);
+  const custoEstimado=d.custo>0?faltam*d.custo:0;
+  const criticos=d.alerts.filter(a=>a.tipo==="red");
+
+  return `🎯 PLANO DE AÇÃO DA IA
+
+Objetivo atual:
+- Meta: ${n(d.meta)} votos
+- Projeção: ${n(d.proj)} votos
+- Faltam: ${n(faltam)} votos
+
+Ações recomendadas para os próximos 7 dias:
+
+1. Revisar a Base de Apoio
+- Corrigir cadastros sem Projeção de Votos.
+- Identificar apoiadores com custo alto e baixa entrega.
+- Priorizar quem tem melhor custo por voto.
+
+2. Fortalecer território
+- Selecionar o município base e verificar se há regiões/bairros sem responsável.
+- Criar agendas nos locais com menor projeção.
+
+3. Agenda
+- Confirmar solicitações pendentes.
+- Transformar reuniões em novos cadastros na Base de Apoio.
+- Após cada reunião, atualizar projeções reais.
+
+4. Financeiro
+- Avaliar se os gastos estão gerando projeção.
+- Evitar pagamentos sem meta clara de votos.
+
+5. Meta
+${faltam>0?`- Para atingir a meta, ainda faltam ${n(faltam)} votos projetados.${d.custo>0?` Mantido o custo atual, o esforço financeiro estimado seria de ${money(custoEstimado)}.`:""}`:"- A projeção já alcança a meta. O foco passa a ser consolidar e proteger a base."}
+
+Alertas críticos:
+${criticos.length?criticos.map(a=>`- ${a.titulo}: ${a.texto}`).join("
+"):"Nenhum alerta crítico no momento."}`;
+}
+
+function iaAnaliseMunicipio(){
+  const d=iaDados();
+  if(!d.mun){
+    return "📍 MUNICÍPIO BASE
+
+Nenhum município base selecionado no Painel Geral. Selecione um município para a IA analisar dados específicos daquele território.";
+  }
+  return `📍 ANÁLISE DO MUNICÍPIO BASE: ${d.mun}
+
+Meta do município: ${n(d.meta)} votos
+Projeção no município: ${n(d.proj)} votos
+Atingimento: ${d.perc.toFixed(1).replace(".",",")}%
+Receitas no município: ${money(d.receitas)}
+Despesas no município: ${money(d.despesas)}
+Custo por voto no município: ${money(d.custo)}
+Pessoas cadastradas: ${d.pessoas.length}
+Regiões/Bairros: ${d.regioes.length}
+Agendas: ${d.agendas.length}
+
+Leitura da IA:
+${d.perc>=80?"Este município está forte. Priorize manutenção, presença e validação da base.":d.perc>=50?"Este município está competitivo, mas ainda precisa de reforço em base e agenda.":d.perc>0?"Este município está abaixo do esperado. Recomendo novas agendas e captação de apoiadores.":"Este município ainda não possui projeção suficiente. É prioridade cadastrar lideranças, apoiadores e possíveis eleitores."}`;
+}
+
+function iaRespostaRapida(tipo){
+  let resposta="";
+  if(tipo==="campanha") resposta=iaResumoCampanha();
+  if(tipo==="municipio") resposta=iaAnaliseMunicipio();
+  if(tipo==="financeiro") resposta=iaAnaliseFinanceira();
+  if(tipo==="base") resposta=iaAnaliseBase();
+  if(tipo==="agenda") resposta=iaAnaliseAgenda();
+  if(tipo==="plano") resposta=iaPlanoAcao();
+  iaAdicionarMensagem("bot",resposta);
+}
+
+function iaResponderPergunta(){
+  const input=document.getElementById("iaPergunta");
+  if(!input) return;
+  const pergunta=(input.value||"").trim();
+  if(!pergunta) return;
+  iaAdicionarMensagem("user",pergunta);
+  input.value="";
+
+  const q=pergunta.toLowerCase();
+  let resposta="";
+  if(q.includes("financeiro")||q.includes("gasto")||q.includes("custo")||q.includes("dinheiro")) resposta=iaAnaliseFinanceira();
+  else if(q.includes("base")||q.includes("apoiador")||q.includes("apoio")||q.includes("eleitor")||q.includes("voto")) resposta=iaAnaliseBase();
+  else if(q.includes("agenda")||q.includes("reunião")||q.includes("reuniao")||q.includes("evento")) resposta=iaAnaliseAgenda();
+  else if(q.includes("município")||q.includes("municipio")||q.includes("cidade")||q.includes("território")||q.includes("territorio")) resposta=iaAnaliseMunicipio();
+  else if(q.includes("plano")||q.includes("fazer")||q.includes("melhorar")||q.includes("estratégia")||q.includes("estrategia")) resposta=iaPlanoAcao();
+  else resposta=iaResumoCampanha()+"
+
+Sugestão: você também pode perguntar sobre financeiro, base de apoio, agenda, município base ou pedir um plano de ação.";
+
+  iaAdicionarMensagem("bot",resposta);
+}
+
+function iaAnalisarCampanha(){
+  const box=document.getElementById("iaMensagens");
+  if(box) box.innerHTML="";
+  iaAdicionarMensagem("bot",iaResumoCampanha());
+  iaAdicionarMensagem("bot",iaPlanoAcao());
+}
+
 function renderInteligencia(){
-  const alerts=gerarAlertas();
-  const proj=projecaoTotal();
-  const perc=percentualMeta();
-  const ice=calcularICE();
-  textoInteligencia.textContent=`LEITURA ESTRATÉGICA\n\nÍndice de Competitividade Eleitoral: ${ice}\nMeta geral: ${n(db.meta)} votos\nProjeção atual: ${n(proj)} votos (${perc.toFixed(1).replace(".",",")}%)\nCusto estimado por voto: ${money(calcCustoVoto())}\nAlertas automáticos: ${alerts.length}\nRiscos críticos: ${alerts.filter(a=>a.tipo==="red").length}\n\nPrioridades automáticas:\n${alerts.slice(0,5).map(a=>"- "+a.titulo+": "+a.texto).join("\n")}`;
+  const d=iaDados();
+  const criticos=d.alerts.filter(a=>a.tipo==="red").length;
+  if(document.getElementById("iaMeta")) iaMeta.textContent=n(d.meta);
+  if(document.getElementById("iaProjecao")) iaProjecao.textContent=n(d.proj);
+  if(document.getElementById("iaCusto")) iaCusto.textContent=money(d.custo);
+  if(document.getElementById("iaCriticos")) iaCriticos.textContent=criticos;
+
+  const alertBox=document.getElementById("iaAlertas");
+  if(alertBox){
+    alertBox.innerHTML=d.alerts.slice(0,6).map(a=>`<div class="ia-note ${a.tipo}"><strong>${a.titulo}</strong><br>${a.texto}</div>`).join("");
+  }
+
+  const msg=document.getElementById("iaMensagens");
+  if(msg && msg.children.length===0){
+    iaAdicionarMensagem("bot","Olá. Eu sou a Inteligência GIE360. Posso analisar campanha, município, financeiro, base de apoio, agenda e sugerir plano de ação. Clique em 'Analisar Agora' ou faça uma pergunta.");
+  }
 }
 
 function renderRelatorio(){
@@ -1626,6 +1938,7 @@ function responderAjuda(){
 
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
+setTimeout(()=>{const ip=document.getElementById("iaPergunta"); if(ip){ip.addEventListener("keydown",e=>{if(e.key==="Enter")iaResponderPergunta();});}},500);
 
 migrarDadosAntigosSeNecessario();
 garantirAdminPadrao();
