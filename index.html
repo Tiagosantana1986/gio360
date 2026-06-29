@@ -300,7 +300,7 @@ p{color:#64748b}
 <main class="main">
 <header class="topbar">
   <div><strong id="tituloTopo">Painel Geral</strong><br><small>Gestão Inteligente Eleitoral</small></div>
-  <div class="top-actions"><span id="statusSave" class="saved"></span><button class="btn gold" onclick="salvarManual()">Salvar</button><button class="btn blue" onclick="sair()">Sair</button></div>
+  <div class="top-actions"><span id="statusSave" class="saved"></span><button class="btn gold" onclick="salvarManual()">Salvar</button><button class="btn light" onclick="atualizarSistema()">Atualizar</button><button class="btn blue" onclick="sair()">Sair</button></div>
 </header>
 
 <section class="content">
@@ -633,7 +633,7 @@ p{color:#64748b}
       <ul>
         <li>Não cadastre projeção sem fundamento.</li>
         <li>Atualize agenda e território com frequência.</li>
-        <li>Use os alertas para corrigir a operação.</li>
+        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li>
         <li>Não use o sistema para maquiar dados.</li>
       </ul>
     </div>
@@ -708,6 +708,18 @@ function garantirAdminPadrao(){
     db.usuarios.unshift({nome:"Administrador",login:"admin",senha:"123",perfil:"Administrador",pagamento:0,projecao:0});
     salvar();
   }
+}
+
+
+function atualizarSistema(){
+  salvar();
+
+  // Recalcula e redesenha todos os módulos interligados:
+  // Painel Geral, Financeiro, Território, Base de Apoio, Agenda, Inteligência, Relatórios e Impressões.
+  render();
+
+  statusSave.textContent="Sistema atualizado";
+  setTimeout(()=>statusSave.textContent="",1600);
 }
 
 function salvarManual(){salvar();render();statusSave.textContent="Salvo com sucesso";setTimeout(()=>statusSave.textContent="",1400);}
