@@ -392,6 +392,20 @@ p{color:#64748b}
 @media(max-width:1100px){.pro-grid,.pro-fields,.kanban{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.pro-grid,.pro-fields,.pro-fields.three,.pro-fields.two,.kanban,.help-grid{grid-template-columns:1fr}}
 
+
+/* RELATÓRIOS FIX - v2.3.2 */
+.report-box{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:24px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-top:20px}
+.report-title{color:#0b2e59;margin:0 0 6px;font-size:28px}
+.report-sub{color:#64748b;font-weight:700;margin-bottom:18px}
+.report-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.report-kpi{border:1px solid #e2e8f0;border-radius:18px;padding:15px;background:#f8fafc}
+.report-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}
+.report-kpi strong{display:block;margin-top:8px;font-size:24px;color:#0b2e59}
+.report-table{width:100%;border-collapse:collapse;margin-top:12px}
+.report-table th,.report-table td{border-bottom:1px solid #e5e7eb;padding:9px;text-align:left;font-size:12px}
+.report-table th{color:#0b2e59;text-transform:uppercase;font-size:10px}
+@media print{body *{visibility:hidden}.print-area,.print-area *{visibility:visible}.print-area{position:absolute;left:0;top:0;width:100%}.no-print{display:none!important}}
+
 </style>
 </head>
 
@@ -2674,6 +2688,111 @@ function renderUsuarios(){
     </tr>`;
   }).join(""):emptyRow(10,"Nenhum usuário cadastrado.");
 }
+
+
+/* RELATÓRIOS FUNCIONAIS - v2.3.2 */
+function relValor(id, padrao=""){
+  const el=document.getElementById(id);
+  return el ? el.value : padrao;
+}
+function relFiltroMunicipio(){
+  return relValor("relMunicipio","");
+}
+function relFiltroTipo(){
+  return relValor("relTipo","Raio-X Completo");
+}
+function relDataBR(d){
+  if(!d) return "-";
+  const p=String(d).split("-");
+  return p.length===3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+}
+function relDentroPeriodo(data,inicio,fim){
+  if(!data) return true;
+  if(inicio && data < inicio) return false;
+  if(fim && data > fim) return false;
+  return true;
+}
+function renderRelatorio(){
+  const alvo=document.getElementById("relatorioCompleto");
+  if(!alvo) return;
+
+  if(typeof preencherSelectsPro==="function") preencherSelectsPro();
+
+  const tipo=relFiltroTipo();
+  const mun=relFiltroMunicipio();
+  const inicio=relValor("relInicio","");
+  const fim=relValor("relFim","");
+
+  const pessoas=(db.pessoas||[]).filter(p=>(!mun||p.municipio===mun));
+  const usuarios=(db.usuarios||[]).filter(u=>(!mun||u.municipio===mun));
+  const municipios=(db.municipios||[]).filter(m=>(!mun||m.nome===mun));
+  const financeiro=(db.financeiro||[]).filter(f=>(!mun||f.municipio===mun)&&relDentroPeriodo(f.data,inicio,fim));
+  const agenda=(db.agenda||[]).filter(a=>(!mun||a.municipio===mun)&&relDentroPeriodo(a.data,inicio,fim));
+
+  const receita=financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despFin=financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despBase=pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
+  const despUsuarios=usuarios.reduce((s,u)=>s+Number(u.pagamento||0),0);
+  const despesa=despFin+despBase+despUsuarios;
+  const saldo=receita-despesa;
+  const proj=pessoas.reduce((s,p)=>s+Number(p.potencial||0),0);
+  const meta=municipios.reduce((s,m)=>s+Number(m.meta||0),0);
+  const custo=proj>0?despesa/proj:0;
+  const perc=meta>0?Math.min((proj/meta)*100,100):0;
+
+  const tabelaPessoas=pessoas.map(p=>`<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td>${p.funcao||"-"}</td><td>${p.municipio||"-"}</td><td>${p.regiao||p.bairro||"-"}</td><td>${n(p.potencial||0)}</td><td>${money(p.valor||0)}</td></tr>`).join("") || `<tr><td colspan="7">Nenhum cadastro encontrado.</td></tr>`;
+  const tabelaFinanceiro=financeiro.map(f=>`<tr><td>${relDataBR(f.data)}</td><td>${f.tipo||"-"}</td><td>${f.categoria||"-"}</td><td>${f.descricao||"-"}</td><td>${f.municipio||"-"}</td><td>${f.status||"-"}</td><td>${money(f.valor||0)}</td></tr>`).join("") || `<tr><td colspan="7">Nenhum lançamento encontrado.</td></tr>`;
+  const tabelaAgenda=agenda.map(a=>`<tr><td>${relDataBR(a.data)}</td><td>${a.hora||"-"}</td><td>${a.tipo||"-"}</td><td>${a.municipio||"-"}</td><td>${a.local||"-"}</td><td>${a.status||"-"}</td></tr>`).join("") || `<tr><td colspan="6">Nenhuma agenda encontrada.</td></tr>`;
+  const tabelaUsuarios=usuarios.map(u=>`<tr><td>${u.nome||"-"}</td><td>${u.telefone||"-"}</td><td>${u.perfil||"-"}</td><td>${u.municipio||"-"}</td><td>${u.status||"Ativo"}</td><td>${money(u.pagamento||0)}</td><td>${n(u.projecao||0)}</td></tr>`).join("") || `<tr><td colspan="7">Nenhum usuário encontrado.</td></tr>`;
+
+  let blocos="";
+  if(tipo==="Raio-X Completo" || tipo==="Base de Apoio"){
+    blocos += `<h2>Base de Apoio</h2><table class="report-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Potencial</th><th>Valor</th></tr></thead><tbody>${tabelaPessoas}</tbody></table>`;
+  }
+  if(tipo==="Raio-X Completo" || tipo==="Financeiro"){
+    blocos += `<h2>Financeiro</h2><table class="report-table"><thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Município</th><th>Status</th><th>Valor</th></tr></thead><tbody>${tabelaFinanceiro}</tbody></table>`;
+  }
+  if(tipo==="Raio-X Completo" || tipo==="Agenda"){
+    blocos += `<h2>Agenda</h2><table class="report-table"><thead><tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Local</th><th>Status</th></tr></thead><tbody>${tabelaAgenda}</tbody></table>`;
+  }
+  if(tipo==="Raio-X Completo" || tipo==="Usuários"){
+    blocos += `<h2>Usuários</h2><table class="report-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Perfil</th><th>Município</th><th>Status</th><th>Pagamento</th><th>Projeção</th></tr></thead><tbody>${tabelaUsuarios}</tbody></table>`;
+  }
+  if(tipo==="Território"){
+    const tabelaMun=municipios.map(m=>`<tr><td>${m.nome||"-"}</td><td>${m.estado||"PR"}</td><td>${n(m.eleitores||0)}</td><td>${n(m.meta||0)}</td><td>${n((db.pessoas||[]).filter(p=>p.municipio===m.nome).reduce((s,p)=>s+Number(p.potencial||0),0))}</td></tr>`).join("") || `<tr><td colspan="5">Nenhum município encontrado.</td></tr>`;
+    blocos += `<h2>Território</h2><table class="report-table"><thead><tr><th>Município</th><th>Estado</th><th>Eleitores</th><th>Meta</th><th>Projeção</th></tr></thead><tbody>${tabelaMun}</tbody></table>`;
+  }
+
+  alvo.innerHTML=`
+    <div class="report-box">
+      <h1 class="report-title">Relatório GIE360</h1>
+      <div class="report-sub">
+        Tipo: <strong>${tipo}</strong> | Município: <strong>${mun||"Todos"}</strong> | Período: <strong>${relDataBR(inicio)} a ${relDataBR(fim)}</strong>
+      </div>
+      <div class="report-kpis">
+        <div class="report-kpi"><span>Receitas</span><strong>${money(receita)}</strong></div>
+        <div class="report-kpi"><span>Despesas</span><strong>${money(despesa)}</strong></div>
+        <div class="report-kpi"><span>Saldo</span><strong>${money(saldo)}</strong></div>
+        <div class="report-kpi"><span>Projeção</span><strong>${n(proj)}</strong></div>
+        <div class="report-kpi"><span>Meta</span><strong>${n(meta)}</strong></div>
+        <div class="report-kpi"><span>% da Meta</span><strong>${perc.toFixed(1).replace(".",",")}%</strong></div>
+        <div class="report-kpi"><span>Custo/Voto</span><strong>${money(custo)}</strong></div>
+        <div class="report-kpi"><span>Agendas</span><strong>${n(agenda.length)}</strong></div>
+      </div>
+      ${blocos}
+    </div>`;
+}
+function gerarRelatorio(){
+  renderRelatorio();
+  const alvo=document.getElementById("relatorioCompleto");
+  if(!alvo || !alvo.innerHTML.trim()){
+    alert("Não foi possível gerar o relatório. Verifique os filtros e tente novamente.");
+    return;
+  }
+  setTimeout(()=>window.print(),200);
+}
+function imprimirRelatorio(){gerarRelatorio();}
+function gerarRelatorioTela(){renderRelatorio();}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
