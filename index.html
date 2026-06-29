@@ -359,6 +359,39 @@ p{color:#64748b}
 @media(max-width:1100px){.user-form-grid,.user-form-grid.three{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.user-form-grid,.user-form-grid.three{grid-template-columns:1fr}}
 
+
+/* EVOLUÇÃO PROFISSIONAL DAS ABAS - v2.3.0 */
+.pro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.pro-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 12px 28px rgba(15,23,42,.07)}
+.pro-card span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900}
+.pro-card strong{display:block;margin-top:8px;font-size:28px;color:#0b2e59}
+.pro-card.green strong{color:#16a34a}.pro-card.red strong{color:#dc2626}.pro-card.gold strong{color:#b77900}.pro-card.orange strong{color:#f97316}
+.pro-form{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:22px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:20px}
+.pro-form h3{margin:0 0 14px;color:#0b2e59}
+.pro-section-title{margin:18px 0 12px;color:#0b2e59;font-weight:900;border-left:5px solid #f2b300;padding-left:10px}
+.pro-fields{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pro-fields.three{grid-template-columns:repeat(3,1fr)}
+.pro-fields.two{grid-template-columns:repeat(2,1fr)}
+.pro-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900;margin-bottom:6px}
+.pro-field input,.pro-field select,.pro-field textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#0f172a;font-weight:700}
+.pro-field textarea{min-height:72px;resize:vertical}
+.pro-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:18px}
+.pro-table-card{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);overflow:auto;margin-bottom:20px}
+.pro-table{width:100%;border-collapse:collapse}
+.pro-table th,.pro-table td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}
+.pro-table th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+.pro-badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#eff6ff;color:#0b2e59}
+.pro-badge.green{background:#dcfce7;color:#166534}.pro-badge.red{background:#fee2e2;color:#991b1b}.pro-badge.gold{background:#fef3c7;color:#92400e}.pro-badge.blue{background:#dbeafe;color:#1e3a8a}
+.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kanban-col{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px;min-height:160px}
+.kanban-col h3{margin:0 0 12px;color:#0b2e59}
+.kanban-item{background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 6px 14px rgba(15,23,42,.05)}
+.help-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.help-card{background:#fff;border:1px solid #dbe3ef;border-radius:20px;padding:18px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.help-card h3{margin-top:0;color:#0b2e59}
+@media(max-width:1100px){.pro-grid,.pro-fields,.kanban{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.pro-grid,.pro-fields,.pro-fields.three,.pro-fields.two,.kanban,.help-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -398,6 +431,7 @@ p{color:#64748b}
     <button data-page="imprimirAgenda" data-roles="Administrador,Operador,Liderança" onclick="openPage('imprimirAgenda',this)"><span>🖨️</span>Imprimir Agenda</button>
     <button data-page="inteligencia" data-roles="Administrador,Operador" onclick="openPage('inteligencia',this)"><span>🧠</span>Inteligência</button>
     <button data-page="relatorios" data-roles="Administrador,Operador" onclick="openPage('relatorios',this)"><span>📊</span>Relatórios</button>
+    <button data-page="banco" data-roles="Administrador,Operador,Liderança" onclick="openPage('banco',this)"><span>🗂️</span>Banco de Dados</button>
     <button data-page="usuarios" data-roles="Administrador" onclick="openPage('usuarios',this)"><span>⚙️</span>Usuários</button>
     <button data-page="ajuda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('ajuda',this)"><span>📖</span>Central de Ajuda</button>
   </nav>
@@ -538,20 +572,93 @@ p{color:#64748b}
 </section>
 
 <section id="financeiro" class="page">
-  <div class="page-head"><div><h1>Financeiro</h1><p>Administrador visualiza tudo. Demais perfis visualizam somente o financeiro vinculado ao próprio login.</p></div><button id="btnAddFinanceiro" class="btn gold" onclick="addFinanceiro()">+ Lançamento</button></div>
-  <div class="grid">
-    <div class="card kpi green"><span>Receitas</span><strong id="finReceitas">R$ 0,00</strong></div>
-    <div class="card kpi red"><span>Despesas</span><strong id="finDespesas">R$ 0,00</strong></div>
-    <div class="card kpi gold"><span>Saldo</span><strong id="finSaldo">R$ 0,00</strong></div>
-    <div class="card kpi"><span>Custo/Voto</span><strong id="finCustoVoto">R$ 0,00</strong></div>
+  <div class="page-head">
+    <div>
+      <h1>Financeiro</h1>
+      <p>Centro financeiro da campanha: receitas, despesas, previsão, pagamento, competência e custo por voto.</p>
+    </div>
   </div>
-  <div class="card table-wrap"><table class="table"><thead><tr><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Município</th><th>Usuário vinculado</th><th>Valor</th><th>Ação</th></tr></thead><tbody id="listaFinanceiro"></tbody></table></div>
+
+  <div class="pro-grid">
+    <div class="pro-card green"><span>Receitas</span><strong id="finDashReceita">R$ 0,00</strong></div>
+    <div class="pro-card red"><span>Despesas</span><strong id="finDashDespesa">R$ 0,00</strong></div>
+    <div class="pro-card green"><span>Saldo</span><strong id="finDashSaldo">R$ 0,00</strong></div>
+    <div class="pro-card orange"><span>Custo por Voto</span><strong id="finDashCusto">R$ 0,00</strong></div>
+  </div>
+
+  <div class="pro-form">
+    <h3>Novo Lançamento Financeiro</h3>
+    <div class="pro-section-title">Dados do lançamento</div>
+    <div class="pro-fields">
+      <div class="pro-field"><label>Data</label><input id="finData" type="date"></div>
+      <div class="pro-field"><label>Competência</label><input id="finCompetencia" type="month"></div>
+      <div class="pro-field"><label>Tipo</label><select id="finTipo"><option value="receita">Receita</option><option value="despesa">Despesa</option></select></div>
+      <div class="pro-field"><label>Categoria</label><select id="finCategoria"><option>Administrativa</option><option>Pessoal</option><option>Campanha</option><option>Reunião</option><option>Material gráfico</option><option>Transporte</option><option>Comunicação</option><option>Outros</option></select></div>
+      <div class="pro-field"><label>Município</label><select id="finMunicipio"></select></div>
+      <div class="pro-field"><label>Usuário vinculado</label><select id="finUsuario"></select></div>
+      <div class="pro-field"><label>Forma de pagamento</label><select id="finForma"><option>PIX</option><option>Dinheiro</option><option>Transferência</option><option>Boleto</option><option>Cartão</option><option>Outros</option></select></div>
+      <div class="pro-field"><label>Status</label><select id="finStatus"><option>Pago</option><option>Pendente</option><option>Previsto</option><option>Cancelado</option></select></div>
+      <div class="pro-field"><label>Valor</label><input id="finValor" type="number" value="0"></div>
+      <div class="pro-field" style="grid-column:span 3"><label>Descrição</label><input id="finDescricao" placeholder="Descreva o lançamento"></div>
+    </div>
+    <div class="pro-actions">
+      <button class="btn light" onclick="limparFormularioFinanceiro()">Limpar</button>
+      <button class="btn gold" onclick="salvarFormularioFinanceiro()">Salvar Lançamento</button>
+    </div>
+  </div>
+
+  <div class="pro-table-card">
+    <h3>Lançamentos Financeiros</h3>
+    <table class="pro-table">
+      <thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Município</th><th>Usuário</th><th>Forma</th><th>Status</th><th>Valor</th><th>Ação</th></tr></thead>
+      <tbody id="listaFinanceiro"></tbody>
+    </table>
+  </div>
 </section>
 
 <section id="territorio" class="page">
-  <div class="page-head"><div><h1>Território</h1><p>O município é cadastro central: cadastre município, população, eleitores e meta. A projeção oficial de votos virá exclusivamente da Base de Apoio.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn gold" onclick="addMunicipio()">+ Município</button><button class="btn blue" onclick="addRegiao()">+ Região/Bairro</button></div></div>
-  <div class="card table-wrap"><h3>Municípios</h3><table class="table"><thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th><th>Ação</th></tr></thead><tbody id="listaMunicipios"></tbody></table></div>
-  <div class="card table-wrap"><h3>Regiões / Bairros Operacionais</h3><table class="table"><thead><tr><th>Município</th><th>Região/Bairro</th><th>Responsável</th><th>Meta</th><th>Projeção</th><th>Prioridade</th><th>Status automático</th><th>Ação</th></tr></thead><tbody id="listaRegioes"></tbody></table></div>
+  <div class="page-head">
+    <div>
+      <h1>Território</h1>
+      <p>Gestão de municípios, regiões, bairros, responsáveis e metas territoriais.</p>
+    </div>
+  </div>
+
+  <div class="pro-form">
+    <h3>Novo Município</h3>
+    <div class="pro-fields">
+      <div class="pro-field"><label>Município</label><input id="terMunNome"></div>
+      <div class="pro-field"><label>Estado</label><input id="terMunEstado" value="PR"></div>
+      <div class="pro-field"><label>População</label><input id="terMunPop" type="number" value="0"></div>
+      <div class="pro-field"><label>Eleitores</label><input id="terMunEleitores" type="number" value="0"></div>
+      <div class="pro-field"><label>Meta de votos</label><input id="terMunMeta" type="number" value="0"></div>
+      <div class="pro-field" style="grid-column:span 3"><label>Observações</label><input id="terMunObs"></div>
+    </div>
+    <div class="pro-actions"><button class="btn gold" onclick="salvarFormularioMunicipio()">Salvar Município</button></div>
+  </div>
+
+  <div class="pro-form">
+    <h3>Nova Região / Bairro</h3>
+    <div class="pro-fields">
+      <div class="pro-field"><label>Município</label><select id="terRegMunicipio"></select></div>
+      <div class="pro-field"><label>Região/Bairro</label><input id="terRegNome"></div>
+      <div class="pro-field"><label>Responsável</label><select id="terRegResp"></select></div>
+      <div class="pro-field"><label>Prioridade</label><select id="terRegPrioridade"><option>Baixa</option><option selected>Média</option><option>Alta</option><option>Crítica</option></select></div>
+      <div class="pro-field"><label>Meta</label><input id="terRegMeta" type="number" value="0"></div>
+      <div class="pro-field"><label>Projeção</label><input id="terRegProj" type="number" value="0"></div>
+      <div class="pro-field" style="grid-column:span 2"><label>Observações</label><input id="terRegObs"></div>
+    </div>
+    <div class="pro-actions"><button class="btn gold" onclick="salvarFormularioRegiao()">Salvar Região</button></div>
+  </div>
+
+  <div class="pro-table-card">
+    <h3>Municípios Cadastrados</h3>
+    <table class="pro-table"><thead><tr><th>Município</th><th>Estado</th><th>População</th><th>Eleitores</th><th>Meta</th><th>Projeção</th><th>%</th><th>Ação</th></tr></thead><tbody id="listaMunicipios"></tbody></table>
+  </div>
+  <div class="pro-table-card">
+    <h3>Regiões / Bairros</h3>
+    <table class="pro-table"><thead><tr><th>Município</th><th>Região</th><th>Responsável</th><th>Meta</th><th>Projeção</th><th>Prioridade</th><th>Ação</th></tr></thead><tbody id="listaRegioes"></tbody></table>
+  </div>
 </section>
 
 <section id="base" class="page">
@@ -617,60 +724,35 @@ p{color:#64748b}
   <div class="page-head">
     <div>
       <h1>Agenda</h1>
-      <p>Apoiador preenche a agenda e clica em Enviar Solicitação. Depois disso, o administrador confirma ou recusa.</p>
+      <p>Solicitações, compromissos oficiais, reuniões, visitas e eventos da campanha.</p>
     </div>
-    <button class="btn gold" onclick="addAgenda()">+ Solicitar Agenda</button>
   </div>
 
-  <div class="grid">
-    <div class="card kpi gold"><span>Solicitações Pendentes</span><strong id="agendaPendentes">0</strong><small>aguardando decisão</small></div>
-    <div class="card kpi green"><span>Agendas Confirmadas</span><strong id="agendaConfirmadas">0</strong><small>agenda oficial</small></div>
-    <div class="card kpi red"><span>Solicitações Recusadas</span><strong id="agendaRecusadas">0</strong><small>histórico de recusas</small></div>
-    <div class="card kpi"><span>Realizadas</span><strong id="agendaRealizadas">0</strong><small>compromissos executados</small></div>
+  <div class="pro-form">
+    <h3>Nova Agenda</h3>
+    <div class="pro-fields">
+      <div class="pro-field"><label>Data</label><input id="agData" type="date"></div>
+      <div class="pro-field"><label>Hora</label><input id="agHora" type="time"></div>
+      <div class="pro-field"><label>Tipo</label><select id="agTipo"><option>Reunião</option><option>Visita</option><option>Evento</option><option>Carreata</option><option>Live</option><option>Outros</option></select></div>
+      <div class="pro-field"><label>Status</label><select id="agStatus"><option>Pendente</option><option>Confirmado</option><option>Realizado</option><option>Recusado</option><option>Cancelado</option></select></div>
+      <div class="pro-field"><label>Município</label><select id="agMunicipio"></select></div>
+      <div class="pro-field"><label>Região/Bairro</label><input id="agRegiao"></div>
+      <div class="pro-field" style="grid-column:span 2"><label>Local</label><input id="agLocal"></div>
+      <div class="pro-field" style="grid-column:span 4"><label>Descrição</label><textarea id="agDescricao"></textarea></div>
+    </div>
+    <div class="pro-actions"><button class="btn gold" onclick="salvarFormularioAgenda()">Salvar Agenda</button></div>
   </div>
 
-  <div class="card table-wrap">
-    <h3>Solicitação de Agenda</h3>
-    <p>Pedidos feitos pelos usuários. O apoiador usa o botão Enviar Solicitação para confirmar o envio ao administrador.</p>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Solicitante</th>
-          <th>Data</th>
-          <th>Hora</th>
-          <th>Tipo</th>
-          <th>Município</th>
-          <th>Região</th>
-          <th>Local</th>
-          <th>Descrição</th>
-          <th>Status</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="listaSolicitacoesAgenda"></tbody>
-    </table>
+  <div class="kanban">
+    <div class="kanban-col"><h3>Pendentes</h3><div id="agPendentes"></div></div>
+    <div class="kanban-col"><h3>Confirmadas</h3><div id="agConfirmadas"></div></div>
+    <div class="kanban-col"><h3>Realizadas</h3><div id="agRealizadas"></div></div>
+    <div class="kanban-col"><h3>Recusadas/Canceladas</h3><div id="agOutras"></div></div>
   </div>
 
-  <div class="card table-wrap">
-    <h3>Agenda Confirmada</h3>
-    <p>Agenda oficial da campanha. Não permite edição dos dados; apenas alteração de status pelo administrador.</p>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Hora</th>
-          <th>Tipo</th>
-          <th>Município</th>
-          <th>Região</th>
-          <th>Local</th>
-          <th>Responsável</th>
-          <th>Status</th>
-          <th>Descrição</th>
-          <th>Ação</th>
-        </tr>
-      </thead>
-      <tbody id="listaAgendaConfirmada"></tbody>
-    </table>
+  <div class="pro-table-card" style="margin-top:20px">
+    <h3>Agenda Completa</h3>
+    <table class="pro-table"><thead><tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Local</th><th>Status</th><th>Ações</th></tr></thead><tbody id="listaAgenda"></tbody></table>
   </div>
 </section>
 
@@ -724,8 +806,28 @@ p{color:#64748b}
 </section>
 
 <section id="relatorios" class="page">
-  <div class="page-head"><div><h1>Relatórios</h1><p>Relatório executivo profissional com interpretação dos dados.</p></div><button class="btn gold" onclick="gerarRelatorio()">Gerar PDF / Imprimir</button></div>
-  <div id="relatorio" class="report"></div>
+  <div class="page-head">
+    <div>
+      <h1>Relatórios</h1>
+      <p>Gere um raio-x completo da campanha com filtros e impressão.</p>
+    </div>
+  </div>
+
+  <div class="pro-form">
+    <h3>Gerador de Relatórios</h3>
+    <div class="pro-fields">
+      <div class="pro-field"><label>Tipo de relatório</label><select id="relTipo"><option>Raio-X Completo</option><option>Financeiro</option><option>Base de Apoio</option><option>Território</option><option>Agenda</option><option>Usuários</option></select></div>
+      <div class="pro-field"><label>Município</label><select id="relMunicipio"></select></div>
+      <div class="pro-field"><label>Data inicial</label><input id="relInicio" type="date"></div>
+      <div class="pro-field"><label>Data final</label><input id="relFim" type="date"></div>
+    </div>
+    <div class="pro-actions">
+      <button class="btn light" onclick="renderRelatorio()">Atualizar Prévia</button>
+      <button class="btn gold" onclick="gerarRelatorio()">Imprimir / PDF</button>
+    </div>
+  </div>
+
+  <div id="relatorioCompleto" class="print-area"></div>
 </section>
 
 
@@ -733,157 +835,46 @@ p{color:#64748b}
   <div class="page-head">
     <div>
       <h1>Central de Ajuda</h1>
-      <p>Manual interno do GIE360: entenda cada módulo, cada indicador e como utilizar o sistema na prática.</p>
+      <p>Manual rápido de uso do GIE360 por módulo e por perfil.</p>
     </div>
   </div>
-
-  <div class="assistant-box">
-    <h3>🤖 Assistente GIE360</h3>
-    <p>Digite uma dúvida rápida sobre o sistema. Esta versão responde com base nas regras internas do GIE360.</p>
-    <div class="assistant-question">
-      <input id="perguntaAjuda" placeholder="Exemplo: como funciona o custo por voto?">
-      <button class="btn gold" onclick="responderAjuda()">Perguntar</button>
-    </div>
-    <div id="respostaAjuda" class="assistant-answer">Faça uma pergunta sobre Painel, Financeiro, Território, Base de Apoio, Agenda, Inteligência, Relatórios ou Usuários.</div>
-  </div>
-
   <div class="help-grid">
-    <div class="help-card">
-      <span class="help-badge">Introdução</span>
-      <h3>O que é o GIE360?</h3>
-      <p>O GIE360 significa <strong>Gestão Inteligente Eleitoral</strong>. Ele foi criado para organizar uma campanha eleitoral com dados, metas, agenda, equipe, financeiro e inteligência.</p>
-      <ul>
-        <li>Centraliza informações da campanha.</li>
-        <li>Ajuda o coordenador a tomar decisões.</li>
-        <li>Gera alertas automáticos com base nos dados.</li>
-      </ul>
-    </div>
+    <div class="help-card"><h3>Painel Geral</h3><p>Use o Município Base para filtrar todos os dados do painel. A visão geral soma todos os municípios.</p></div>
+    <div class="help-card"><h3>Financeiro</h3><p>Cadastre receitas e despesas com data, competência, status, forma de pagamento e município.</p></div>
+    <div class="help-card"><h3>Base de Apoio</h3><p>Cadastre pessoas com telefone, função, potencial de votos, responsável, origem e influência.</p></div>
+    <div class="help-card"><h3>Agenda</h3><p>Organize reuniões, visitas e eventos por status: pendente, confirmado, realizado, recusado ou cancelado.</p></div>
+    <div class="help-card"><h3>Relatórios</h3><p>Gere um raio-x completo da campanha e use imprimir para salvar em PDF.</p></div>
+    <div class="help-card"><h3>Banco de Dados</h3><p>Monte listas filtradas por fonte, município, função, perfil, status ou busca por nome/telefone.</p></div>
+  </div>
+</section>
 
-    <div class="help-card">
-      <span class="help-badge">Perfis</span>
-      <h3>Login e perfis de acesso</h3>
-      <p>O sistema possui quatro perfis principais:</p>
-      <ul>
-        <li><strong>Administrador:</strong> acessa tudo e confirma agendas.</li>
-        <li><strong>Operador:</strong> acessa Meu Perfil, Território, Base de Apoio, Agenda, Imprimir Agenda, Inteligência, Relatórios e Central de Ajuda.</li>
-        <li><strong>Liderança:</strong> acessa Meu Perfil, Território, Base de Apoio, Agenda, Imprimir Agenda e Central de Ajuda.</li>
-        <li><strong>Apoiador:</strong> acessa Meu Perfil, Base de Apoio, Agenda e Central de Ajuda.</li>
-      </ul>
-    </div>
 
-    <div class="help-card">
-      <span class="help-badge">Painel</span>
-      <h3>Painel Geral</h3>
-      <p>É a tela principal do sistema. Mostra meta, projeção, custo por voto, riscos e o Índice de Competitividade Eleitoral.</p>
-      <ul>
-        <li>A meta geral define o objetivo de votos.</li>
-        <li>A projeção mostra o projeção de votos cadastrado.</li>
-        <li>Os alertas mostram riscos e oportunidades.</li>
-      </ul>
+<section id="banco" class="page">
+  <div class="page-head">
+    <div>
+      <h1>Banco de Dados</h1>
+      <p>Gere listas completas dos cadastros da campanha para consulta, impressão ou cópia.</p>
     </div>
+  </div>
 
-    <div class="help-card">
-      <span class="help-badge">Indicador</span>
-      <h3>Índice de Competitividade Eleitoral</h3>
-      <p>É um indicador de 0 a 100 que mede a saúde da campanha. Ele considera meta, território, agenda, base de apoio e eficiência financeira.</p>
-      <ul>
-        <li>0 a 39: campanha crítica.</li>
-        <li>40 a 59: campanha em atenção.</li>
-        <li>60 a 79: campanha competitiva.</li>
-        <li>80 a 100: campanha forte.</li>
-      </ul>
+  <div class="pro-form">
+    <h3>Filtros da Lista</h3>
+    <div class="pro-fields">
+      <div class="pro-field"><label>Fonte</label><select id="bdFonte"><option value="pessoas">Base de Apoio</option><option value="usuarios">Usuários</option><option value="financeiro">Financeiro</option><option value="agenda">Agenda</option><option value="municipios">Municípios</option></select></div>
+      <div class="pro-field"><label>Município</label><select id="bdMunicipio"></select></div>
+      <div class="pro-field"><label>Função/Perfil/Status</label><input id="bdFiltro" placeholder="Ex: Apoiador, Liderança, Ativo"></div>
+      <div class="pro-field"><label>Busca por nome/telefone</label><input id="bdBusca" placeholder="Digite para buscar"></div>
     </div>
+    <div class="pro-actions">
+      <button class="btn light" onclick="limparBancoDados()">Limpar</button>
+      <button class="btn gold" onclick="renderBancoDados()">Gerar Lista</button>
+      <button class="btn blue" onclick="imprimirBancoDados()">Imprimir Lista</button>
+    </div>
+  </div>
 
-    <div class="help-card">
-      <span class="help-badge">Financeiro</span>
-      <h3>Financeiro</h3>
-      <p>Controla receitas e despesas. As categorias já aparecem em lista conforme o tipo do lançamento.</p>
-      <ul>
-        <li>Administrador visualiza tudo.</li>
-        <li>Usuários comuns visualizam apenas valores vinculados ao próprio login.</li>
-        <li>O custo por voto é calculado automaticamente.</li><li>Receita Geral e Despesa Geral do Painel são preenchidas automaticamente pelo Financeiro.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Território</span>
-      <h3>Território</h3>
-      <p>Organiza municípios, regiões e bairros. O objetivo não é apenas cadastrar locais, mas medir meta, projeção e prioridade.</p>
-      <ul>
-        <li>Municípios possuem população, eleitores e meta.</li><li>Após cadastrar um município, ele aparece automaticamente nas demais abas.</li>
-        <li>Regiões e bairros possuem responsável.</li>
-        <li>O sistema classifica territórios automaticamente.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Base</span>
-      <h3>Base de Apoio</h3>
-      <p>Cadastro de lideranças, apoiadores, cabos eleitorais e coordenadores.</p>
-      <ul>
-        <li>Define projeção de votos por pessoa.</li>
-        <li>Registra telefone, município, região, Projeção de Votos e valor mensal quando houver custo.</li>
-        <li>Permite organizar a árvore de apoio e possíveis eleitores.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Agenda</span>
-      <h3>Agenda</h3>
-      <p>Todos podem solicitar uma agenda, mas somente o administrador confirma.</p>
-      <ul>
-        <li><strong>Pendente:</strong> aguardando aprovação.</li>
-        <li><strong>Confirmado:</strong> entrou na agenda oficial.</li>
-        <li><strong>Realizado:</strong> compromisso executado.</li>
-        <li><strong>Cancelado/Recusado:</strong> compromisso não validado.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Inteligência</span>
-      <h3>Inteligência</h3>
-      <p>A Inteligência interpreta os dados cadastrados e gera leitura estratégica automática.</p>
-      <ul>
-        <li>Identifica riscos críticos.</li>
-        <li>Aponta custos altos.</li>
-        <li>Mostra territórios fracos.</li>
-        <li>Indica pendências de agenda.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Relatórios</span>
-      <h3>Relatórios</h3>
-      <p>Gera relatório executivo com indicadores principais e leitura automática.</p>
-      <ul>
-        <li>Pode ser impresso ou salvo em PDF.</li>
-        <li>Resume meta, projeção, custo por voto e alertas.</li>
-        <li>Ajuda na prestação de contas gerencial da campanha.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Usuários</span>
-      <h3>Usuários</h3>
-      <p>Área exclusiva do administrador para cadastrar acessos e permissões.</p>
-      <ul>
-        <li>Define login e senha.</li>
-        <li>Define perfil de acesso.</li>
-        <li>Permite lançar pagamento e projeção individual.</li>
-      </ul>
-    </div>
-
-    <div class="help-card">
-      <span class="help-badge">Boas práticas</span>
-      <h3>Como usar corretamente</h3>
-      <p>O GIE360 funciona melhor quando os dados são alimentados com responsabilidade.</p>
-      <ul>
-        <li>Não cadastre projeção sem fundamento.</li>
-        <li>Atualize agenda e território com frequência.</li>
-        <li>Use os alertas para corrigir a operação.</li><li>Use o botão Atualizar para recalcular todos os módulos interligados após cadastros e alterações.</li>
-        <li>Não use o sistema para maquiar dados.</li>
-      </ul>
-    </div>
+  <div class="pro-table-card">
+    <h3>Resultado</h3>
+    <div id="bdResultado"></div>
   </div>
 </section>
 
@@ -1403,6 +1394,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{preencherSelectsPro();}catch(e){}
   try{garantirCamposAvancados();}catch(e){console.error('Campos avançados:',e);}
   try{atualizarSelectMunicipioBase();}catch(e){console.error('Select Município Base:',e);}
   try{renderPainelExecutivo();}catch(e){console.error('Painel Executivo:',e);}
@@ -2466,6 +2458,100 @@ function renderUsuarios(){
     const perfilCls=(u.perfil||"")==="Administrador"?"gold":"";
     return `<tr><td><strong>${u.nome||"-"}</strong><br><small>${u.email||""}</small></td><td>${u.telefone||"-"}</td><td>${u.municipio||"-"}<br><small>${u.regiao||""}</small></td><td>${u.login||"-"}</td><td><span class="user-badge ${perfilCls}">${u.perfil||"-"}</span></td><td><span class="user-badge ${statusCls}">${u.status||"Ativo"}</span></td><td>${money(u.pagamento||0)}</td><td>${n(u.projecao||0)}</td><td>${custo>0?money(custo):"R$ 0,00"}</td><td><button class="action-mini red" onclick="delItem('usuarios',${i})">Excluir</button></td></tr>`;
   }).join(""):emptyRow(10,"Nenhum usuário cadastrado.");
+}
+
+
+/* EVOLUÇÃO PROFISSIONAL DAS ABAS - v2.3.0 */
+function proMunicipioOptions(selValue=""){
+  return '<option value="">Todos/Selecione</option>'+(db.municipios||[]).map(m=>`<option value="${m.nome||""}" ${selValue===(m.nome||"")?"selected":""}>${m.nome||"Município sem nome"}</option>`).join("");
+}
+function proUsuarioOptions(selValue=""){
+  return '<option value="">Nenhum</option>'+(db.usuarios||[]).map(u=>{const nome=u.nome||u.login||"";return `<option value="${nome}" ${selValue===nome?"selected":""}>${nome}</option>`}).join("");
+}
+function preencherSelectsPro(){
+  ["finMunicipio","terRegMunicipio","agMunicipio","relMunicipio","bdMunicipio"].forEach(id=>{const el=document.getElementById(id); if(el){const v=el.value; el.innerHTML=proMunicipioOptions(v); if(v) el.value=v;}});
+  ["finUsuario","terRegResp"].forEach(id=>{const el=document.getElementById(id); if(el){const v=el.value; el.innerHTML=proUsuarioOptions(v); if(v) el.value=v;}});
+}
+function limparFormularioFinanceiro(){["finData","finCompetencia","finDescricao","finValor"].forEach(id=>{const e=document.getElementById(id); if(e)e.value=id==="finValor"?0:"";});}
+function salvarFormularioFinanceiro(){
+  db.financeiro=db.financeiro||[];
+  db.financeiro.push({id:uid(),data:finData?.value||"",competencia:finCompetencia?.value||"",tipo:finTipo?.value||"despesa",categoria:finCategoria?.value||"Administrativa",descricao:finDescricao?.value||"",municipio:finMunicipio?.value||"",usuarioLogin:finUsuario?.value||"",forma:finForma?.value||"",status:finStatus?.value||"Pago",valor:Number(finValor?.value||0)});
+  salvar();limparFormularioFinanceiro();render();
+}
+function renderFinanceiro(){
+  if(!document.getElementById("listaFinanceiro")) return;
+  preencherSelectsPro();
+  const rec=(db.financeiro||[]).filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const desp=typeof despesasTotal==="function"?despesasTotal():(db.financeiro||[]).filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const proj=typeof projecaoTotal==="function"?projecaoTotal():0;
+  if(finDashReceita) finDashReceita.textContent=money(rec);
+  if(finDashDespesa) finDashDespesa.textContent=money(desp);
+  if(finDashSaldo) finDashSaldo.textContent=money(rec-desp);
+  if(finDashCusto) finDashCusto.textContent=proj?money(desp/proj):"R$ 0,00";
+  listaFinanceiro.innerHTML=(db.financeiro||[]).length?(db.financeiro||[]).map((f,i)=>`<tr><td>${f.data||"-"}</td><td><span class="pro-badge ${f.tipo==="receita"?"green":"red"}">${f.tipo}</span></td><td>${f.categoria||"-"}</td><td>${f.descricao||"-"}</td><td>${f.municipio||"-"}</td><td>${f.usuarioLogin||"-"}</td><td>${f.forma||"-"}</td><td>${f.status||"-"}</td><td>${money(f.valor||0)}</td><td><button class="action-mini red" onclick="delItem('financeiro',${i})">Excluir</button></td></tr>`).join(""):emptyRow(10,"Nenhum lançamento financeiro.");
+}
+function salvarFormularioMunicipio(){
+  db.municipios=db.municipios||[];
+  db.municipios.push({id:uid(),nome:terMunNome?.value||"",estado:terMunEstado?.value||"PR",populacao:Number(terMunPop?.value||0),eleitores:Number(terMunEleitores?.value||0),meta:Number(terMunMeta?.value||0),observacoes:terMunObs?.value||""});
+  salvar();["terMunNome","terMunObs"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});render();
+}
+function salvarFormularioRegiao(){
+  db.regioes=db.regioes||[];
+  db.regioes.push({id:uid(),municipio:terRegMunicipio?.value||"",nome:terRegNome?.value||"",responsavel:terRegResp?.value||"",meta:Number(terRegMeta?.value||0),projecao:Number(terRegProj?.value||0),prioridade:terRegPrioridade?.value||"Média",observacoes:terRegObs?.value||""});
+  salvar();render();
+}
+function renderTerritorio(){
+  if(!document.getElementById("listaMunicipios")) return;
+  preencherSelectsPro();
+  listaMunicipios.innerHTML=(db.municipios||[]).length?(db.municipios||[]).map((m,i)=>{const proj=(db.pessoas||[]).filter(p=>p.municipio===m.nome).reduce((s,p)=>s+Number(p.potencial||0),0);const meta=Number(m.meta||0);const perc=meta?Math.min((proj/meta)*100,100):0;return `<tr><td>${m.nome||"-"}</td><td>${m.estado||"PR"}</td><td>${n(m.populacao||0)}</td><td>${n(m.eleitores||0)}</td><td>${n(meta)}</td><td>${n(proj)}</td><td>${perc.toFixed(1).replace(".",",")}%</td><td><button class="action-mini red" onclick="delItem('municipios',${i})">Excluir</button></td></tr>`}).join(""):emptyRow(8,"Nenhum município cadastrado.");
+  if(document.getElementById("listaRegioes")) listaRegioes.innerHTML=(db.regioes||[]).length?(db.regioes||[]).map((r,i)=>`<tr><td>${r.municipio||"-"}</td><td>${r.nome||"-"}</td><td>${r.responsavel||"-"}</td><td>${n(r.meta||0)}</td><td>${n(r.projecao||0)}</td><td><span class="pro-badge ${r.prioridade==="Crítica"?"red":r.prioridade==="Alta"?"gold":"blue"}">${r.prioridade||"Média"}</span></td><td><button class="action-mini red" onclick="delItem('regioes',${i})">Excluir</button></td></tr>`).join(""):emptyRow(7,"Nenhuma região cadastrada.");
+}
+function salvarFormularioAgenda(){
+  db.agenda=db.agenda||[];
+  db.agenda.push({id:uid(),solicitadoPor:currentUser?(currentUser.nome||currentUser.login):"Usuário",data:agData?.value||"",hora:agHora?.value||"",tipo:agTipo?.value||"Reunião",municipio:agMunicipio?.value||"",regiao:agRegiao?.value||"",local:agLocal?.value||"",descricao:agDescricao?.value||"",status:agStatus?.value||"Pendente"});
+  salvar();render();
+}
+function agendaCard(a,i){return `<div class="kanban-item"><strong>${a.tipo||"Agenda"}</strong><br>${a.data||"-"} ${a.hora||""}<br>${a.municipio||"-"} - ${a.local||""}<br><small>${a.descricao||""}</small></div>`}
+function renderAgenda(){
+  if(!document.getElementById("listaAgenda")) return;
+  preencherSelectsPro();
+  const ag=db.agenda||[];
+  const pend=ag.filter(a=>a.status==="Pendente"||a.status==="Rascunho");
+  const conf=ag.filter(a=>a.status==="Confirmado");
+  const real=ag.filter(a=>a.status==="Realizado");
+  const out=ag.filter(a=>a.status==="Recusado"||a.status==="Cancelado");
+  if(agPendentes) agPendentes.innerHTML=pend.map((a)=>agendaCard(a,0)).join("")||"<p class='empty'>Nenhuma.</p>";
+  if(agConfirmadas) agConfirmadas.innerHTML=conf.map((a)=>agendaCard(a,0)).join("")||"<p class='empty'>Nenhuma.</p>";
+  if(agRealizadas) agRealizadas.innerHTML=real.map((a)=>agendaCard(a,0)).join("")||"<p class='empty'>Nenhuma.</p>";
+  if(agOutras) agOutras.innerHTML=out.map((a)=>agendaCard(a,0)).join("")||"<p class='empty'>Nenhuma.</p>";
+  listaAgenda.innerHTML=ag.length?ag.map((a,i)=>`<tr><td>${a.data||"-"}</td><td>${a.hora||"-"}</td><td>${a.tipo||"-"}</td><td>${a.municipio||"-"}</td><td>${a.local||"-"}</td><td><span class="pro-badge">${a.status||"Pendente"}</span></td><td><button class="action-mini red" onclick="delItem('agenda',${i})">Excluir</button></td></tr>`).join(""):emptyRow(7,"Nenhuma agenda cadastrada.");
+}
+function renderRelatorio(){
+  if(!document.getElementById("relatorioCompleto")) return;
+  preencherSelectsPro();
+  const mun=relMunicipio?.value||"";
+  const pessoas=mun?(db.pessoas||[]).filter(p=>p.municipio===mun):(db.pessoas||[]);
+  const fin=mun?(db.financeiro||[]).filter(f=>f.municipio===mun):(db.financeiro||[]);
+  const ag=mun?(db.agenda||[]).filter(a=>a.municipio===mun):(db.agenda||[]);
+  const receita=fin.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const desp=fin.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0)+pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
+  const proj=pessoas.reduce((s,p)=>s+Number(p.potencial||0),0);
+  relatorioCompleto.innerHTML=`<div class="report"><h1>Relatório GIE360 - ${relTipo?.value||"Raio-X Completo"}</h1><p><strong>Município:</strong> ${mun||"Todos"}</p><div class="grid"><div class="card kpi green"><span>Receitas</span><strong>${money(receita)}</strong></div><div class="card kpi red"><span>Despesas</span><strong>${money(desp)}</strong></div><div class="card kpi blue"><span>Projeção</span><strong>${n(proj)}</strong></div><div class="card kpi gold"><span>Agenda</span><strong>${n(ag.length)}</strong></div></div><h2>Base de Apoio</h2><table class="table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Potencial</th><th>Valor</th></tr></thead><tbody>${pessoas.map(p=>`<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td>${p.funcao||"-"}</td><td>${p.municipio||"-"}</td><td>${n(p.potencial||0)}</td><td>${money(p.valor||0)}</td></tr>`).join("")}</tbody></table></div>`;
+}
+function gerarRelatorio(){renderRelatorio();window.print();}
+function limparBancoDados(){["bdFiltro","bdBusca"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""}); const m=document.getElementById("bdMunicipio"); if(m)m.value=""; renderBancoDados();}
+function imprimirBancoDados(){renderBancoDados();window.print();}
+function renderBancoDados(){
+  if(!document.getElementById("bdResultado")) return;
+  preencherSelectsPro();
+  const fonte=bdFonte?.value||"pessoas", mun=bdMunicipio?.value||"", filtro=(bdFiltro?.value||"").toLowerCase(), busca=(bdBusca?.value||"").toLowerCase();
+  let rows=[];
+  if(fonte==="pessoas") rows=(db.pessoas||[]).filter(p=>(!mun||p.municipio===mun)&&(!filtro||String(p.funcao||p.status||"").toLowerCase().includes(filtro))&&(!busca||(String(p.nome||"").toLowerCase().includes(busca)||String(p.telefone||"").toLowerCase().includes(busca)))).map(p=>[p.nome,p.telefone,p.funcao,p.municipio,p.regiao,n(p.potencial||0),money(p.valor||0)]);
+  if(fonte==="usuarios") rows=(db.usuarios||[]).filter(u=>(!mun||u.municipio===mun)&&(!filtro||String(u.perfil||u.status||"").toLowerCase().includes(filtro))&&(!busca||(String(u.nome||"").toLowerCase().includes(busca)||String(u.telefone||"").toLowerCase().includes(busca)))).map(u=>[u.nome,u.telefone,u.perfil,u.municipio,u.login,u.status,money(u.pagamento||0)]);
+  if(fonte==="financeiro") rows=(db.financeiro||[]).filter(f=>(!mun||f.municipio===mun)&&(!filtro||String(f.tipo||f.categoria||f.status||"").toLowerCase().includes(filtro))&&(!busca||String(f.descricao||"").toLowerCase().includes(busca))).map(f=>[f.data,f.tipo,f.categoria,f.descricao,f.municipio,money(f.valor||0),f.status]);
+  if(fonte==="agenda") rows=(db.agenda||[]).filter(a=>(!mun||a.municipio===mun)&&(!filtro||String(a.status||a.tipo||"").toLowerCase().includes(filtro))&&(!busca||String(a.local||a.descricao||"").toLowerCase().includes(busca))).map(a=>[a.data,a.hora,a.tipo,a.municipio,a.local,a.status,a.descricao]);
+  if(fonte==="municipios") rows=(db.municipios||[]).filter(m=>(!mun||m.nome===mun)&&(!busca||String(m.nome||"").toLowerCase().includes(busca))).map(m=>[m.nome,m.estado,n(m.populacao||0),n(m.eleitores||0),n(m.meta||0)]);
+  bdResultado.innerHTML=`<table class="pro-table"><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c||"-"}</td>`).join("")}</tr>`).join("")||"<tr><td>Nenhum resultado encontrado.</td></tr>"}</tbody></table>`;
 }
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
