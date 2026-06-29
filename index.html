@@ -406,6 +406,29 @@ p{color:#64748b}
 .report-table th{color:#0b2e59;text-transform:uppercase;font-size:10px}
 @media print{body *{visibility:hidden}.print-area,.print-area *{visibility:visible}.print-area{position:absolute;left:0;top:0;width:100%}.no-print{display:none!important}}
 
+
+/* RELATÓRIOS DEFINITIVO - v2.3.3 */
+#relatorioCompleto{margin-top:20px}
+.report-box{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:26px;box-shadow:0 14px 34px rgba(15,23,42,.07)}
+.report-title{font-size:30px;color:#0b2e59;margin:0 0 6px}
+.report-sub{color:#64748b;font-weight:700;margin-bottom:18px}
+.report-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.report-kpi{border:1px solid #e2e8f0;border-radius:18px;padding:15px;background:#f8fafc}
+.report-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}
+.report-kpi strong{display:block;margin-top:8px;font-size:23px;color:#0b2e59}
+.report-section{margin-top:24px}
+.report-section h2{color:#0b2e59;margin-bottom:10px;border-left:5px solid #f2b300;padding-left:10px}
+.report-table{width:100%;border-collapse:collapse;margin-top:8px}
+.report-table th,.report-table td{border-bottom:1px solid #e5e7eb;padding:9px;text-align:left;font-size:12px;vertical-align:top}
+.report-table th{color:#0b2e59;text-transform:uppercase;font-size:10px;background:#f8fafc}
+@media print{
+  .sidebar,.topbar,.no-print,.page:not(#relatorios) {display:none!important}
+  body{background:#fff!important}
+  main,.content,#relatorios{display:block!important;margin:0!important;padding:0!important;width:100%!important}
+  #relatorioCompleto{display:block!important;margin:0!important}
+  .report-box{box-shadow:none!important;border:none!important;border-radius:0!important}
+}
+
 </style>
 </head>
 
@@ -823,24 +846,35 @@ p{color:#64748b}
   <div class="page-head">
     <div>
       <h1>Relatórios</h1>
-      <p>Gere um raio-x completo da campanha com filtros e impressão.</p>
+      <p>Gere uma prévia completa na tela e depois imprima ou salve em PDF.</p>
     </div>
   </div>
 
-  <div class="pro-form">
+  <div class="pro-form no-print">
     <h3>Gerador de Relatórios</h3>
     <div class="pro-fields">
-      <div class="pro-field"><label>Tipo de relatório</label><select id="relTipo"><option>Raio-X Completo</option><option>Financeiro</option><option>Base de Apoio</option><option>Território</option><option>Agenda</option><option>Usuários</option></select></div>
+      <div class="pro-field">
+        <label>Tipo de relatório</label>
+        <select id="relTipo">
+          <option>Raio-X Completo</option>
+          <option>Financeiro</option>
+          <option>Base de Apoio</option>
+          <option>Território</option>
+          <option>Agenda</option>
+          <option>Usuários</option>
+        </select>
+      </div>
       <div class="pro-field"><label>Município</label><select id="relMunicipio"></select></div>
       <div class="pro-field"><label>Data inicial</label><input id="relInicio" type="date"></div>
       <div class="pro-field"><label>Data final</label><input id="relFim" type="date"></div>
     </div>
     <div class="pro-actions">
-      <button class="btn light" onclick="renderRelatorio()">Atualizar Prévia</button>
-      <button class="btn gold" onclick="gerarRelatorio()">Imprimir / PDF</button>
+      <button type="button" class="btn gold" onclick="gerarPreviaRelatorio()">Gerar Relatório na Tela</button>
+      <button type="button" class="btn blue" onclick="imprimirRelatorioGerado()">Imprimir / Salvar PDF</button>
     </div>
   </div>
 
+  <div id="relatorioStatus" class="form-hint no-print">Clique em <strong>Gerar Relatório na Tela</strong> para montar o relatório.</div>
   <div id="relatorioCompleto" class="print-area"></div>
 </section>
 
@@ -1409,6 +1443,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{preencherSelectRelatorio233();}catch(e){}
   try{preencherSelectsPro();}catch(e){}
   try{garantirCamposAvancados();}catch(e){console.error('Campos avançados:',e);}
   try{atualizarSelectMunicipioBase();}catch(e){console.error('Select Município Base:',e);}
@@ -2793,6 +2828,137 @@ function gerarRelatorio(){
 }
 function imprimirRelatorio(){gerarRelatorio();}
 function gerarRelatorioTela(){renderRelatorio();}
+
+
+/* RELATÓRIOS DEFINITIVO - v2.3.3 */
+function rel233Money(v){return typeof money==="function"?money(v):("R$ "+Number(v||0).toFixed(2));}
+function rel233N(v){return typeof n==="function"?n(v):String(v||0);}
+function rel233DataBR(d){
+  if(!d) return "-";
+  const p=String(d).split("-");
+  return p.length===3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+}
+function rel233PeriodoOk(data,inicio,fim){
+  if(!data) return true;
+  if(inicio && data < inicio) return false;
+  if(fim && data > fim) return false;
+  return true;
+}
+function rel233Get(id, padrao=""){
+  const el=document.getElementById(id);
+  return el ? el.value : padrao;
+}
+function preencherSelectRelatorio233(){
+  const sel=document.getElementById("relMunicipio");
+  if(!sel) return;
+  const atual=sel.value||"";
+  const opts=['<option value="">Todos os municípios</option>'].concat((db.municipios||[]).map(m=>`<option value="${m.nome||""}">${m.nome||"Município sem nome"}</option>`)).join("");
+  if(sel.innerHTML!==opts) sel.innerHTML=opts;
+  if(atual) sel.value=atual;
+}
+function linhaVazia(cols,msg){return `<tr><td colspan="${cols}">${msg}</td></tr>`;}
+
+function montarRelatorioGIE360(){
+  preencherSelectRelatorio233();
+
+  const tipo=rel233Get("relTipo","Raio-X Completo");
+  const mun=rel233Get("relMunicipio","");
+  const inicio=rel233Get("relInicio","");
+  const fim=rel233Get("relFim","");
+
+  const pessoas=(db.pessoas||[]).filter(p=>(!mun||p.municipio===mun));
+  const usuarios=(db.usuarios||[]).filter(u=>(!mun||u.municipio===mun));
+  const municipios=(db.municipios||[]).filter(m=>(!mun||m.nome===mun));
+  const financeiro=(db.financeiro||[]).filter(f=>(!mun||f.municipio===mun)&&rel233PeriodoOk(f.data,inicio,fim));
+  const agenda=(db.agenda||[]).filter(a=>(!mun||a.municipio===mun)&&rel233PeriodoOk(a.data,inicio,fim));
+
+  const receita=financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despFinanceiro=financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despBase=pessoas.reduce((s,p)=>s+Number(p.valor||0),0);
+  const despUsuarios=usuarios.reduce((s,u)=>s+Number(u.pagamento||0),0);
+  const despesa=despFinanceiro+despBase+despUsuarios;
+  const saldo=receita-despesa;
+  const proj=pessoas.reduce((s,p)=>s+Number(p.potencial||0),0);
+  const meta=municipios.reduce((s,m)=>s+Number(m.meta||0),0);
+  const custo=proj>0?despesa/proj:0;
+  const perc=meta>0?Math.min((proj/meta)*100,100):0;
+
+  let blocos="";
+
+  if(tipo==="Raio-X Completo" || tipo==="Base de Apoio"){
+    const linhas=pessoas.map(p=>`<tr><td>${p.nome||"-"}</td><td>${p.telefone||"-"}</td><td>${p.funcao||"-"}</td><td>${p.municipio||"-"}</td><td>${p.regiao||p.bairro||"-"}</td><td>${rel233N(p.potencial||0)}</td><td>${rel233Money(p.valor||0)}</td><td>${Number(p.potencial||0)>0?rel233Money(Number(p.valor||0)/Number(p.potencial||0)):"-"}</td></tr>`).join("") || linhaVazia(8,"Nenhuma pessoa cadastrada.");
+    blocos+=`<div class="report-section"><h2>Base de Apoio</h2><table class="report-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Região</th><th>Potencial</th><th>Valor</th><th>Custo/Voto</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  }
+
+  if(tipo==="Raio-X Completo" || tipo==="Financeiro"){
+    const linhas=financeiro.map(f=>`<tr><td>${rel233DataBR(f.data)}</td><td>${f.tipo||"-"}</td><td>${f.categoria||"-"}</td><td>${f.descricao||"-"}</td><td>${f.municipio||"-"}</td><td>${f.usuarioLogin||"-"}</td><td>${f.status||"-"}</td><td>${rel233Money(f.valor||0)}</td></tr>`).join("") || linhaVazia(8,"Nenhum lançamento financeiro.");
+    blocos+=`<div class="report-section"><h2>Financeiro</h2><table class="report-table"><thead><tr><th>Data</th><th>Tipo</th><th>Categoria</th><th>Descrição</th><th>Município</th><th>Usuário</th><th>Status</th><th>Valor</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  }
+
+  if(tipo==="Raio-X Completo" || tipo==="Agenda"){
+    const linhas=agenda.map(a=>`<tr><td>${rel233DataBR(a.data)}</td><td>${a.hora||"-"}</td><td>${a.tipo||"-"}</td><td>${a.municipio||"-"}</td><td>${a.local||"-"}</td><td>${a.status||"-"}</td><td>${a.descricao||"-"}</td></tr>`).join("") || linhaVazia(7,"Nenhuma agenda cadastrada.");
+    blocos+=`<div class="report-section"><h2>Agenda</h2><table class="report-table"><thead><tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Local</th><th>Status</th><th>Descrição</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  }
+
+  if(tipo==="Raio-X Completo" || tipo==="Usuários"){
+    const linhas=usuarios.map(u=>`<tr><td>${u.nome||"-"}</td><td>${u.telefone||"-"}</td><td>${u.perfil||"-"}</td><td>${u.municipio||"-"}</td><td>${u.login||"-"}</td><td>${u.status||"Ativo"}</td><td>${rel233Money(u.pagamento||0)}</td><td>${rel233N(u.projecao||0)}</td></tr>`).join("") || linhaVazia(8,"Nenhum usuário cadastrado.");
+    blocos+=`<div class="report-section"><h2>Usuários</h2><table class="report-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Perfil</th><th>Município</th><th>Login</th><th>Status</th><th>Pagamento</th><th>Projeção</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  }
+
+  if(tipo==="Raio-X Completo" || tipo==="Território"){
+    const linhas=municipios.map(m=>{
+      const p=(db.pessoas||[]).filter(x=>x.municipio===m.nome).reduce((s,x)=>s+Number(x.potencial||0),0);
+      const mm=Number(m.meta||0);
+      const pp=mm>0?Math.min((p/mm)*100,100):0;
+      return `<tr><td>${m.nome||"-"}</td><td>${m.estado||"PR"}</td><td>${rel233N(m.eleitores||0)}</td><td>${rel233N(mm)}</td><td>${rel233N(p)}</td><td>${pp.toFixed(1).replace(".",",")}%</td></tr>`;
+    }).join("") || linhaVazia(6,"Nenhum município cadastrado.");
+    blocos+=`<div class="report-section"><h2>Território</h2><table class="report-table"><thead><tr><th>Município</th><th>Estado</th><th>Eleitores</th><th>Meta</th><th>Projeção</th><th>%</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+  }
+
+  return `
+    <div class="report-box">
+      <h1 class="report-title">Relatório GIE360</h1>
+      <div class="report-sub">
+        Tipo: <strong>${tipo}</strong> | Município: <strong>${mun||"Todos"}</strong> | Período: <strong>${rel233DataBR(inicio)} a ${rel233DataBR(fim)}</strong>
+      </div>
+      <div class="report-kpis">
+        <div class="report-kpi"><span>Receitas</span><strong>${rel233Money(receita)}</strong></div>
+        <div class="report-kpi"><span>Despesas</span><strong>${rel233Money(despesa)}</strong></div>
+        <div class="report-kpi"><span>Saldo</span><strong>${rel233Money(saldo)}</strong></div>
+        <div class="report-kpi"><span>Meta</span><strong>${rel233N(meta)}</strong></div>
+        <div class="report-kpi"><span>Projeção</span><strong>${rel233N(proj)}</strong></div>
+        <div class="report-kpi"><span>% da Meta</span><strong>${perc.toFixed(1).replace(".",",")}%</strong></div>
+        <div class="report-kpi"><span>Custo/Voto</span><strong>${rel233Money(custo)}</strong></div>
+        <div class="report-kpi"><span>Agendas</span><strong>${rel233N(agenda.length)}</strong></div>
+      </div>
+      ${blocos}
+    </div>`;
+}
+
+function gerarPreviaRelatorio(){
+  const alvo=document.getElementById("relatorioCompleto");
+  const status=document.getElementById("relatorioStatus");
+  if(!alvo){
+    alert("Área do relatório não encontrada.");
+    return;
+  }
+  alvo.innerHTML=montarRelatorioGIE360();
+  if(status) status.innerHTML="Relatório gerado na tela. Agora você pode imprimir ou salvar em PDF.";
+}
+
+function imprimirRelatorioGerado(){
+  const alvo=document.getElementById("relatorioCompleto");
+  if(!alvo || !alvo.innerHTML.trim()){
+    gerarPreviaRelatorio();
+  }
+  setTimeout(()=>window.print(),250);
+}
+
+// Compatibilidade com botões antigos
+function renderRelatorio(){gerarPreviaRelatorio();}
+function gerarRelatorio(){gerarPreviaRelatorio();}
+function imprimirRelatorio(){imprimirRelatorioGerado();}
+function gerarRelatorioTela(){gerarPreviaRelatorio();}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
