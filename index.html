@@ -304,6 +304,17 @@ p{color:#64748b}
   font-size:15px;
 }
 
+
+/* CADASTROS AVANÇADOS - v2.2.2 */
+.table-wide{min-width:1500px}
+.smart-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-top:16px}
+.smart-card h3{margin-top:0;color:#0b2e59}
+.smart-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.smart-item{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px}
+.smart-item span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}
+.smart-item strong{display:block;margin-top:5px;color:#0f172a}
+@media(max-width:900px){.smart-grid{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 
@@ -1240,6 +1251,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{garantirCamposAvancados();}catch(e){console.error('Campos avançados:',e);}
   try{atualizarSelectMunicipioBase();}catch(e){console.error('Select Município Base:',e);}
   try{renderPainelExecutivo();}catch(e){console.error('Painel Executivo:',e);}
   const proj=painelProjecao(),perc=painelPercentualMeta(),cv=painelCustoVoto(),ice=calcularICE(),alerts=gerarAlertas();
@@ -1370,32 +1382,48 @@ function renderTerritorio(){
 }
 
 function renderBase(){
-  if(!document.getElementById('listaPessoas')) return;
-  const baseVisivel = currentRole==="Apoiador" ? db.pessoas.filter(p=>p.criadoPor===(currentUser&&currentUser.login)) : db.pessoas;
+  if(!document.getElementById("listaPessoas")) return;
+  garantirCamposAvancados();
+  const baseVisivel = currentRole==="Apoiador" ? (db.pessoas||[]).filter(p=>p.criadoPor===(currentUser&&currentUser.login)) : (db.pessoas||[]);
   listaPessoas.innerHTML=baseVisivel.length?baseVisivel.map((p)=>{
     const i=db.pessoas.indexOf(p);
-
-    let funcoes = "";
+    let funcoes="";
     if(currentRole==="Apoiador"){
-      funcoes = `<option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
-    }else if(currentRole==="Operador" || currentRole==="Liderança"){
-      funcoes = `<option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
+      funcoes=`<option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
+    }else if(currentRole==="Operador"||currentRole==="Liderança"){
+      funcoes=`<option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
     }else{
-      funcoes = `<option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Liderança"?"selected":""}>Liderança</option><option ${p.funcao==="Cabo Eleitoral"?"selected":""}>Cabo Eleitoral</option><option ${p.funcao==="Coordenador"?"selected":""}>Coordenador</option><option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option>`;
+      funcoes=`<option ${p.funcao==="Apoiador"?"selected":""}>Apoiador</option><option ${p.funcao==="Liderança"?"selected":""}>Liderança</option><option ${p.funcao==="Cabo Eleitoral"?"selected":""}>Cabo Eleitoral</option><option ${p.funcao==="Coordenador"?"selected":""}>Coordenador</option><option ${p.funcao==="Possível Eleitor"?"selected":""}>Possível Eleitor</option><option ${p.funcao==="Influenciador"?"selected":""}>Influenciador</option><option ${p.funcao==="Empresário"?"selected":""}>Empresário</option><option ${p.funcao==="Voluntário"?"selected":""}>Voluntário</option><option ${p.funcao==="Outros"?"selected":""}>Outros</option>`;
     }
-
-    const valorBloqueado = currentRole==="Administrador" ? "" : "disabled";
+    const valorBloqueado=currentRole==="Administrador"?"":"disabled";
+    const custo=baseCustoVoto(p);
     return`<tr>
       <td><input value="${p.nome||""}" onchange="setField('pessoas',${i},'nome',this.value)"></td>
-      <td><input value="${p.telefone||""}" placeholder="(00) 00000-0000" onchange="setField('pessoas',${i},'telefone',this.value)"></td>
+      <td><input value="${p.cpf||""}" placeholder="CPF" onchange="setField('pessoas',${i},'cpf',this.value)"></td>
+      <td><input value="${p.telefone||""}" placeholder="WhatsApp" onchange="setField('pessoas',${i},'telefone',this.value)"></td>
+      <td><input value="${p.email||""}" placeholder="E-mail" onchange="setField('pessoas',${i},'email',this.value)"></td>
+      <td><select onchange="setField('pessoas',${i},'sexo',this.value)"><option value=""></option><option ${p.sexo==="Feminino"?"selected":""}>Feminino</option><option ${p.sexo==="Masculino"?"selected":""}>Masculino</option><option ${p.sexo==="Outro"?"selected":""}>Outro</option></select></td>
+      <td><input type="date" value="${p.nascimento||""}" onchange="setField('pessoas',${i},'nascimento',this.value)"></td>
       <td><select onchange="setField('pessoas',${i},'funcao',this.value)">${funcoes}</select></td>
-      <td>${municipioSelect("pessoas",i,"municipio",p.municipio)}</td>
-      <td><input value="${p.regiao||""}" onchange="setField('pessoas',${i},'regiao',this.value)"></td>
+      <td>${municipioSelect("pessoas",i,"municipio",p.municipio||"")}</td>
+      <td><input value="${p.regiao||""}" placeholder="Região" onchange="setField('pessoas',${i},'regiao',this.value)"></td>
+      <td><input value="${p.bairro||""}" placeholder="Bairro" onchange="setField('pessoas',${i},'bairro',this.value)"></td>
+      <td><input value="${p.endereco||""}" placeholder="Endereço" onchange="setField('pessoas',${i},'endereco',this.value)"></td>
       <td><input type="number" value="${p.potencial||0}" onchange="setField('pessoas',${i},'potencial',this.value,true);render()"></td>
-      <td><input ${valorBloqueado} type="number" value="${p.valor||0}" title="${currentRole==="Administrador"?"Valor mensal":"Valor mensal restrito ao administrador"}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
-      <td><button class="action-mini red" onclick="delItem('pessoas',${i})">Excluir</button></td>
+      <td><input ${valorBloqueado} type="number" value="${p.valor||0}" onchange="setField('pessoas',${i},'valor',this.value,true);render()"></td>
+      <td>${custo>0?money(custo):"Sem projeção"}</td>
+      <td><select onchange="setField('pessoas',${i},'status',this.value)"><option ${p.status==="Ativo"?"selected":""}>Ativo</option><option ${p.status==="Inativo"?"selected":""}>Inativo</option><option ${p.status==="Em negociação"?"selected":""}>Em negociação</option><option ${p.status==="Perdido"?"selected":""}>Perdido</option></select></td>
+      <td><select onchange="setField('pessoas',${i},'responsavel',this.value)">${usuarioOptions(p.responsavel||"")}</select></td>
+      <td><select onchange="setField('pessoas',${i},'origem',this.value)"><option value=""></option><option ${p.origem==="Indicação"?"selected":""}>Indicação</option><option ${p.origem==="WhatsApp"?"selected":""}>WhatsApp</option><option ${p.origem==="Instagram"?"selected":""}>Instagram</option><option ${p.origem==="Facebook"?"selected":""}>Facebook</option><option ${p.origem==="Evento"?"selected":""}>Evento</option><option ${p.origem==="Reunião"?"selected":""}>Reunião</option><option ${p.origem==="Visita"?"selected":""}>Visita</option><option ${p.origem==="Ligação"?"selected":""}>Ligação</option><option ${p.origem==="Outros"?"selected":""}>Outros</option></select></td>
+      <td><select onchange="setField('pessoas',${i},'influencia',this.value)"><option ${p.influencia==="Baixa"?"selected":""}>Baixa</option><option ${p.influencia==="Média"?"selected":""}>Média</option><option ${p.influencia==="Alta"?"selected":""}>Alta</option><option ${p.influencia==="Muito Alta"?"selected":""}>Muito Alta</option><option ${p.influencia==="Estratégica"?"selected":""}>Estratégica</option></select></td>
+      <td><input type="date" value="${p.ultimoContato||""}" onchange="setField('pessoas',${i},'ultimoContato',this.value)"></td>
+      <td><input value="${p.observacoes||""}" placeholder="Observações" onchange="setField('pessoas',${i},'observacoes',this.value)"></td>
+      <td><button class="action-mini blue" onclick="abrirFichaPessoa(${i})">Ficha</button><button class="action-mini red" onclick="delItem('pessoas',${i})">Excluir</button></td>
     </tr>`;
-  }).join(""):emptyRow(8,currentRole==="Apoiador"?"Nenhuma pessoa cadastrada na sua árvore.":"Nenhuma pessoa cadastrada.");
+  }).join(""):emptyRow(22,currentRole==="Apoiador"?"Nenhuma pessoa cadastrada na sua árvore.":"Nenhuma pessoa cadastrada.");
+  if(!document.getElementById("fichaPessoaBox") && document.getElementById("base")){
+    const box=document.createElement("div"); box.id="fichaPessoaBox"; document.getElementById("base").appendChild(box);
+  }
 }
 
 function renderAgenda(){
@@ -2037,6 +2065,77 @@ function painelReceitas(){return execDadosPainel().receita;}
 function painelDespesas(){return execDadosPainel().despesa;}
 function painelPercentualMeta(){return execDadosPainel().perc;}
 function painelCustoVoto(){return execDadosPainel().custo;}
+
+
+/* CAMPOS AVANÇADOS - v2.2.2 */
+function garantirCamposAvancados(){
+  (db.usuarios||[]).forEach(u=>{
+    if(u.telefone===undefined) u.telefone="";
+    if(u.email===undefined) u.email="";
+    if(u.cpf===undefined) u.cpf="";
+    if(u.municipio===undefined) u.municipio="";
+    if(u.regiao===undefined) u.regiao="";
+    if(u.status===undefined) u.status="Ativo";
+    if(u.observacoes===undefined) u.observacoes="";
+  });
+  (db.pessoas||[]).forEach(p=>{
+    if(p.cpf===undefined) p.cpf="";
+    if(p.email===undefined) p.email="";
+    if(p.sexo===undefined) p.sexo="";
+    if(p.nascimento===undefined) p.nascimento="";
+    if(p.bairro===undefined) p.bairro="";
+    if(p.endereco===undefined) p.endereco="";
+    if(p.status===undefined) p.status="Ativo";
+    if(p.responsavel===undefined) p.responsavel=(p.criadoPor||"");
+    if(p.origem===undefined) p.origem="";
+    if(p.influencia===undefined) p.influencia="Média";
+    if(p.ultimoContato===undefined) p.ultimoContato="";
+    if(p.observacoes===undefined) p.observacoes="";
+  });
+}
+
+function usuarioOptions(selected){
+  const opts=(db.usuarios||[]).map(u=>{
+    const nome=u.nome||u.login||"Usuário";
+    return `<option value="${nome}" ${selected===nome?"selected":""}>${nome}</option>`;
+  }).join("");
+  return `<option value="">Selecione</option>${opts}`;
+}
+
+function baseCustoVoto(p){
+  const votos=Number(p.potencial||0);
+  const valor=Number(p.valor||0);
+  return votos>0 ? valor/votos : 0;
+}
+
+function abrirFichaPessoa(i){
+  const p=db.pessoas[i];
+  const box=document.getElementById("fichaPessoaBox");
+  if(!p||!box) return;
+  const custo=baseCustoVoto(p);
+  box.innerHTML=`
+    <div class="smart-card">
+      <h3>Ficha Inteligente da Base de Apoio</h3>
+      <div class="smart-grid">
+        <div class="smart-item"><span>Nome</span><strong>${p.nome||"-"}</strong></div>
+        <div class="smart-item"><span>Telefone</span><strong>${p.telefone||"-"}</strong></div>
+        <div class="smart-item"><span>Função</span><strong>${p.funcao||"-"}</strong></div>
+        <div class="smart-item"><span>Status</span><strong>${p.status||"-"}</strong></div>
+        <div class="smart-item"><span>Município</span><strong>${p.municipio||"-"}</strong></div>
+        <div class="smart-item"><span>Região/Bairro</span><strong>${p.regiao||p.bairro||"-"}</strong></div>
+        <div class="smart-item"><span>Potencial</span><strong>${n(p.potencial||0)} votos</strong></div>
+        <div class="smart-item"><span>Valor Mensal</span><strong>${money(p.valor||0)}</strong></div>
+        <div class="smart-item"><span>Custo por voto</span><strong>${custo>0?money(custo):"Sem projeção"}</strong></div>
+        <div class="smart-item"><span>Responsável</span><strong>${p.responsavel||p.criadoPor||"-"}</strong></div>
+        <div class="smart-item"><span>Origem</span><strong>${p.origem||"-"}</strong></div>
+        <div class="smart-item"><span>Influência</span><strong>${p.influencia||"-"}</strong></div>
+        <div class="smart-item"><span>Último contato</span><strong>${p.ultimoContato||"-"}</strong></div>
+        <div class="smart-item"><span>E-mail</span><strong>${p.email||"-"}</strong></div>
+        <div class="smart-item"><span>CPF</span><strong>${p.cpf||"-"}</strong></div>
+        <div class="smart-item"><span>Observações</span><strong>${p.observacoes||"-"}</strong></div>
+      </div>
+    </div>`;
+}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
