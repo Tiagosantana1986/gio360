@@ -263,6 +263,33 @@ p{color:#64748b}
 .ia-form{display:flex;gap:10px;padding:14px;border-top:1px solid #e2e8f0}.ia-form input{flex:1}
 .ia-buttons{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px;background:#fff}.ia-buttons button{border:1px solid #dbe3ef;background:#fff;color:#0b2e59;border-radius:999px;padding:8px 12px;font-weight:900;cursor:pointer}
 
+
+/* PAINEL EXECUTIVO GIE360 - v2.2.0 */
+.exec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:22px}
+.exec-card{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:22px;box-shadow:0 14px 34px rgba(15,23,42,.08);position:relative;overflow:hidden}
+.exec-card:before{content:"";position:absolute;left:0;top:0;width:7px;height:100%}
+.exec-card.green:before{background:#16a34a}.exec-card.red:before{background:#dc2626}.exec-card.gold:before{background:#f2b300}.exec-card.blue:before{background:#0b2e59}.exec-card.orange:before{background:#f97316}
+.exec-card span{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:#64748b;font-weight:900}
+.exec-card strong{display:block;margin-top:10px;font-size:38px;line-height:1.05;color:#0f172a}
+.exec-card.green strong{color:#16a34a}.exec-card.red strong{color:#dc2626}.exec-card.gold strong{color:#b77900}.exec-card.blue strong{color:#0b2e59}.exec-card.orange strong{color:#f97316}
+.exec-card small{display:block;margin-top:8px;color:#64748b;font-weight:700}
+.exec-section{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;margin-bottom:20px}
+.exec-panel{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:20px;box-shadow:0 14px 34px rgba(15,23,42,.07)}
+.exec-panel h3{margin:0 0 14px;color:#0b2e59}
+.exec-bars{display:flex;flex-direction:column;gap:14px}
+.exec-bar-row span{display:flex;justify-content:space-between;font-weight:900;color:#334155;margin-bottom:7px}
+.exec-track{height:16px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.exec-fill{height:100%;border-radius:999px;background:#0b2e59;width:0}
+.exec-fill.green{background:#16a34a}.exec-fill.red{background:#dc2626}.exec-fill.gold{background:#f2b300}.exec-fill.blue{background:#0b2e59}.exec-fill.orange{background:#f97316}
+.exec-table{width:100%;border-collapse:collapse}
+.exec-table th,.exec-table td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}
+.exec-table th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.4px}
+.exec-badge{border-radius:999px;padding:4px 8px;font-weight:900;font-size:11px}
+.exec-badge.green{background:#dcfce7;color:#166534}.exec-badge.yellow{background:#fef3c7;color:#92400e}.exec-badge.red{background:#fee2e2;color:#991b1b}
+.ia-exec-text{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:16px;white-space:pre-wrap;line-height:1.55;color:#0f172a}
+@media(max-width:1100px){.exec-grid{grid-template-columns:repeat(2,1fr)}.exec-section{grid-template-columns:1fr}}
+@media(max-width:720px){.exec-grid{grid-template-columns:1fr}.exec-card strong{font-size:31px}}
+
 </style>
 </head>
 
@@ -316,50 +343,106 @@ p{color:#64748b}
 <section class="content">
 
 <section id="painel" class="page active">
-  <div class="page-head"><div><h1>Painel Geral</h1><p>O Painel Geral é apenas para visualização. Selecione o Município Base para puxar automaticamente os dados daquele município.</p></div></div>
-  <div class="card">
-    <div class="grid">
-      <label>Meta Geral<input id="metaInput" type="number" readonly title="Meta puxada automaticamente do município selecionado"></label>
-      <label>Município Base<select id="municipioBaseInput" onchange="atualizarControle()"></select></label>
-      <label>Receita Geral<input id="receitaInput" type="number" readonly title="Valor calculado automaticamente pelos lançamentos financeiros"></label>
-      <label>Despesa Geral<input id="despesaInput" type="number" readonly title="Valor calculado automaticamente pelos lançamentos financeiros"></label>
+  <div class="page-head">
+    <div>
+      <h1>Painel Geral</h1>
+      <p>Centro executivo da campanha: financeiro, meta, projeção, custo por voto, território, agenda e recomendações inteligentes.</p>
+    </div>
+    <button class="btn gold" onclick="atualizarSistema()">Atualizar Painel</button>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3>Município Base</h3>
+    <p>Selecione o município para o painel puxar automaticamente os dados daquele território.</p>
+    <div id="municipioBaseHolder">
+      <input id="municipioBaseInput" placeholder="Município base">
     </div>
   </div>
+
+  <div class="exec-grid">
+    <div class="exec-card green"><span>Receita Geral</span><strong id="execReceita">R$ 0,00</strong><small>Entradas lançadas no Financeiro</small></div>
+    <div class="exec-card red"><span>Despesa Geral</span><strong id="execDespesa">R$ 0,00</strong><small>Financeiro + usuários + base de apoio</small></div>
+    <div class="exec-card green"><span>Saldo Geral</span><strong id="execSaldo">R$ 0,00</strong><small>Receita menos despesa</small></div>
+    <div class="exec-card gold"><span>Meta Geral</span><strong id="execMeta">🎯 0</strong><small>Meta do município ou geral</small></div>
+    <div class="exec-card blue"><span>Projeção Geral</span><strong id="execProjecao">📈 0</strong><small>Votos projetados na base</small></div>
+    <div class="exec-card orange"><span>Custo por Voto</span><strong id="execCusto">R$ 0,00</strong><small>Despesa geral ÷ projeção</small></div>
+  </div>
+
   <div class="grid">
-    <div class="card kpi"><span>Índice de Competitividade Eleitoral <i class="info-tip" data-tip="Indicador de 0 a 100 que mede a força geral da campanha com base em meta, território, agenda, base de apoio e financeiro.">i</i></span><strong id="indiceCompetitividade">0</strong><small id="indiceCompetitividadeLabel">Indicador geral da campanha</small></div>
-    <div class="card kpi green"><span>Projeção atual <i class="info-tip" data-tip="Estimativa de votos gerados por municípios, regiões, lideranças, apoiadores e usuários cadastrados.">i</i></span><strong id="projecaoAtual">0</strong><small id="percMeta">0% da meta</small></div>
-    <div class="card kpi gold"><span>Custo por voto <i class="info-tip" data-tip="Valor médio investido para cada voto projetado. Quanto menor e mais realista, melhor.">i</i></span><strong id="custoVotoEl">R$ 0,00</strong><small>com base nas despesas</small></div>
-    <div class="card kpi red"><span>Riscos críticos</span><strong id="criticos">0</strong><small>alertas automáticos</small></div>
+    <div class="card kpi"><span>Meta</span><strong id="kpiMeta">0</strong><small>meta cadastrada</small></div>
+    <div class="card kpi green"><span>Projeção</span><strong id="kpiProj">0</strong><small>votos projetados</small></div>
+    <div class="card kpi gold"><span>Custo por voto</span><strong id="kpiCusto">R$ 0,00</strong><small>custo consolidado</small></div>
+    <div class="card kpi blue"><span>Índice de Competitividade</span><strong id="kpiICE">0</strong><small>leitura estratégica</small></div>
   </div>
-  <div class="two">
-    <div class="card">
-      <h3>Meta x Projeção <span id="badgePerc" class="badge yellow">0%</span></h3>
-      <div class="progress"><div id="progressBar"></div></div>
-      <p id="textoProjecao"></p>
+
+  <div class="card progress-card">
+    <div class="progress-top">
+      <strong>Progresso da Meta</strong>
+      <span id="badgePerc">0%</span>
     </div>
-    <div class="card">
-      <h3>Alertas Inteligentes Automáticos</h3>
+    <div class="progress"><div id="progressBar"></div></div>
+    <p id="textoProjecao">A campanha ainda não possui dados suficientes para projeção.</p>
+  </div>
+
+  <div class="exec-section">
+    <div class="exec-panel">
+      <h3>Financeiro Executivo</h3>
+      <div class="exec-bars">
+        <div class="exec-bar-row"><span><b>Receitas</b><b id="barReceitaTxt">R$ 0,00</b></span><div class="exec-track"><div id="barReceita" class="exec-fill green"></div></div></div>
+        <div class="exec-bar-row"><span><b>Despesas</b><b id="barDespesaTxt">R$ 0,00</b></span><div class="exec-track"><div id="barDespesa" class="exec-fill red"></div></div></div>
+        <div class="exec-bar-row"><span><b>Projeção da Meta</b><b id="barMetaTxt">0%</b></span><div class="exec-track"><div id="barMeta" class="exec-fill blue"></div></div></div>
+      </div>
+    </div>
+
+    <div class="exec-panel">
+      <h3>Leitura da IA</h3>
+      <div id="iaPainelResumo" class="ia-exec-text">Atualize o painel para gerar a leitura automática.</div>
+    </div>
+  </div>
+
+  <div class="exec-section">
+    <div class="exec-panel">
+      <h3>Municípios / Territórios</h3>
+      <table class="exec-table">
+        <thead><tr><th>Município</th><th>Meta</th><th>Projeção</th><th>%</th><th>Situação</th></tr></thead>
+        <tbody id="execMunicipios"></tbody>
+      </table>
+    </div>
+
+    <div class="exec-panel">
+      <h3>Base de Apoio</h3>
+      <table class="exec-table">
+        <thead><tr><th>Tipo</th><th>Quantidade</th></tr></thead>
+        <tbody id="execBaseResumo"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="exec-section">
+    <div class="exec-panel">
+      <h3>Agenda</h3>
+      <table class="exec-table">
+        <thead><tr><th>Status</th><th>Quantidade</th></tr></thead>
+        <tbody id="execAgendaResumo"></tbody>
+      </table>
+    </div>
+
+    <div class="exec-panel">
+      <h3>Alertas Inteligentes</h3>
       <div id="listaAlertasPainel"></div>
     </div>
   </div>
 
-  <div class="card" id="painelAdminResumo">
-    <h3>Resumo Integrado do Sistema</h3>
-    <div class="grid">
-      <div class="kpi"><span>Municípios</span><strong id="resumoMunicipios">0</strong><small>cadastrados no território</small></div>
-      <div class="kpi"><span>Regiões/Bairros</span><strong id="resumoRegioes">0</strong><small>vinculados aos municípios</small></div>
-      <div class="kpi"><span>Base de Apoio</span><strong id="resumoPessoas">0</strong><small>lideranças, apoiadores e possíveis eleitores</small></div>
-      <div class="kpi"><span>Agendas</span><strong id="resumoAgendas">0</strong><small>solicitadas e oficiais</small></div>
-    </div>
-    <div class="grid">
-      <div class="kpi green"><span>Possíveis Eleitores</span><strong id="resumoPossiveis">0</strong><small>cadastrados na base</small></div>
-      <div class="kpi gold"><span>Agendas Pendentes</span><strong id="resumoPendentes">0</strong><small>aguardando administrador</small></div>
-      <div class="kpi"><span>Agendas Confirmadas</span><strong id="resumoConfirmadas">0</strong><small>agenda oficial</small></div>
-      <div class="kpi red"><span>Riscos Automáticos</span><strong id="resumoRiscos">0</strong><small>alertas críticos</small></div>
-    </div>
-  </div>
+  <input type="hidden" id="metaInput">
+  <input type="hidden" id="receitaInput">
+  <input type="hidden" id="despesaInput">
+  <span style="display:none" id="indiceCompetitividade"></span>
+  <span style="display:none" id="indiceCompetitividadeLabel"></span>
+  <span style="display:none" id="projecaoAtual"></span>
+  <span style="display:none" id="percMeta"></span>
+  <span style="display:none" id="custoVotoEl"></span>
+  <span style="display:none" id="criticos"></span>
 </section>
-
 
 <section id="perfil" class="page">
   <div class="page-head">
@@ -1143,6 +1226,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{renderPainelExecutivo();}catch(e){console.error('Painel Executivo:',e);}
   const proj=painelProjecao(),perc=painelPercentualMeta(),cv=painelCustoVoto(),ice=calcularICE(),alerts=gerarAlertas();
 
   atualizarSelectMunicipioBase();
@@ -1773,6 +1857,99 @@ function gerarRelatorio(){
   }
 }
 function imprimirRelatorio(){gerarRelatorio();}
+
+
+/* PAINEL EXECUTIVO GIE360 - v2.2.0 */
+function execDadosPainel(){
+  const mun=(typeof painelMunicipioNome==="function")?painelMunicipioNome():(db.municipioBase||"");
+  const municipios=db.municipios||[];
+  const pessoas=db.pessoas||[];
+  const financeiro=db.financeiro||[];
+  const usuarios=db.usuarios||[];
+  const agenda=db.agenda||[];
+  const regioes=db.regioes||[];
+
+  const municipioObj=mun?municipios.find(m=>m.nome===mun):null;
+  const meta=municipioObj?Number(municipioObj.meta||0):municipios.reduce((s,m)=>s+Number(m.meta||0),0);
+  const pessoasFiltro=mun?pessoas.filter(p=>p.municipio===mun):pessoas;
+  const proj=pessoasFiltro.reduce((s,p)=>s+Number(p.potencial||0),0);
+  const finFiltro=mun?financeiro.filter(f=>f.municipio===mun):financeiro;
+  const receita=finFiltro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despFin=finFiltro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despBase=pessoasFiltro.reduce((s,p)=>s+Number(p.valor||0),0);
+  const despUsuarios=mun?usuarios.filter(u=>u.municipio===mun).reduce((s,u)=>s+Number(u.pagamento||0),0):usuarios.reduce((s,u)=>s+Number(u.pagamento||0),0);
+  const despesa=despFin+despBase+despUsuarios;
+  const saldo=receita-despesa;
+  const custo=proj>0?despesa/proj:0;
+  const perc=meta>0?Math.min((proj/meta)*100,100):0;
+  const alertas=(typeof gerarAlertas==="function")?gerarAlertas():[];
+  return {mun,municipios,pessoas:pessoasFiltro,agenda:mun?agenda.filter(a=>a.municipio===mun):agenda,regioes:mun?regioes.filter(r=>r.municipio===mun):regioes,meta,proj,receita,despesa,saldo,custo,perc,alertas};
+}
+function execText(id,v){const el=document.getElementById(id); if(el) el.textContent=v;}
+function execWidth(id,v){const el=document.getElementById(id); if(el) el.style.width=Math.max(0,Math.min(100,v))+"%";}
+function renderPainelExecutivo(){
+  const d=execDadosPainel();
+  execText("execReceita",money(d.receita));
+  execText("execDespesa",money(d.despesa));
+  execText("execSaldo",money(d.saldo));
+  execText("execMeta","🎯 "+n(d.meta));
+  execText("execProjecao","📈 "+n(d.proj));
+  execText("execCusto",money(d.custo));
+
+  execText("barReceitaTxt",money(d.receita));
+  execText("barDespesaTxt",money(d.despesa));
+  execText("barMetaTxt",d.perc.toFixed(1).replace(".",",")+"%");
+  const maior=Math.max(d.receita,d.despesa,1);
+  execWidth("barReceita",(d.receita/maior)*100);
+  execWidth("barDespesa",(d.despesa/maior)*100);
+  execWidth("barMeta",d.perc);
+
+  const kpiMeta=document.getElementById("kpiMeta"); if(kpiMeta) kpiMeta.textContent=n(d.meta);
+  const kpiProj=document.getElementById("kpiProj"); if(kpiProj) kpiProj.textContent=n(d.proj);
+  const kpiCusto=document.getElementById("kpiCusto"); if(kpiCusto) kpiCusto.textContent=money(d.custo);
+  const badge=document.getElementById("badgePerc"); if(badge) badge.textContent=d.perc.toFixed(1).replace(".",",")+"%";
+  const progress=document.getElementById("progressBar"); if(progress) progress.style.width=d.perc+"%";
+
+  const texto=document.getElementById("textoProjecao");
+  if(texto) texto.textContent=(d.mun?"Município selecionado: "+d.mun+". ":"Visão geral da campanha. ")+"Projeção de "+n(d.proj)+" votos para uma meta de "+n(d.meta)+". Receita: "+money(d.receita)+", despesa: "+money(d.despesa)+", saldo: "+money(d.saldo)+".";
+
+  const ia=document.getElementById("iaPainelResumo");
+  if(ia){
+    const faltam=Math.max(d.meta-d.proj,0);
+    ia.textContent=
+      "A campanha atingiu "+d.perc.toFixed(1).replace(".",",")+"% da meta.\n"+
+      "Faltam "+n(faltam)+" votos projetados.\n"+
+      "Custo por voto atual: "+money(d.custo)+".\n"+
+      (d.despesa>d.receita?"Atenção: as despesas estão maiores que as receitas.\n":"O saldo financeiro está positivo ou controlado.\n")+
+      (d.alertas.length?("Existem "+d.alertas.length+" alerta(s) para revisão."):"Sem alertas críticos no momento.");
+  }
+
+  const munBody=document.getElementById("execMunicipios");
+  if(munBody){
+    munBody.innerHTML=(db.municipios||[]).map(m=>{
+      const meta=Number(m.meta||0);
+      const proj=(db.pessoas||[]).filter(p=>p.municipio===m.nome).reduce((s,p)=>s+Number(p.potencial||0),0);
+      const perc=meta>0?Math.min((proj/meta)*100,100):0;
+      const cls=perc>=80?"green":perc>=50?"yellow":"red";
+      const label=perc>=80?"Forte":perc>=50?"Atenção":"Crítico";
+      return `<tr><td>${m.nome||"-"}</td><td>${n(meta)}</td><td>${n(proj)}</td><td>${perc.toFixed(1).replace(".",",")}%</td><td><span class="exec-badge ${cls}">${label}</span></td></tr>`;
+    }).join("")||`<tr><td colspan="5">Nenhum município cadastrado.</td></tr>`;
+  }
+
+  const baseBody=document.getElementById("execBaseResumo");
+  if(baseBody){
+    const grupos={};
+    d.pessoas.forEach(p=>{const f=p.funcao||"Sem função";grupos[f]=(grupos[f]||0)+1;});
+    baseBody.innerHTML=Object.keys(grupos).length?Object.entries(grupos).map(([k,v])=>`<tr><td>${k}</td><td>${n(v)}</td></tr>`).join(""):`<tr><td colspan="2">Nenhuma pessoa cadastrada.</td></tr>`;
+  }
+
+  const agendaBody=document.getElementById("execAgendaResumo");
+  if(agendaBody){
+    const st={};
+    d.agenda.forEach(a=>{const s=a.status||"Pendente";st[s]=(st[s]||0)+1;});
+    agendaBody.innerHTML=Object.keys(st).length?Object.entries(st).map(([k,v])=>`<tr><td>${k}</td><td>${n(v)}</td></tr>`).join(""):`<tr><td colspan="2">Nenhuma agenda cadastrada.</td></tr>`;
+  }
+}
 
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&loginPage.style.display!=="none")doLogin();});
 
