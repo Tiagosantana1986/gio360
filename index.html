@@ -1062,6 +1062,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{atualizarPainelGeral();}catch(e){console.error('Erro ao atualizar Painel Geral:',e);}
   // Renderização protegida: um erro em um módulo não pode travar o sistema inteiro.
   try{
     if(typeof atualizarSelectMunicipioBase==="function") atualizarSelectMunicipioBase();
@@ -1843,6 +1844,97 @@ function responderAjuda(){
 
 
 
+
+/* PAINEL GERAL FIX - v2.1.8 */
+function giePainelDados(){
+  const mun = (typeof painelMunicipioNome==="function") ? painelMunicipioNome() : (db.municipioBase||"");
+  const municipioObj = mun ? (db.municipios||[]).find(m=>m.nome===mun) : null;
+
+  const meta = municipioObj ? Number(municipioObj.meta||0) : (db.municipios||[]).reduce((s,m)=>s+Number(m.meta||0),0);
+  const proj = mun ? (db.pessoas||[]).filter(p=>p.municipio===mun).reduce((s,p)=>s+Number(p.potencial||0),0) : (db.pessoas||[]).reduce((s,p)=>s+Number(p.potencial||0),0);
+
+  const financeiro = mun ? (db.financeiro||[]).filter(f=>f.municipio===mun) : (db.financeiro||[]);
+  const receitas = financeiro.filter(f=>f.tipo==="receita").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despFinanceiro = financeiro.filter(f=>f.tipo==="despesa").reduce((s,f)=>s+Number(f.valor||0),0);
+  const despBase = mun ? (db.pessoas||[]).filter(p=>p.municipio===mun).reduce((s,p)=>s+Number(p.valor||0),0) : (db.pessoas||[]).reduce((s,p)=>s+Number(p.valor||0),0);
+  const despUsuarios = mun ? (db.usuarios||[]).filter(u=>u.municipio===mun).reduce((s,u)=>s+Number(u.pagamento||0),0) : (db.usuarios||[]).reduce((s,u)=>s+Number(u.pagamento||0),0);
+  const despesas = despFinanceiro + despBase + despUsuarios;
+  const saldo = receitas - despesas;
+  const custo = proj > 0 ? despesas/proj : 0;
+  const perc = meta > 0 ? Math.min((proj/meta)*100,100) : 0;
+
+  const pessoas = mun ? (db.pessoas||[]).filter(p=>p.municipio===mun) : (db.pessoas||[]);
+  const agendas = mun ? (db.agenda||[]).filter(a=>a.municipio===mun) : (db.agenda||[]);
+  const regioes = mun ? (db.regioes||[]).filter(r=>r.municipio===mun) : (db.regioes||[]);
+  const alertas = (typeof gerarAlertas==="function") ? gerarAlertas() : [];
+  const ice = (typeof calcularICE==="function") ? calcularICE() : 0;
+
+  return {mun,municipioObj,meta,proj,receitas,despesas,saldo,custo,perc,pessoas,agendas,regioes,alertas,ice,despFinanceiro,despBase,despUsuarios};
+}
+
+function gieSetText(id,valor){
+  const el=document.getElementById(id);
+  if(el) el.textContent=valor;
+}
+function gieSetValue(id,valor){
+  const el=document.getElementById(id);
+  if(el) el.value=valor;
+}
+
+function atualizarPainelGeral(){
+  const d=giePainelDados();
+
+  // Campos de controle
+  gieSetValue("metaInput", d.meta);
+  gieSetValue("receitaInput", d.receitas);
+  gieSetValue("despesaInput", d.despesas);
+
+  // KPIs usados em versões diferentes do GIE360
+  gieSetText("kpiMeta", n(d.meta));
+  gieSetText("kpiProj", n(d.proj));
+  gieSetText("kpiCusto", money(d.custo));
+  gieSetText("kpiICE", d.ice);
+
+  gieSetText("indiceCompetitividade", d.ice);
+  gieSetText("projecaoAtual", n(d.proj));
+  gieSetText("percMeta", d.perc.toFixed(1).replace(".",",")+"% da meta");
+  gieSetText("custoVotoEl", money(d.custo));
+  gieSetText("criticos", d.alertas.filter(a=>a.tipo==="red").length);
+
+  gieSetText("badgePerc", d.perc.toFixed(1).replace(".",",")+"%");
+  const progress=document.getElementById("progressBar");
+  if(progress) progress.style.width=d.perc+"%";
+
+  // Indicadores extras se existirem
+  gieSetText("painelReceitas", money(d.receitas));
+  gieSetText("painelDespesas", money(d.despesas));
+  gieSetText("painelSaldo", money(d.saldo));
+  gieSetText("painelPessoas", n(d.pessoas.length));
+  gieSetText("painelAgendas", n(d.agendas.length));
+  gieSetText("painelRegioes", n(d.regioes.length));
+
+  const texto=document.getElementById("textoProjecao");
+  if(texto){
+    const prefixo=d.mun?("Município selecionado: "+d.mun+". "):"Visão geral da campanha. ";
+    texto.textContent=prefixo+"A campanha está com "+n(d.proj)+" votos projetados de uma meta de "+n(d.meta)+" votos. Receita: "+money(d.receitas)+", despesa geral: "+money(d.despesas)+", saldo: "+money(d.saldo)+".";
+  }
+
+  const lista=document.getElementById("listaAlertasPainel");
+  if(lista){
+    lista.innerHTML=d.alertas.length
+      ? d.alertas.map(a=>`<div class="auto-alert ${a.tipo}"><strong>${a.titulo}</strong>${a.texto}</div>`).join("")
+      : `<div class="auto-alert green"><strong>Sem alertas críticos</strong>O sistema não identificou risco relevante neste momento.</div>`;
+  }
+}
+
+// Sobrescreve funções usadas pelo Painel para garantir cálculo consolidado
+function painelMeta(){ return giePainelDados().meta; }
+function painelProjecao(){ return giePainelDados().proj; }
+function painelReceitas(){ return giePainelDados().receitas; }
+function painelDespesas(){ return giePainelDados().despesas; }
+function painelPercentualMeta(){ return giePainelDados().perc; }
+function painelCustoVoto(){ return giePainelDados().custo; }
+
 /* RELATÓRIO E IA FIX - v2.1.7 */
 function gerarRelatorio(){
   try{
@@ -2094,7 +2186,7 @@ function addAgenda(){db.agenda=db.agenda||[];const mun=(db.municipios&&db.munici
 function addFinanceiro(){db.financeiro=db.financeiro||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"Administrativa",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
 function addUsuario(){db.usuarios=db.usuarios||[];db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
 function delItem(tipo,i){if(!db[tipo]||!db[tipo][i])return;db[tipo].splice(i,1);salvar();render();}
-function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();}
+function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();try{atualizarPainelGeral();}catch(e){}}
 function enviarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
 function confirmarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Confirmado";salvar();render();}
 function recusarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Recusado";salvar();render();}
@@ -2122,7 +2214,7 @@ function addAgenda(){db.agenda=db.agenda||[];const mun=(db.municipios&&db.munici
 function addFinanceiro(){db.financeiro=db.financeiro||[];const mun=(db.municipios&&db.municipios[0]&&db.municipios[0].nome)||"";db.financeiro.push({id:uid(),tipo:"despesa",categoria:"Administrativa",descricao:"",municipio:mun,usuarioLogin:"",valor:0});salvar();render();}
 function addUsuario(){db.usuarios=db.usuarios||[];db.usuarios.push({id:uid(),nome:"",login:"",senha:"",perfil:"Apoiador",pagamento:0,projecao:0});salvar();render();}
 function delItem(tipo,i){if(!db[tipo]||!db[tipo][i])return;db[tipo].splice(i,1);salvar();render();}
-function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();}
+function setField(tipo,i,campo,valor,numero=false){if(!db[tipo]||!db[tipo][i])return;db[tipo][i][campo]=numero?(Number(valor)||0):valor;salvar();try{atualizarPainelGeral();}catch(e){}}
 function enviarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Pendente";salvar();render();alert("Solicitação de agenda enviada para aprovação do administrador.");}
 function confirmarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Confirmado";salvar();render();}
 function recusarAgenda(i){if(!db.agenda||!db.agenda[i])return;db.agenda[i].status="Recusado";salvar();render();}
