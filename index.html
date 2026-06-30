@@ -25,7 +25,7 @@ p{color:#64748b}
 .login-box{background:rgba(255,255,255,.60);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:26px;box-shadow:0 26px 70px rgba(15,23,42,.10);backdrop-filter:blur(14px)}
 .login-field{height:60px;display:flex;align-items:center;gap:14px;padding:0 18px;margin-bottom:16px;border-radius:14px;border:1px solid #cbd5e1;background:rgba(255,255,255,.86)}
 .login-field span{color:#f2b300;font-size:20px}
-.login-field input{flex:1;border:0;background:transparent;box-shadow:none;font-size:21px}
+.login-field input{flex:1;border:0;background:transparent;box-shadow:none;font-size:22px}
 .login-btn{width:100%;height:60px;border:0;border-radius:14px;background:linear-gradient(180deg,#ffdc55,#f4b400);color:#061532;font-size:17px;font-weight:900;letter-spacing:.8px}
 .login-msg{min-height:20px;color:#b91c1c;font-weight:800;font-size:13px}
 .restricted{margin-top:18px;color:#0b2e59;font-size:11px;letter-spacing:1.5px;font-weight:800}
@@ -365,7 +365,7 @@ p{color:#64748b}
 .pro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 .pro-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 12px 28px rgba(15,23,42,.07)}
 .pro-card span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900}
-.pro-card strong{display:block;margin-top:8px;font-size:28px;color:#0b2e59}
+.pro-card strong{display:block;margin-top:8px;font-size:32px;color:#0b2e59}
 .pro-card.green strong{color:#16a34a}.pro-card.red strong{color:#dc2626}.pro-card.gold strong{color:#b77900}.pro-card.orange strong{color:#f97316}
 .pro-form{background:#fff;border:1px solid #dbe3ef;border-radius:24px;padding:22px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:20px}
 .pro-form h3{margin:0 0 14px;color:#0b2e59}
@@ -515,7 +515,7 @@ p{color:#64748b}
 .whats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 .whats-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:18px}
 .whats-card h3{margin:0 0 12px;color:#0b2e59}
-.whats-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}.whats-kpi strong{display:block;margin-top:7px;font-size:28px;color:#0b2e59}
+.whats-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}.whats-kpi strong{display:block;margin-top:7px;font-size:32px;color:#0b2e59}
 .whats-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.whats-field label{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900;margin-bottom:6px}
 .whats-field input,.whats-field select,.whats-field textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#0f172a;font-weight:700}.whats-field textarea{min-height:95px;resize:vertical}
 .whats-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px}.whats-table-wrap{overflow:auto}.whats-table{width:100%;border-collapse:collapse;min-width:1100px}
@@ -569,131 +569,96 @@ p{color:#64748b}
 }
 
 
-/* RELATÓRIOS COM FONTE MAIOR - v4.1.8 */
-.report,
-.report-pro,
-.report-box,
-#relatorioCompleto,
-#relatorio,
-.print-area{
-  font-size:16px !important;
-  line-height:1.55 !important;
-}
-
-.report-title,
-.report-cover h1,
-.report-cover-top h1{
-  font-size:36px !important;
-  line-height:1.15 !important;
-}
-
-.report-sub,
-.report-cover p,
-.report-cover-top p,
-.report-exec p,
-.report-note{
-  font-size:17px !important;
-  line-height:1.6 !important;
-}
-
-.report-section h2,
-.report-section-pro h2{
-  font-size:24px !important;
-  line-height:1.3 !important;
-}
-
-.report-kpi span,
-.report-kpi-pro span,
-.report-cover-info span{
-  font-size:13px !important;
-}
-
-.report-kpi strong,
-.report-kpi-pro strong,
-.report-cover-info strong{
-  font-size:26px !important;
-}
-
-.report-table,
-.report-table-pro{
-  font-size:15px !important;
-}
-
-.report-table th,
-.report-table td,
-.report-table-pro th,
-.report-table-pro td{
-  font-size:15px !important;
-  padding:11px 10px !important;
-  line-height:1.45 !important;
-}
-
-.report-table th,
-.report-table-pro th{
-  font-size:13px !important;
-  font-weight:900 !important;
-}
-
-.report-section-pro ul,
-.report-section-pro li,
-.report-section ul,
-.report-section li{
-  font-size:16px !important;
-  line-height:1.65 !important;
-}
-
-.report-footer,
-.report-sign div{
-  font-size:14px !important;
-}
-
+/* RELATÓRIO PDF COM FONTE MAIOR - v4.1.9 */
+/* Este ajuste vale SOMENTE para impressão/PDF, não altera a tela do sistema */
 @media print{
-  .report,
-  .report-pro,
-  .report-box,
   #relatorioCompleto,
+  #relatorioCompleto *,
   #relatorio,
-  .print-area{
-    font-size:15px !important;
-    line-height:1.5 !important;
+  #relatorio *,
+  .print-area,
+  .print-area *{
+    font-size:15.5px !important;
+    line-height:1.55 !important;
   }
 
-  .report-title,
+  #relatorioCompleto .report-title,
+  #relatorio .report-title,
+  .print-area .report-title,
+  #relatorioCompleto h1,
+  #relatorio h1,
+  .print-area h1,
   .report-cover h1,
   .report-cover-top h1{
     font-size:32px !important;
+    line-height:1.2 !important;
   }
 
+  #relatorioCompleto h2,
+  #relatorio h2,
+  .print-area h2,
+  .report-section h2,
+  .report-section-pro h2{
+    font-size:22px !important;
+    line-height:1.3 !important;
+  }
+
+  #relatorioCompleto p,
+  #relatorio p,
+  .print-area p,
   .report-sub,
   .report-cover p,
   .report-cover-top p,
   .report-exec p,
   .report-note{
     font-size:15.5px !important;
+    line-height:1.6 !important;
   }
 
-  .report-section h2,
-  .report-section-pro h2{
-    font-size:21px !important;
+  .report-kpi span,
+  .report-kpi-pro span,
+  .report-cover-info span{
+    font-size:12.5px !important;
+  }
+
+  .report-kpi strong,
+  .report-kpi-pro strong,
+  .report-cover-info strong{
+    font-size:23px !important;
   }
 
   .report-table th,
   .report-table td,
   .report-table-pro th,
-  .report-table-pro td{
-    font-size:13.8px !important;
+  .report-table-pro td,
+  #relatorioCompleto table th,
+  #relatorioCompleto table td,
+  #relatorio table th,
+  #relatorio table td{
+    font-size:14.5px !important;
     padding:9px 8px !important;
-    line-height:1.42 !important;
+    line-height:1.45 !important;
   }
 
   .report-table th,
-  .report-table-pro th{
-    font-size:12.5px !important;
+  .report-table-pro th,
+  #relatorioCompleto table th,
+  #relatorio table th{
+    font-size:13px !important;
+    font-weight:900 !important;
   }
 
-  .report-kpi strong,
-  .report-kpi-pro strong{
-    font-size:22px !important;
+  .report-section-pro li,
+  .report-section li,
+  #relatorioCompleto li,
+  #relatorio li{
+    font-size:15.5px !important;
+    line-height:1.6 !important;
+  }
+
+  .report-footer,
+  .report-sign div{
+    font-size:13.5px !important;
   }
 }
 
@@ -3295,14 +3260,14 @@ function imprimirRelatorioGerado(){
 body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#0f172a;margin:0}
 .report-cover{border:1px solid #dbe3ef;border-radius:20px;overflow:hidden;margin-bottom:18px}
 .report-cover-top{background:#0b2e59;color:#fff;padding:28px}
-.report-cover-top h1{margin:0;font-size:28px;color:#fff}.report-cover-top p{margin:8px 0 0;color:#dbeafe;font-weight:700}
+.report-cover-top h1{margin:0;font-size:32px;color:#fff}.report-cover-top p{margin:8px 0 0;color:#dbeafe;font-weight:700}
 .report-cover-info{display:grid;grid-template-columns:repeat(4,1fr);border-top:4px solid #f2b300}
 .report-cover-info div{padding:12px;border-right:1px solid #e2e8f0}.report-cover-info span{display:block;font-size:12px;text-transform:uppercase;color:#64748b;font-weight:900}.report-cover-info strong{display:block;margin-top:5px;color:#0b2e59}
 .report-exec{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin:14px 0;line-height:1.45}.report-exec h2{margin:0 0 8px;color:#0b2e59}
-.report-kpis-pro{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.report-kpi-pro{border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#fff;break-inside:avoid}.report-kpi-pro span{display:block;font-size:12px;text-transform:uppercase;color:#64748b;font-weight:900}.report-kpi-pro strong{display:block;margin-top:5px;font-size:22px;color:#0b2e59}
-.report-section-pro{margin-top:18px;border:1px solid #e2e8f0;border-radius:12px;padding:12px;break-inside:auto}.report-section-pro h2{margin:0 0 8px;color:#0b2e59;border-left:5px solid #f2b300;padding-left:8px;font-size:21px}
-.report-table-pro{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px}.report-table-pro th,.report-table-pro td{border:1px solid #ddd;padding:5px;text-align:left;vertical-align:top}.report-table-pro th{background:#f8fafc;color:#0b2e59;text-transform:uppercase;font-size:11px}tr{page-break-inside:avoid}
-.report-sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px}.report-sign div{border-top:1px solid #334155;text-align:center;padding-top:8px;font-weight:700}.report-footer{text-align:center;color:#64748b;font-size:10px;margin-top:20px}
+.report-kpis-pro{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.report-kpi-pro{border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#fff;break-inside:avoid}.report-kpi-pro span{display:block;font-size:12px;text-transform:uppercase;color:#64748b;font-weight:900}.report-kpi-pro strong{display:block;margin-top:5px;font-size:23px;color:#0b2e59}
+.report-section-pro{margin-top:18px;border:1px solid #e2e8f0;border-radius:12px;padding:12px;break-inside:auto}.report-section-pro h2{margin:0 0 8px;color:#0b2e59;border-left:5px solid #f2b300;padding-left:8px;font-size:22px}
+.report-table-pro{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}.report-table-pro th,.report-table-pro td{border:1px solid #ddd;padding:5px;text-align:left;vertical-align:top}.report-table-pro th{background:#f8fafc;color:#0b2e59;text-transform:uppercase;font-size:12px}tr{page-break-inside:avoid}
+.report-sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px}.report-sign div{border-top:1px solid #334155;text-align:center;padding-top:8px;font-weight:700}.report-footer{text-align:center;color:#64748b;font-size:13.5px;margin-top:20px}
 </style>
 </head><body>${alvo.innerHTML}<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},250)};<\/script></body></html>`);
   w.document.close();
