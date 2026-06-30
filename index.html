@@ -884,6 +884,222 @@ p{color:#64748b}
   .blue strong,.report-kpi-pro.blue strong,.report-kpi.blue strong{color:#0b2e59 !important}
 }
 
+
+/* LOGIN ENTERPRISE - v4.2.4 */
+#loginPage{
+  background:
+    radial-gradient(circle at 20% 20%,rgba(242,179,0,.16),transparent 28%),
+    radial-gradient(circle at 80% 20%,rgba(11,46,89,.14),transparent 30%),
+    linear-gradient(180deg,#eef3fb,#dfe9f7,#cddcf2) !important;
+  overflow:hidden;
+}
+#loginPage::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(11,46,89,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(11,46,89,.055) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:linear-gradient(180deg,transparent,black 20%,black 75%,transparent);
+  pointer-events:none;
+}
+#loginPage::after{
+  content:"";
+  position:absolute;
+  width:520px;
+  height:520px;
+  border-radius:50%;
+  right:-180px;
+  bottom:-210px;
+  background:rgba(242,179,0,.12);
+  filter:blur(8px);
+  pointer-events:none;
+}
+.login-card{
+  position:relative;
+  z-index:2;
+  animation:loginFade424 .55s ease both;
+}
+@keyframes loginFade424{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.login-card img{
+  max-width:560px !important;
+  margin-bottom:22px !important;
+  filter:drop-shadow(0 18px 30px rgba(15,23,42,.18)) !important;
+}
+.login-divider{
+  width:78% !important;
+  height:2px !important;
+  background:linear-gradient(90deg,transparent,#f2b300,#0b2e59,transparent) !important;
+}
+.login-box{
+  background:rgba(255,255,255,.74) !important;
+  border:1px solid rgba(255,255,255,.95) !important;
+  border-radius:28px !important;
+  padding:28px !important;
+  box-shadow:0 30px 90px rgba(15,23,42,.16) !important;
+  backdrop-filter:blur(18px) !important;
+}
+.login-enterprise-title{
+  margin:0 0 4px;
+  color:#0b2e59;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:-.2px;
+}
+.login-enterprise-sub{
+  margin:0 0 18px;
+  color:#64748b;
+  font-size:13px;
+  font-weight:800;
+}
+.login-field{
+  background:#fff !important;
+  border-color:#cbd5e1 !important;
+  box-shadow:0 8px 20px rgba(15,23,42,.045) !important;
+}
+.login-field input{
+  font-weight:700;
+}
+.login-password-wrap{
+  position:relative;
+}
+.login-eye{
+  border:0;
+  background:transparent;
+  color:#0b2e59;
+  font-weight:900;
+  width:auto;
+  padding:6px 4px;
+  cursor:pointer;
+}
+.login-btn{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg,#ffdd55,#f2b300) !important;
+  box-shadow:0 12px 22px rgba(242,179,0,.32);
+}
+.login-btn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);
+  transform:translateX(-110%);
+}
+.login-btn:hover::after{
+  animation:loginShine424 .8s ease;
+}
+@keyframes loginShine424{
+  to{transform:translateX(110%)}
+}
+.login-tools{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  margin:2px 0 14px;
+  font-size:12px;
+  color:#0b2e59;
+  font-weight:800;
+}
+.login-tools label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+}
+.login-tools input{
+  width:auto;
+  accent-color:#f2b300;
+}
+.login-tools button{
+  border:0;
+  background:transparent;
+  color:#0b2e59;
+  font-weight:900;
+  padding:0;
+}
+.login-trust{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:16px;
+}
+.login-trust span{
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  border-radius:13px;
+  padding:9px 8px;
+  color:#0b2e59;
+  font-size:11px;
+  font-weight:900;
+  line-height:1.25;
+}
+.restricted{
+  margin-top:16px !important;
+  color:#0b2e59 !important;
+  font-size:12px !important;
+}
+.login-footer{
+  z-index:2;
+}
+.login-footer .enterprise-line{
+  color:#0b2e59;
+  font-weight:900;
+}
+.login-loader424{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(238,243,251,.88);
+  backdrop-filter:blur(10px);
+}
+.login-loader424.active{
+  display:flex;
+}
+.login-loader-card424{
+  background:#fff;
+  border:1px solid #dbe3ef;
+  border-radius:28px;
+  padding:30px;
+  width:min(420px,90vw);
+  text-align:center;
+  box-shadow:0 30px 90px rgba(15,23,42,.18);
+}
+.login-spinner424{
+  width:64px;
+  height:64px;
+  margin:0 auto 16px;
+  border-radius:50%;
+  border:6px solid #e2e8f0;
+  border-top-color:#f2b300;
+  border-right-color:#0b2e59;
+  animation:spin424 .9s linear infinite;
+}
+@keyframes spin424{to{transform:rotate(360deg)}}
+.login-loader-card424 strong{
+  display:block;
+  color:#0b2e59;
+  font-size:18px;
+  margin-bottom:6px;
+}
+.login-loader-card424 small{
+  color:#64748b;
+  font-weight:800;
+}
+@media(max-width:650px){
+  .login-card img{max-width:420px !important}
+  .login-trust{grid-template-columns:1fr}
+  .login-tools{display:block;text-align:left}
+  .login-tools button{margin-top:8px}
+}
+
 </style>
 </head>
 
@@ -895,14 +1111,16 @@ p{color:#64748b}
     <div class="login-divider"></div>
     <section class="login-box">
       <div class="login-field"><span>👤</span><input id="loginUser" placeholder="Usuário" autocomplete="username"></div>
-      <div class="login-field"><span>🔒</span><input id="loginPass" type="password" placeholder="Senha" autocomplete="current-password"></div>
-      <button class="login-btn" type="button" onclick="doLogin()">ACESSAR SISTEMA</button>
+      <div class="login-field login-password-wrap"><span>🔐</span><input id="loginPass" type="password" placeholder="Senha" autocomplete="current-password"><button class="login-eye" type="button" onclick="toggleSenha424()">👁</button></div>
+      <div class="login-tools"><label><input type="checkbox" id="lembrarUsuario424"> Lembrar usuário</label><button type="button" onclick="esqueciSenha424()">Esqueci minha senha</button></div>
+      <button class="login-btn" type="button" onclick="doLogin()">🔒 Entrar no GIE360</button>
+      <div class="login-trust"><span>🛡 Ambiente Seguro</span><span>🔒 Dados Protegidos</span><span>☁ Backup e Auditoria</span></div>
       <p id="loginMsg" class="login-msg"></p>
-      <div class="restricted">AMBIENTE RESTRITO DE GESTÃO DE CAMPANHA</div>
+      <div class="restricted">AMBIENTE RESTRITO • ACESSO AUTORIZADO</div>
     </section>
   </main>
   <footer class="login-footer">
-    <div>© 2026 GIE 360 • Todos os direitos reservados.</div>
+    <div>© 2026 GIE 360 • Todos os direitos reservados.<br><span class="enterprise-line">GIE360 Enterprise v1.0 • Ambiente Seguro • Tecnologia e Inteligência Eleitoral</span></div>
     <div>Desenvolvido por <strong>Tiago Santana</strong> • Tecnologia e Inteligência Eleitoral • WhatsApp: (43) 9 9984-1190</div>
   </footer>
 </section>
@@ -4604,6 +4822,67 @@ function imprimirBancoContatos422(){
     }catch(e){}
     return w;
   };
+})();
+
+</script>
+
+<div id="loginLoader424" class="login-loader424">
+  <div class="login-loader-card424">
+    <div class="login-spinner424"></div>
+    <strong>Validando credenciais...</strong>
+    <small>Carregando Inteligência Eleitoral</small>
+  </div>
+</div>
+
+<script>
+
+/* LOGIN ENTERPRISE - v4.2.4 */
+function toggleSenha424(){
+  var s = document.getElementById("senha") || document.querySelector('input[type="password"], input[placeholder="Senha"]');
+  if(!s) return;
+  s.type = s.type === "password" ? "text" : "password";
+}
+function esqueciSenha424(){
+  alert("Para recuperar o acesso, entre em contato com o administrador do sistema GIE360.");
+}
+function carregarLoginLembrado424(){
+  try{
+    var saved = localStorage.getItem("gie360_login_lembrado");
+    var user = document.getElementById("usuario") || document.querySelector('input[placeholder="Usuário"]');
+    var chk = document.getElementById("lembrarUsuario424");
+    if(saved && user){user.value = saved; if(chk) chk.checked = true;}
+  }catch(e){}
+}
+function salvarLoginLembrado424(){
+  try{
+    var user = document.getElementById("usuario") || document.querySelector('input[placeholder="Usuário"]');
+    var chk = document.getElementById("lembrarUsuario424");
+    if(user && chk && chk.checked) localStorage.setItem("gie360_login_lembrado", user.value || "");
+    if(chk && !chk.checked) localStorage.removeItem("gie360_login_lembrado");
+  }catch(e){}
+}
+function mostrarLoaderLogin424(){
+  var l = document.getElementById("loginLoader424");
+  if(l) l.classList.add("active");
+  setTimeout(function(){ if(l) l.classList.remove("active"); }, 1800);
+}
+(function(){
+  var oldLogin = window.login;
+  if(typeof oldLogin === "function"){
+    window.login = function(){
+      salvarLoginLembrado424();
+      mostrarLoaderLogin424();
+      setTimeout(function(){ oldLogin(); }, 350);
+    };
+  }
+  document.addEventListener("DOMContentLoaded",function(){
+    carregarLoginLembrado424();
+    var btn = document.querySelector(".login-btn");
+    if(btn && !btn.dataset.login424){
+      btn.dataset.login424 = "1";
+      btn.addEventListener("click",function(){salvarLoginLembrado424();});
+    }
+  });
 })();
 
 </script>
