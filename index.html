@@ -544,6 +544,18 @@ p{color:#64748b}
 .agenda-approval-actions .no{background:#dc2626;color:#fff}
 .agenda-approval-actions .view{background:#e2e8f0;color:#0b2e59}
 
+
+/* EDITAR USUÁRIOS - v4.1.6 */
+.user-editing-alert{
+  background:#fffbeb;
+  border:1px solid #fde68a;
+  color:#92400e;
+  border-radius:16px;
+  padding:12px 14px;
+  font-weight:800;
+  margin-bottom:14px;
+}
+
 </style>
 </head>
 
@@ -3546,6 +3558,236 @@ function marcarSolicitacoesNovasComoPendentes415(){
     if(page === "agenda") setTimeout(renderAprovacaoAgenda415,100);
   };
   document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){try{marcarSolicitacoesNovasComoPendentes415();renderAprovacaoAgenda415();}catch(e){}},700);});
+})();
+
+</script>
+<script>
+
+/* EDITAR USUÁRIOS - v4.1.6 */
+var usuarioEditIndex416 = null;
+
+function user416Get(id){return document.getElementById(id);}
+function user416Val(id){var e=user416Get(id); return e ? e.value : "";}
+function user416Set(id,val){var e=user416Get(id); if(e) e.value = val == null ? "" : val;}
+
+function usuariosArray416(){
+  if(typeof db === "undefined") return [];
+  if(!db.usuarios && db.users) db.usuarios = db.users;
+  if(!db.usuarios) db.usuarios = [];
+  return db.usuarios;
+}
+
+function usuario416Campos(){
+  return {
+    nome:["userNome","usuarioNome","nomeUsuario","uNome","novoUsuarioNome"],
+    cpf:["userCpf","usuarioCpf","cpfUsuario","uCpf"],
+    telefone:["userTelefone","usuarioTelefone","telefoneUsuario","uTelefone","userWhatsApp","usuarioWhatsapp"],
+    email:["userEmail","usuarioEmail","emailUsuario","uEmail"],
+    municipio:["userMunicipio","usuarioMunicipio","municipioUsuario","uMunicipio"],
+    regiao:["userRegiao","usuarioRegiao","regiaoUsuario","uRegiao"],
+    status:["userStatus","usuarioStatus","statusUsuario","uStatus"],
+    perfil:["userPerfil","usuarioPerfil","perfilUsuario","uPerfil"],
+    login:["userLogin","usuarioLogin","loginUsuario","uLogin"],
+    senha:["userSenha","usuarioSenha","senhaUsuario","uSenha"],
+    entrada:["userEntrada","usuarioEntrada","entradaUsuario","uEntrada"],
+    pagamento:["userPagamento","usuarioPagamento","pagamentoUsuario","uPagamento","userValor","usuarioValor"],
+    projecao:["userProjecao","usuarioProjecao","projecaoUsuario","uProjecao"],
+    observacoes:["userObservacoes","usuarioObservacoes","observacoesUsuario","uObservacoes"]
+  };
+}
+
+function findCampoUsuario416(nome){
+  var lista = usuario416Campos()[nome] || [];
+  for(var i=0;i<lista.length;i++){
+    var el = document.getElementById(lista[i]);
+    if(el) return el;
+  }
+  return null;
+}
+
+function getCampoUsuario416(nome){
+  var el = findCampoUsuario416(nome);
+  return el ? el.value : "";
+}
+
+function setCampoUsuario416(nome,val){
+  var el = findCampoUsuario416(nome);
+  if(el) el.value = val == null ? "" : val;
+}
+
+function limparFormularioUsuario416(){
+  Object.keys(usuario416Campos()).forEach(function(k){
+    var el = findCampoUsuario416(k);
+    if(el){
+      if(k === "pagamento" || k === "projecao") el.value = 0;
+      else el.value = "";
+    }
+  });
+  setCampoUsuario416("status","Ativo");
+  setCampoUsuario416("perfil","Apoiador");
+  usuarioEditIndex416 = null;
+  var btn = document.getElementById("btnSalvarUsuario") || document.querySelector('[onclick*="salvarFormularioUsuario"]') || document.querySelector('[onclick*="salvarUsuario"]');
+  if(btn) btn.textContent = "Salvar Usuário";
+  var alert = document.getElementById("userEditingAlert416");
+  if(alert) alert.remove();
+}
+
+function editarUsuario416(i){
+  var arr = usuariosArray416();
+  var u = arr[i];
+  if(!u){alert("Usuário não encontrado.");return;}
+
+  usuarioEditIndex416 = i;
+
+  if(typeof openPage === "function"){
+    var btn = document.querySelector('[data-page="usuarios"]');
+    openPage("usuarios", btn);
+  }
+
+  setTimeout(function(){
+    setCampoUsuario416("nome", u.nome || "");
+    setCampoUsuario416("cpf", u.cpf || "");
+    setCampoUsuario416("telefone", u.telefone || u.whatsapp || "");
+    setCampoUsuario416("email", u.email || "");
+    setCampoUsuario416("municipio", u.municipio || "");
+    setCampoUsuario416("regiao", u.regiao || "");
+    setCampoUsuario416("status", u.status || "Ativo");
+    setCampoUsuario416("perfil", u.perfil || "Apoiador");
+    setCampoUsuario416("login", u.login || "");
+    setCampoUsuario416("senha", u.senha || "");
+    setCampoUsuario416("entrada", u.entrada || "");
+    setCampoUsuario416("pagamento", Number(u.pagamento || u.valor || 0));
+    setCampoUsuario416("projecao", Number(u.projecao || 0));
+    setCampoUsuario416("observacoes", u.observacoes || "");
+
+    var form = findCampoUsuario416("nome");
+    if(form) form.focus();
+
+    var container = (form && form.closest(".user-form-card")) || (form && form.closest(".form-card")) || (form && form.closest(".pro-form")) || (form && form.closest(".card"));
+    if(container && !document.getElementById("userEditingAlert416")){
+      var div = document.createElement("div");
+      div.id = "userEditingAlert416";
+      div.className = "user-editing-alert";
+      div.textContent = "Editando usuário: " + (u.nome || u.login || "");
+      container.insertBefore(div, container.firstChild);
+    }
+
+    var btnSalvar = document.getElementById("btnSalvarUsuario") || document.querySelector('[onclick*="salvarFormularioUsuario"]') || document.querySelector('[onclick*="salvarUsuario"]');
+    if(btnSalvar) btnSalvar.textContent = "Atualizar Usuário";
+  },120);
+}
+
+function dadosUsuarioFormulario416(){
+  return {
+    id: usuarioEditIndex416 !== null && usuariosArray416()[usuarioEditIndex416] ? usuariosArray416()[usuarioEditIndex416].id : (typeof uid==="function" ? uid() : ("u"+Date.now()+Math.random())),
+    nome: getCampoUsuario416("nome").trim(),
+    cpf: getCampoUsuario416("cpf"),
+    telefone: getCampoUsuario416("telefone"),
+    email: getCampoUsuario416("email"),
+    municipio: getCampoUsuario416("municipio"),
+    regiao: getCampoUsuario416("regiao"),
+    status: getCampoUsuario416("status") || "Ativo",
+    perfil: getCampoUsuario416("perfil") || "Apoiador",
+    login: getCampoUsuario416("login").trim(),
+    senha: getCampoUsuario416("senha"),
+    entrada: getCampoUsuario416("entrada"),
+    pagamento: Number(getCampoUsuario416("pagamento") || 0),
+    projecao: Number(getCampoUsuario416("projecao") || 0),
+    observacoes: getCampoUsuario416("observacoes")
+  };
+}
+
+function salvarUsuario416(){
+  var arr = usuariosArray416();
+  var u = dadosUsuarioFormulario416();
+
+  if(!u.nome){alert("Informe o nome do usuário.");return false;}
+  if(!u.login){alert("Informe o login do usuário.");return false;}
+  if(!u.senha){alert("Informe a senha do usuário.");return false;}
+
+  var existe = arr.some(function(x,idx){
+    return idx !== usuarioEditIndex416 && String(x.login||"").trim() === u.login;
+  });
+  if(existe){alert("Já existe um usuário com esse login.");return false;}
+
+  if(usuarioEditIndex416 !== null && arr[usuarioEditIndex416]){
+    arr[usuarioEditIndex416] = u;
+  }else{
+    arr.push(u);
+  }
+
+  db.usuarios = arr;
+  if(db.users) db.users = arr;
+
+  if(typeof salvar === "function") salvar();
+  usuarioEditIndex416 = null;
+
+  if(typeof render === "function") render();
+  setTimeout(function(){limparFormularioUsuario416();},80);
+
+  alert("Usuário salvo com sucesso.");
+  return true;
+}
+
+function renderBotoesEditarUsuarios416(){
+  var arr = usuariosArray416();
+  if(!arr.length) return;
+
+  var tables = document.querySelectorAll("table");
+  tables.forEach(function(table){
+    var txt = table.textContent || "";
+    if(txt.indexOf("Login") < 0 && txt.indexOf("Perfil") < 0 && txt.indexOf("Usuário") < 0) return;
+
+    var rows = table.querySelectorAll("tbody tr");
+    rows.forEach(function(tr,idx){
+      if(!arr[idx]) return;
+      if(tr.querySelector(".btn-edit-user-416")) return;
+      var last = tr.children[tr.children.length-1];
+      if(!last) return;
+      var btn = document.createElement("button");
+      btn.className = "action-mini blue btn-edit-user-416";
+      btn.type = "button";
+      btn.textContent = "Editar";
+      btn.onclick = function(){editarUsuario416(idx);};
+      last.insertBefore(btn, last.firstChild);
+    });
+  });
+}
+
+(function(){
+  var originalSalvarFormulario = window.salvarFormularioUsuario;
+  window.salvarFormularioUsuario = function(){
+    return salvarUsuario416();
+  };
+
+  var originalSalvarUsuario = window.salvarUsuario;
+  window.salvarUsuario = function(){
+    return salvarUsuario416();
+  };
+
+  var originalLimparFormulario = window.limparFormularioUsuario;
+  window.limparFormularioUsuario = function(){
+    limparFormularioUsuario416();
+    if(typeof originalLimparFormulario === "function") {
+      try{originalLimparFormulario();}catch(e){}
+    }
+  };
+
+  var oldRender = window.render;
+  window.render = function(){
+    if(typeof oldRender === "function") oldRender();
+    setTimeout(renderBotoesEditarUsuarios416,80);
+  };
+
+  var oldOpenPage = window.openPage;
+  window.openPage = function(page,btn){
+    if(typeof oldOpenPage === "function") oldOpenPage(page,btn);
+    if(page === "usuarios") setTimeout(renderBotoesEditarUsuarios416,120);
+  };
+
+  document.addEventListener("DOMContentLoaded",function(){
+    setTimeout(renderBotoesEditarUsuarios416,800);
+  });
 })();
 
 </script>
