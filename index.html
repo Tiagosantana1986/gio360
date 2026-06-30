@@ -525,6 +525,25 @@ p{color:#64748b}
 .whats-group-btn{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:14px;text-align:left;box-shadow:0 8px 18px rgba(15,23,42,.05);cursor:pointer}.whats-group-btn strong{display:block;color:#0b2e59;margin-bottom:5px}.whats-group-btn span{color:#64748b;font-size:12px;font-weight:800}
 @media(max-width:1100px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:1fr}}
 
+
+/* APROVAÇÃO DE REUNIÕES - v4.1.5 */
+.agenda-admin-approval{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:20px}
+.agenda-admin-approval h3{margin:0 0 12px;color:#0b2e59}
+.agenda-approval-wrap{overflow:auto}
+.agenda-approval-table{width:100%;border-collapse:collapse;min-width:950px}
+.agenda-approval-table th,.agenda-approval-table td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px;vertical-align:top}
+.agenda-approval-table th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+.agenda-status-badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#f3f4f6;color:#374151}
+.agenda-status-badge.pendente{background:#fef3c7;color:#92400e}
+.agenda-status-badge.aprovada{background:#dcfce7;color:#166534}
+.agenda-status-badge.recusada{background:#fee2e2;color:#991b1b}
+.agenda-status-badge.confirmada{background:#dbeafe;color:#0b2e59}
+.agenda-approval-actions{display:flex;gap:8px;flex-wrap:wrap}
+.agenda-approval-actions button{border:0;border-radius:10px;padding:8px 10px;font-weight:900;cursor:pointer}
+.agenda-approval-actions .ok{background:#16a34a;color:#fff}
+.agenda-approval-actions .no{background:#dc2626;color:#fff}
+.agenda-approval-actions .view{background:#e2e8f0;color:#0b2e59}
+
 </style>
 </head>
 
@@ -3391,5 +3410,144 @@ function renderWhatsApp(){if(!wGet("whatsapp")||typeof db==="undefined")return;g
 })();
 </script>
 
+<script>
+
+/* APROVAÇÃO DE REUNIÕES - v4.1.5 */
+function perfilAtualAgenda415(){
+  try{
+    if(typeof currentUser !== "undefined" && currentUser) return currentUser.perfil || currentUser.role || "";
+    if(typeof usuarioLogado !== "undefined" && usuarioLogado) return usuarioLogado.perfil || usuarioLogado.role || "";
+    if(typeof db !== "undefined" && db.session) return db.session.perfil || db.session.role || "";
+  }catch(e){}
+  return "";
+}
+function usuarioAtualAgenda415(){
+  try{
+    if(typeof currentUser !== "undefined" && currentUser) return currentUser.nome || currentUser.login || "";
+    if(typeof usuarioLogado !== "undefined" && usuarioLogado) return usuarioLogado.nome || usuarioLogado.login || "";
+    if(typeof db !== "undefined" && db.session) return db.session.nome || db.session.login || "";
+  }catch(e){}
+  return "";
+}
+function garantirAgendaAprovacao415(){
+  if(typeof db === "undefined") return;
+  db.agenda = db.agenda || [];
+  db.agenda.forEach(function(a){
+    if(!a.id && typeof uid === "function") a.id = uid();
+    if(!a.id) a.id = "ag"+Date.now()+Math.random();
+    if(!a.aprovacaoStatus){
+      var st = String(a.status || "").toLowerCase();
+      if(st.indexOf("recus") >= 0 || st.indexOf("cancel") >= 0) a.aprovacaoStatus = "recusada";
+      else if(st.indexOf("confirm") >= 0 || st.indexOf("aprov") >= 0 || st.indexOf("realiz") >= 0) a.aprovacaoStatus = "aprovada";
+      else a.aprovacaoStatus = "pendente";
+    }
+  });
+  if(typeof salvar === "function") salvar();
+}
+function statusAgendaBadge415(status){
+  var s = String(status || "pendente").toLowerCase();
+  var cls = "pendente";
+  if(s.indexOf("aprov") >= 0) cls = "aprovada";
+  if(s.indexOf("recus") >= 0) cls = "recusada";
+  if(s.indexOf("confirm") >= 0) cls = "confirmada";
+  return '<span class="agenda-status-badge '+cls+'">'+(status || "pendente")+'</span>';
+}
+function aprovarAgenda415(id){
+  garantirAgendaAprovacao415();
+  var a = (db.agenda || []).find(function(x){return String(x.id) === String(id);});
+  if(!a){alert("Solicitação não encontrada.");return;}
+  a.aprovacaoStatus = "aprovada";
+  a.status = "Confirmado";
+  a.aprovadoPor = usuarioAtualAgenda415() || "Administrador";
+  a.aprovadoEm = new Date().toISOString();
+  if(typeof salvar === "function") salvar();
+  if(typeof render === "function") render();
+  setTimeout(renderAprovacaoAgenda415,100);
+  alert("Reunião aprovada e confirmada na agenda.");
+}
+function recusarAgenda415(id){
+  var motivo = prompt("Informe o motivo da recusa, se desejar:") || "";
+  garantirAgendaAprovacao415();
+  var a = (db.agenda || []).find(function(x){return String(x.id) === String(id);});
+  if(!a){alert("Solicitação não encontrada.");return;}
+  a.aprovacaoStatus = "recusada";
+  a.status = "Recusado";
+  a.recusadoPor = usuarioAtualAgenda415() || "Administrador";
+  a.recusadoEm = new Date().toISOString();
+  a.motivoRecusa = motivo;
+  if(typeof salvar === "function") salvar();
+  if(typeof render === "function") render();
+  setTimeout(renderAprovacaoAgenda415,100);
+  alert("Reunião recusada.");
+}
+function verAgenda415(id){
+  var a = (db.agenda || []).find(function(x){return String(x.id) === String(id);});
+  if(!a){alert("Solicitação não encontrada.");return;}
+  alert("Solicitação de agenda\n\nTipo: "+(a.tipo||"-")+"\nData: "+(a.data||"-")+"\nHora: "+(a.hora||"-")+"\nMunicípio: "+(a.municipio||"-")+"\nLocal: "+(a.local||"-")+"\nSolicitado por: "+(a.solicitadoPor||a.criadoPor||"-")+"\nDescrição: "+(a.descricao||"-"));
+}
+function renderAprovacaoAgenda415(){
+  if(typeof db === "undefined") return;
+  var perfil = perfilAtualAgenda415();
+  var agendaPage = document.getElementById("agenda");
+  if(!agendaPage) return;
+  var old = document.getElementById("agendaAdminApproval415");
+  if(old) old.remove();
+  garantirAgendaAprovacao415();
+  if(perfil !== "Administrador") return;
+  var pendentes = (db.agenda || []).filter(function(a){return String(a.aprovacaoStatus || "pendente").toLowerCase() === "pendente";});
+  var box = document.createElement("div");
+  box.id = "agendaAdminApproval415";
+  box.className = "agenda-admin-approval";
+  box.innerHTML =
+    '<h3>Solicitações de Reuniões Pendentes de Aprovação</h3>'+
+    '<p>As solicitações feitas por usuários aparecem aqui para o Administrador aprovar ou recusar.</p>'+
+    '<div class="agenda-approval-wrap"><table class="agenda-approval-table">'+
+    '<thead><tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Local</th><th>Solicitado por</th><th>Status</th><th>Ação</th></tr></thead><tbody>'+
+    (pendentes.length ? pendentes.map(function(a){
+      var id = String(a.id).replace(/"/g,"&quot;");
+      return '<tr><td>'+(a.data||"-")+'</td><td>'+(a.hora||"-")+'</td><td>'+(a.tipo||"Reunião")+'</td><td>'+(a.municipio||"-")+'</td><td>'+(a.local||"-")+'</td><td>'+(a.solicitadoPor||a.criadoPor||"-")+'</td><td>'+statusAgendaBadge415(a.aprovacaoStatus)+'</td><td><div class="agenda-approval-actions"><button class="view" onclick="verAgenda415(&quot;'+id+'&quot;)">Ver</button><button class="ok" onclick="aprovarAgenda415(&quot;'+id+'&quot;)">Aprovar</button><button class="no" onclick="recusarAgenda415(&quot;'+id+'&quot;)">Recusar</button></div></td></tr>';
+    }).join("") : '<tr><td colspan="8" class="empty">Nenhuma solicitação pendente.</td></tr>')+
+    '</tbody></table></div>';
+  var head = agendaPage.querySelector(".page-head");
+  if(head && head.nextSibling) agendaPage.insertBefore(box, head.nextSibling);
+  else agendaPage.insertBefore(box, agendaPage.firstChild);
+}
+function marcarSolicitacoesNovasComoPendentes415(){
+  if(typeof db === "undefined") return;
+  var perfil = perfilAtualAgenda415();
+  var usuario = usuarioAtualAgenda415();
+  db.agenda = db.agenda || [];
+  var mudou = false;
+  db.agenda.forEach(function(a){
+    if(!a.id){a.id = typeof uid === "function" ? uid() : ("ag"+Date.now()+Math.random()); mudou = true;}
+    if(!a.aprovacaoStatus){
+      if(perfil === "Administrador"){
+        a.aprovacaoStatus = "aprovada";
+        if(!a.status || String(a.status).toLowerCase()==="pendente") a.status = "Confirmado";
+      }else{
+        a.aprovacaoStatus = "pendente";
+        a.status = "Pendente";
+      }
+      if(!a.solicitadoPor) a.solicitadoPor = usuario;
+      mudou = true;
+    }
+  });
+  if(mudou && typeof salvar === "function") salvar();
+}
+(function(){
+  var oldRender = window.render;
+  window.render = function(){
+    if(typeof oldRender === "function") oldRender();
+    try{marcarSolicitacoesNovasComoPendentes415();renderAprovacaoAgenda415();}catch(e){console.warn("Agenda aprovação",e);}
+  };
+  var oldOpenPage = window.openPage;
+  window.openPage = function(page,btn){
+    if(typeof oldOpenPage === "function") oldOpenPage(page,btn);
+    if(page === "agenda") setTimeout(renderAprovacaoAgenda415,100);
+  };
+  document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){try{marcarSolicitacoesNovasComoPendentes415();renderAprovacaoAgenda415();}catch(e){}},700);});
+})();
+
+</script>
 </body>
 </html>
