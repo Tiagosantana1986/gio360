@@ -564,9 +564,9 @@ p{color:#64748b}
     <button data-page="imprimirAgenda" data-roles="Administrador,Operador,Liderança" onclick="openPage('imprimirAgenda',this)"><span>🖨️</span>Imprimir Agenda</button>
     <button data-page="inteligencia" data-roles="Administrador,Operador" onclick="openPage('inteligencia',this)"><span>🧠</span>Inteligência</button>
     <button data-page="relatorios" data-roles="Administrador,Operador" onclick="openPage('relatorios',this)"><span>📊</span>Relatórios</button>
-    <button data-page="banco" data-roles="Administrador,Operador,Liderança" onclick="openPage('banco',this)"><span>🗂️</span>Banco de Dados</button>
+    <button data-page="banco" onclick="openPage('banco',this)" data-roles="Administrador"><span>🗂️</span>Banco de Dados</button>
     <button data-page="usuarios" data-roles="Administrador" onclick="openPage('usuarios',this)"><span>⚙️</span>Usuários</button>
-    <button data-page="whatsapp" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('whatsapp',this)"><span>📲</span>WhatsApp</button>
+    <button data-page="whatsapp" onclick="openPage('whatsapp',this)" data-roles="Administrador,Operador"><span>📲</span>WhatsApp</button>
     <button data-page="ajuda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('ajuda',this)"><span>📖</span>Central de Ajuda</button>
   </nav>
 </aside>
@@ -3331,5 +3331,65 @@ function aplicarGrupoWhatsApp(g){preencherSelectsWhatsApp();limparWhatsApp();if(
 function renderWhatsApp(){if(!wGet("whatsapp")||typeof db==="undefined")return;garantirWhatsAppDB();preencherSelectsWhatsApp();if(!whatsResultados.length)whatsResultados=getPessoasWhatsApp();renderListaWhatsApp()}
 
 </script>
+
+<script>
+/* PERMISSÕES WHATSAPP/BANCO - v4.1.4 */
+(function(){
+  function perfilAtualGIE(){
+    try{
+      if(typeof currentUser !== "undefined" && currentUser) return currentUser.perfil || currentUser.role || "";
+      if(typeof usuarioLogado !== "undefined" && usuarioLogado) return usuarioLogado.perfil || usuarioLogado.role || "";
+      if(typeof db !== "undefined" && db.session) return db.session.perfil || db.session.role || "";
+    }catch(e){}
+    return "";
+  }
+
+  function aplicarPermissoesExtrasGIE(){
+    var perfil = perfilAtualGIE();
+
+    document.querySelectorAll('[data-page="whatsapp"]').forEach(function(btn){
+      btn.style.display = (perfil === "Administrador" || perfil === "Operador") ? "" : "none";
+    });
+
+    document.querySelectorAll('[data-page="banco"],[data-page="database"]').forEach(function(btn){
+      btn.style.display = (perfil === "Administrador") ? "" : "none";
+    });
+
+    if(perfil !== "Administrador" && perfil !== "Operador"){
+      var whatsPage = document.getElementById("whatsapp");
+      if(whatsPage) whatsPage.classList.remove("active");
+    }
+
+    if(perfil !== "Administrador"){
+      var bancoPage = document.getElementById("banco") || document.getElementById("database");
+      if(bancoPage) bancoPage.classList.remove("active");
+    }
+  }
+
+  var oldOpenPagePerm = window.openPage;
+  window.openPage = function(page, btn){
+    var perfil = perfilAtualGIE();
+
+    if(page === "whatsapp" && !(perfil === "Administrador" || perfil === "Operador")){
+      alert("Acesso permitido apenas para Administrador e Operador.");
+      return;
+    }
+
+    if((page === "banco" || page === "database") && perfil !== "Administrador"){
+      alert("Acesso permitido apenas para Administrador.");
+      return;
+    }
+
+    if(typeof oldOpenPagePerm === "function") oldOpenPagePerm(page, btn);
+    setTimeout(aplicarPermissoesExtrasGIE, 50);
+  };
+
+  document.addEventListener("DOMContentLoaded", function(){
+    setInterval(aplicarPermissoesExtrasGIE, 800);
+    setTimeout(aplicarPermissoesExtrasGIE, 300);
+  });
+})();
+</script>
+
 </body>
 </html>
