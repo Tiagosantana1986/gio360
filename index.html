@@ -1100,6 +1100,376 @@ p{color:#64748b}
   .login-tools button{margin-top:8px}
 }
 
+
+/* PADRONIZAÇÃO VISUAL GLOBAL - v4.2.5 */
+/* Uniformiza todas as abas internas sem alterar regras do sistema */
+:root{
+  --gie-font: Arial, Helvetica, sans-serif;
+  --gie-blue:#0b2e59;
+  --gie-gold:#f2b300;
+  --gie-text:#1f2937;
+  --gie-muted:#64748b;
+  --gie-border:#dbe3ef;
+  --gie-bg:#eef3fb;
+  --gie-card:#ffffff;
+  --gie-radius:22px;
+  --gie-shadow:0 14px 34px rgba(15,23,42,.07);
+}
+
+body,
+button,
+input,
+select,
+textarea,
+table,
+td,
+th{
+  font-family:var(--gie-font) !important;
+}
+
+/* Texto geral das abas */
+#app{
+  font-size:14px !important;
+  line-height:1.45 !important;
+  color:var(--gie-text) !important;
+}
+
+/* Cabeçalhos padronizados */
+.page-head h1,
+.content h1{
+  font-size:32px !important;
+  line-height:1.18 !important;
+  font-weight:900 !important;
+  letter-spacing:-.6px !important;
+  color:var(--gie-blue) !important;
+}
+
+.page-head p,
+.content > p,
+.card p,
+.form-card p,
+.pro-form p,
+.user-form-card p,
+.db-contatos-card p,
+.agenda-print-unificada p,
+.whats-card p{
+  font-size:14px !important;
+  line-height:1.55 !important;
+  color:var(--gie-muted) !important;
+  font-weight:600 !important;
+}
+
+/* Cards */
+.card,
+.form-card,
+.pro-form,
+.pro-table-card,
+.user-form-card,
+.user-list-card,
+.list-card,
+.smart-card,
+.exec-panel,
+.report-box,
+.whats-card,
+.db-contatos-card,
+.agenda-print-unificada,
+.agenda-admin-approval{
+  border-radius:24px !important;
+  border:1px solid var(--gie-border) !important;
+  box-shadow:var(--gie-shadow) !important;
+  background:var(--gie-card) !important;
+}
+
+/* Títulos internos */
+.card h3,
+.form-card h3,
+.pro-form h3,
+.user-form-card h3,
+.smart-card h3,
+.exec-panel h3,
+.whats-card h3,
+.db-contatos-card h3,
+.agenda-print-unificada h3,
+.agenda-admin-approval h3,
+.help-card h3{
+  font-size:20px !important;
+  line-height:1.25 !important;
+  font-weight:900 !important;
+  color:var(--gie-blue) !important;
+  margin-top:0 !important;
+}
+
+/* Subtítulos de seção */
+.form-section-title,
+.pro-section-title,
+.user-form-title{
+  font-size:15px !important;
+  line-height:1.35 !important;
+  font-weight:900 !important;
+  color:var(--gie-blue) !important;
+}
+
+/* Formulários */
+input,
+select,
+textarea,
+.form-field input,
+.form-field select,
+.form-field textarea,
+.pro-field input,
+.pro-field select,
+.pro-field textarea,
+.user-field input,
+.user-field select,
+.user-field textarea,
+.whats-field input,
+.whats-field select,
+.whats-field textarea{
+  font-size:14px !important;
+  line-height:1.35 !important;
+  min-height:44px !important;
+  border-radius:14px !important;
+  font-weight:700 !important;
+}
+
+textarea,
+.form-field textarea,
+.pro-field textarea,
+.user-field textarea,
+.whats-field textarea{
+  min-height:78px !important;
+}
+
+label,
+.form-field label,
+.pro-field label,
+.user-field label,
+.whats-field label,
+.db-contatos-filtros label,
+.agenda-print-filtros label{
+  font-size:11px !important;
+  line-height:1.25 !important;
+  letter-spacing:.5px !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  color:var(--gie-muted) !important;
+}
+
+/* Botões */
+.btn,
+.action-mini,
+.whats-btn,
+.agenda-approval-actions button,
+.login-btn{
+  font-size:14px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+  border-radius:14px !important;
+}
+
+.action-mini,
+.whats-btn,
+.agenda-approval-actions button{
+  font-size:13px !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+}
+
+/* Menu lateral */
+.nav button{
+  font-size:14px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+}
+.user-box strong{
+  font-size:14px !important;
+}
+.user-box small{
+  font-size:12px !important;
+}
+
+/* Topbar */
+.topbar strong{
+  font-size:18px !important;
+}
+.topbar small{
+  font-size:12px !important;
+}
+
+/* KPIs e indicadores */
+.kpi span,
+.exec-card span,
+.pro-card span,
+.smart-item span,
+.db-contatos-kpi span,
+.whats-kpi span,
+.report-kpi span,
+.report-kpi-pro span{
+  font-size:11px !important;
+  line-height:1.25 !important;
+  letter-spacing:.5px !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  color:var(--gie-muted) !important;
+}
+
+.kpi strong,
+.pro-card strong,
+.db-contatos-kpi strong,
+.whats-kpi strong{
+  font-size:28px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+}
+
+.exec-card strong{
+  font-size:36px !important;
+  line-height:1.05 !important;
+  font-weight:900 !important;
+}
+
+/* Tabelas */
+.table th,
+.table td,
+.simple-list th,
+.simple-list td,
+.user-list th,
+.user-list td,
+.pro-table th,
+.pro-table td,
+.exec-table th,
+.exec-table td,
+.whats-table th,
+.whats-table td,
+.db-contatos-table th,
+.db-contatos-table td,
+.agenda-approval-table th,
+.agenda-approval-table td{
+  font-size:13px !important;
+  line-height:1.4 !important;
+  padding:11px 10px !important;
+  vertical-align:middle !important;
+}
+
+.table th,
+.simple-list th,
+.user-list th,
+.pro-table th,
+.exec-table th,
+.whats-table th,
+.db-contatos-table th,
+.agenda-approval-table th{
+  font-size:11px !important;
+  line-height:1.25 !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.45px !important;
+  color:var(--gie-blue) !important;
+}
+
+.table td,
+.simple-list td,
+.user-list td,
+.pro-table td,
+.exec-table td,
+.whats-table td,
+.db-contatos-table td,
+.agenda-approval-table td{
+  color:#0f172a !important;
+}
+
+/* Badges */
+.badge,
+.tag,
+.pro-badge,
+.user-badge,
+.exec-badge,
+.whats-badge,
+.agenda-status-badge,
+.status-pill{
+  font-size:11px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+  padding:6px 10px !important;
+  border-radius:999px !important;
+}
+
+/* IA */
+.ia-head h3{
+  font-size:20px !important;
+}
+.ia-head p{
+  font-size:14px !important;
+}
+.ia-msg{
+  font-size:14px !important;
+  line-height:1.55 !important;
+}
+
+/* Central de ajuda */
+.help-card p,
+.help-card li,
+.assistant-answer{
+  font-size:14px !important;
+  line-height:1.6 !important;
+}
+
+/* Rodapé */
+.footer{
+  font-size:12px !important;
+  line-height:1.5 !important;
+}
+
+/* Login mantém padrão próprio, mas sem exagero */
+#loginPage{
+  font-size:14px !important;
+}
+.login-enterprise-title{
+  font-size:22px !important;
+}
+.login-enterprise-sub{
+  font-size:13px !important;
+}
+.login-field input{
+  font-size:15px !important;
+}
+.login-trust span{
+  font-size:11px !important;
+}
+
+/* Não mexer no padrão de PDF executivo */
+@media print{
+  #relatorioCompleto,
+  #relatorioCompleto *,
+  #relatorio,
+  #relatorio *,
+  .report-pro,
+  .report-pro *,
+  .report-box,
+  .report-box *,
+  .print-area,
+  .print-area *{
+    font-size:inherit;
+  }
+}
+
+/* Responsivo */
+@media(max-width:650px){
+  .page-head h1,
+  .content h1{
+    font-size:26px !important;
+  }
+  .kpi strong,
+  .pro-card strong,
+  .db-contatos-kpi strong,
+  .whats-kpi strong{
+    font-size:24px !important;
+  }
+  .exec-card strong{
+    font-size:30px !important;
+  }
+}
+
 </style>
 </head>
 
