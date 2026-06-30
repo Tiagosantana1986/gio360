@@ -723,6 +723,32 @@ p{color:#64748b}
   }
 }
 
+
+/* BANCO DE DADOS - LISTA DE CONTATOS - v4.2.2 */
+.db-contatos-card{
+  background:#fff;
+  border:1px solid #dbe3ef;
+  border-radius:24px;
+  padding:22px;
+  box-shadow:0 14px 34px rgba(15,23,42,.07);
+  margin-bottom:20px;
+}
+.db-contatos-card h3{margin:0 0 10px;color:#0b2e59}
+.db-contatos-filtros{display:grid;grid-template-columns:2fr 2fr 1fr;gap:14px;margin:16px 0}
+.db-contatos-filtros label{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900;margin-bottom:6px}
+.db-contatos-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.db-contatos-table-wrap{overflow:auto}
+.db-contatos-table{width:100%;border-collapse:collapse;min-width:720px}
+.db-contatos-table th,.db-contatos-table td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:14px}
+.db-contatos-table th{color:#0b2e59;text-transform:uppercase;font-size:12px;letter-spacing:.5px}
+.db-contatos-table td:nth-child(1){font-weight:900;color:#0f172a}
+.db-contatos-table td:nth-child(3){font-weight:900;color:#0b2e59}
+.db-contatos-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+.db-contatos-kpi div{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:14px}
+.db-contatos-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}
+.db-contatos-kpi strong{display:block;margin-top:6px;font-size:24px;color:#0b2e59}
+@media(max-width:800px){.db-contatos-filtros,.db-contatos-kpi{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -4245,6 +4271,165 @@ function limparImpressaoAgenda421(){
   document.addEventListener("DOMContentLoaded",function(){
     setTimeout(inserirImpressaoNaAgenda421,800);
   });
+})();
+
+</script>
+<script>
+
+/* BANCO DE DADOS - LISTA DE CONTATOS - v4.2.2 */
+function db422Telefone(item){
+  return item.telefone || item.whatsapp || item.celular || item.phone || "";
+}
+function db422Perfil(item,tipo){
+  if(tipo === "usuario") return item.perfil || item.role || "Usuário";
+  return item.funcao || item.perfil || item.cargo || "Apoiador";
+}
+function db422Municipio(item){
+  return item.municipio || item.cidade || "";
+}
+function db422Nome(item){
+  return item.nome || item.name || item.login || "-";
+}
+function db422Contatos(){
+  if(typeof db === "undefined") return [];
+  var out = [];
+  (db.usuarios || db.users || []).forEach(function(u){
+    out.push({
+      nome: db422Nome(u),
+      telefone: db422Telefone(u),
+      perfil: db422Perfil(u,"usuario"),
+      municipio: db422Municipio(u),
+      origem: "Usuário"
+    });
+  });
+  (db.pessoas || db.base || []).forEach(function(p){
+    out.push({
+      nome: db422Nome(p),
+      telefone: db422Telefone(p),
+      perfil: db422Perfil(p,"pessoa"),
+      municipio: db422Municipio(p),
+      origem: "Base de Apoio"
+    });
+  });
+  // remover vazios e duplicados simples por telefone+nome
+  var vistos = {};
+  return out.filter(function(x){
+    if(!x.nome || x.nome === "-") return false;
+    var key = (x.nome+"|"+x.telefone+"|"+x.perfil).toLowerCase();
+    if(vistos[key]) return false;
+    vistos[key] = true;
+    return true;
+  }).sort(function(a,b){
+    return String(a.nome).localeCompare(String(b.nome));
+  });
+}
+function db422Municipios(){
+  var ms = [];
+  db422Contatos().forEach(function(c){
+    if(c.municipio && ms.indexOf(c.municipio) < 0) ms.push(c.municipio);
+  });
+  return ms.sort();
+}
+function inserirBancoContatos422(){
+  var page = document.getElementById("banco") || document.getElementById("database");
+  if(!page || document.getElementById("dbContatos422")) return;
+  page.innerHTML =
+    '<div class="page-head"><div><h1>Banco de Dados</h1><p>Lista geral de contatos por município, independente de onde a pessoa esteja cadastrada na operação.</p></div></div>'+
+    '<div class="db-contatos-card" id="dbContatos422">'+
+      '<h3>Lista de Contatos</h3>'+
+      '<p>Selecione um município para aparecerem todos os nomes cadastrados em Usuários e Base de Apoio.</p>'+
+      '<div class="db-contatos-filtros">'+
+        '<div><label>Município</label><select id="db422Municipio"></select></div>'+
+        '<div><label>Buscar nome ou telefone</label><input id="db422Busca" placeholder="Digite para buscar"></div>'+
+        '<div><label>&nbsp;</label><button class="btn gold" type="button" onclick="gerarBancoContatos422()">Gerar Lista</button></div>'+
+      '</div>'+
+      '<div class="db-contatos-actions">'+
+        '<button class="btn light" type="button" onclick="limparBancoContatos422()">Limpar</button>'+
+        '<button class="btn blue" type="button" onclick="copiarBancoContatos422()">Copiar Lista</button>'+
+        '<button class="btn blue" type="button" onclick="imprimirBancoContatos422()">Imprimir</button>'+
+      '</div>'+
+      '<div class="db-contatos-kpi">'+
+        '<div><span>Total listado</span><strong id="db422Total">0</strong></div>'+
+        '<div><span>Município</span><strong id="db422MunLabel">Todos</strong></div>'+
+        '<div><span>Formato</span><strong>Nome | Telefone | Perfil</strong></div>'+
+      '</div>'+
+      '<div class="db-contatos-table-wrap">'+
+        '<table class="db-contatos-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Perfil / Função</th></tr></thead><tbody id="db422Lista"></tbody></table>'+
+      '</div>'+
+    '</div>';
+  preencherBancoMunicipios422();
+  gerarBancoContatos422();
+}
+function preencherBancoMunicipios422(){
+  var sel = document.getElementById("db422Municipio");
+  if(!sel) return;
+  var atual = sel.value || "";
+  var ms = db422Municipios();
+  sel.innerHTML = '<option value="">Todos os municípios</option>' + ms.map(function(m){return '<option value="'+m+'">'+m+'</option>';}).join("");
+  if(atual) sel.value = atual;
+}
+function filtrarBancoContatos422(){
+  var mun = document.getElementById("db422Municipio") ? document.getElementById("db422Municipio").value : "";
+  var busca = document.getElementById("db422Busca") ? document.getElementById("db422Busca").value.toLowerCase() : "";
+  return db422Contatos().filter(function(c){
+    if(mun && c.municipio !== mun) return false;
+    var texto = (c.nome+" "+c.telefone+" "+c.perfil).toLowerCase();
+    if(busca && texto.indexOf(busca) < 0) return false;
+    return true;
+  });
+}
+function gerarBancoContatos422(){
+  preencherBancoMunicipios422();
+  var lista = filtrarBancoContatos422();
+  var tbody = document.getElementById("db422Lista");
+  if(!tbody) return;
+  tbody.innerHTML = lista.length ? lista.map(function(c){
+    return '<tr><td>'+c.nome+'</td><td>'+(c.telefone||"-")+'</td><td>'+c.perfil+'</td></tr>';
+  }).join("") : '<tr><td colspan="3" class="empty">Nenhum contato encontrado.</td></tr>';
+  var total = document.getElementById("db422Total");
+  if(total) total.textContent = lista.length;
+  var munLabel = document.getElementById("db422MunLabel");
+  var mun = document.getElementById("db422Municipio") ? document.getElementById("db422Municipio").value : "";
+  if(munLabel) munLabel.textContent = mun || "Todos";
+}
+function limparBancoContatos422(){
+  if(document.getElementById("db422Municipio")) document.getElementById("db422Municipio").value = "";
+  if(document.getElementById("db422Busca")) document.getElementById("db422Busca").value = "";
+  gerarBancoContatos422();
+}
+function copiarBancoContatos422(){
+  var lista = filtrarBancoContatos422();
+  if(!lista.length){alert("Nenhum contato para copiar.");return;}
+  var texto = lista.map(function(c){return c.nome+"    "+(c.telefone||"-")+"    "+c.perfil;}).join("\n");
+  navigator.clipboard.writeText(texto).then(function(){alert("Lista copiada.");});
+}
+function imprimirBancoContatos422(){
+  var lista = filtrarBancoContatos422();
+  var mun = document.getElementById("db422Municipio") ? document.getElementById("db422Municipio").value : "";
+  var rows = lista.length ? lista.map(function(c){
+    return '<tr><td>'+c.nome+'</td><td>'+(c.telefone||"-")+'</td><td>'+c.perfil+'</td></tr>';
+  }).join("") : '<tr><td colspan="3">Nenhum contato encontrado.</td></tr>';
+  var html = '<html><head><title>Banco de Dados - Contatos</title><style>body{font-family:Arial;padding:24px;color:#111}h1{color:#0b2e59}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{border:1px solid #ddd;padding:10px;text-align:left;font-size:15px}th{background:#e5e7eb;color:#0b2e59;text-transform:uppercase;font-size:13px}</style></head><body><h1>Banco de Dados - Contatos</h1><p>Município: '+(mun||"Todos")+' | Total: '+lista.length+'</p><table><thead><tr><th>Nome</th><th>Telefone</th><th>Perfil / Função</th></tr></thead><tbody>'+rows+'</tbody></table></body></html>';
+  var w = window.open("","_blank");
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){w.print();},250);
+}
+(function(){
+  var oldOpenPage = window.openPage;
+  window.openPage = function(page,btn){
+    if(typeof oldOpenPage === "function") oldOpenPage(page,btn);
+    if(page === "banco" || page === "database") setTimeout(inserirBancoContatos422,80);
+  };
+  var oldRender = window.render;
+  window.render = function(){
+    if(typeof oldRender === "function") oldRender();
+    setTimeout(function(){
+      var active = document.querySelector(".page.active");
+      if(active && (active.id === "banco" || active.id === "database")) inserirBancoContatos422();
+    },100);
+  };
+  document.addEventListener("DOMContentLoaded",function(){setTimeout(inserirBancoContatos422,900);});
 })();
 
 </script>
