@@ -511,7 +511,8 @@ p{color:#64748b}
 }
 
 
-/* FUNÇÃO WHATSAPP - v4.1 */
+/* FUNÇÃO WHATSAPP CORRIGIDA - v4.1.1 */
+.whatsapp-shortcut{position:fixed;right:18px;bottom:18px;z-index:9999;background:#22c55e;color:#fff;border:0;border-radius:999px;padding:14px 18px;font-weight:900;box-shadow:0 14px 38px rgba(15,23,42,.24)}
 .whats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 .whats-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:18px}
 .whats-card h3{margin:0 0 12px;color:#0b2e59}
@@ -528,15 +529,16 @@ p{color:#64748b}
 .whats-table th,.whats-table td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px;vertical-align:middle}
 .whats-table th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
 .whats-badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#eff6ff;color:#0b2e59}
-.whats-badge.green{background:#dcfce7;color:#166534}.whats-badge.red{background:#fee2e2;color:#991b1b}.whats-badge.gold{background:#fef3c7;color:#92400e}.whats-badge.gray{background:#f3f4f6;color:#374151}
+.whats-badge.green{background:#dcfce7;color:#166534}.whats-badge.red{background:#fee2e2;color:#991b1b}.whats-badge.gold{background:#fef3c7;color:#92400e}.whats-badge.gray{background:#f3f4f6;color:#374151}.whats-badge.blue{background:#dbeafe;color:#0b2e59}
 .whats-btn{border:0;border-radius:10px;padding:8px 10px;font-weight:900;white-space:nowrap;cursor:pointer}
-.whats-btn.green{background:#22c55e;color:#fff}.whats-btn.blue{background:#0b2e59;color:#fff}.whats-btn.light{background:#e2e8f0;color:#0b2e59}.whats-btn.gold{background:#f2b300;color:#061532}.whats-btn.red{background:#fee2e2;color:#991b1b}
+.whats-btn.green{background:#22c55e;color:#fff}.whats-btn.blue{background:#0b2e59;color:#fff}
 .whats-groups{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 .whats-group-btn{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:14px;text-align:left;box-shadow:0 8px 18px rgba(15,23,42,.05);cursor:pointer}
 .whats-group-btn strong{display:block;color:#0b2e59;margin-bottom:5px}
 .whats-group-btn span{color:#64748b;font-size:12px;font-weight:800}
 @media(max-width:1100px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:720px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:1fr}}
+@media(max-width:720px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:1fr}.whatsapp-shortcut{right:12px;bottom:12px}}
+@media print{.whatsapp-shortcut{display:none!important}}
 
 </style>
 </head>
@@ -578,8 +580,8 @@ p{color:#64748b}
     <button data-page="inteligencia" data-roles="Administrador,Operador" onclick="openPage('inteligencia',this)"><span>🧠</span>Inteligência</button>
     <button data-page="relatorios" data-roles="Administrador,Operador" onclick="openPage('relatorios',this)"><span>📊</span>Relatórios</button>
     <button data-page="banco" data-roles="Administrador,Operador,Liderança" onclick="openPage('banco',this)"><span>🗂️</span>Banco de Dados</button>
-        <button data-page="whatsapp" onclick="openPage(\'whatsapp\',this)"><span>📲</span>WhatsApp</button>
     <button data-page="usuarios" data-roles="Administrador" onclick="openPage('usuarios',this)"><span>⚙️</span>Usuários</button>
+    <button data-page="whatsapp" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('whatsapp',this)"><span>📲</span>WhatsApp</button>
     <button data-page="ajuda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('ajuda',this)"><span>📖</span>Central de Ajuda</button>
   </nav>
 </aside>
@@ -991,33 +993,21 @@ p{color:#64748b}
 
 
 <section id="whatsapp" class="page">
-  <div class="page-head">
-    <div>
-      <h1>WhatsApp</h1>
-      <p>Listas de transmissão, mensagens prontas, grupos estratégicos e controle de retorno.</p>
-    </div>
-  </div>
-
+  <div class="page-head"><div><h1>WhatsApp</h1><p>Listas de transmissão, mensagens prontas, grupos estratégicos e controle de retorno.</p></div></div>
   <div class="whats-grid">
     <div class="whats-card whats-kpi blue"><span>Contatos filtrados</span><strong id="whatsTotal">0</strong></div>
     <div class="whats-card whats-kpi green"><span>Mensagens enviadas</span><strong id="whatsEnviadas">0</strong></div>
     <div class="whats-card whats-kpi gold"><span>Responderam</span><strong id="whatsResponderam">0</strong></div>
     <div class="whats-card whats-kpi red"><span>Precisa retornar</span><strong id="whatsRetornar">0</strong></div>
   </div>
-
-  <div class="whats-card">
-    <h3>Grupos rápidos</h3>
-    <div class="whats-groups">
-      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('liderancas_arapongas')"><strong>Lideranças de Arapongas</strong><span>Função liderança + município Arapongas</span></button>
-      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('apoiadores_zona_sul')"><strong>Apoiadores Zona Sul</strong><span>Apoiadores da Zona Sul</span></button>
-      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('cabos')"><strong>Cabos Eleitorais</strong><span>Função cabo eleitoral</span></button>
-      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('possiveis')"><strong>Possíveis Eleitores</strong><span>Função possível eleitor</span></button>
-      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('agenda')"><strong>Equipe de Agenda</strong><span>Usuários/equipe vinculada</span></button>
-    </div>
-  </div>
-
-  <div class="whats-card">
-    <h3>Filtros da lista de transmissão</h3>
+  <div class="whats-card"><h3>Grupos rápidos</h3><div class="whats-groups">
+    <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('liderancas_arapongas')"><strong>Lideranças de Arapongas</strong><span>Função liderança + município Arapongas</span></button>
+    <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('apoiadores_zona_sul')"><strong>Apoiadores Zona Sul</strong><span>Apoiadores da Zona Sul</span></button>
+    <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('cabos')"><strong>Cabos Eleitorais</strong><span>Função cabo eleitoral</span></button>
+    <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('possiveis')"><strong>Possíveis Eleitores</strong><span>Função possível eleitor</span></button>
+    <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('agenda')"><strong>Equipe de Agenda</strong><span>Equipe para confirmar agenda</span></button>
+  </div></div>
+  <div class="whats-card"><h3>Filtros da lista de transmissão</h3>
     <div class="whats-filters">
       <div class="whats-field"><label>Município</label><select id="whatsMunicipio"></select></div>
       <div class="whats-field"><label>Bairro / Região</label><input id="whatsBairro" placeholder="Ex: Zona Sul, Centro"></div>
@@ -1025,37 +1015,11 @@ p{color:#64748b}
       <div class="whats-field"><label>Responsável</label><select id="whatsResponsavel"></select></div>
       <div class="whats-field"><label>Status do contato</label><select id="whatsControle"><option value="">Todos</option><option>mensagem enviada</option><option>respondeu</option><option>não respondeu</option><option>confirmou presença</option><option>precisa retornar</option></select></div>
       <div class="whats-field"><label>Buscar nome/telefone</label><input id="whatsBusca" placeholder="Digite para buscar"></div>
-      <div class="whats-field" style="grid-column:span 2"><label>Mensagem pronta</label><textarea id="whatsMensagem">Olá, tudo bem? Passando para reforçar nosso convite e manter você informado pela equipe da campanha. Podemos contar com você?</textarea></div>
+      <div class="whats-field" style="grid-column:span 2"><label>Mensagem pronta</label><textarea id="whatsMensagem">Olá {nome}, tudo bem? Passando para reforçar nosso convite e manter você informado pela equipe da campanha. Podemos contar com você?</textarea></div>
     </div>
-    <div class="whats-actions">
-      <button class="btn light" onclick="limparWhatsApp()">Limpar</button>
-      <button class="btn gold" onclick="gerarListaWhatsApp()">Gerar Lista</button>
-      <button class="btn blue" onclick="copiarTelefonesWhatsApp()">Copiar Telefones</button>
-      <button class="btn blue" onclick="copiarMensagemWhatsApp()">Copiar Mensagem</button>
-    </div>
+    <div class="whats-actions"><button class="btn light" onclick="limparWhatsApp()">Limpar</button><button class="btn gold" onclick="gerarListaWhatsApp()">Gerar Lista</button><button class="btn blue" onclick="copiarTelefonesWhatsApp()">Copiar Telefones</button><button class="btn blue" onclick="copiarMensagemWhatsApp()">Copiar Mensagem</button></div>
   </div>
-
-  <div class="whats-card">
-    <h3>Lista de transmissão</h3>
-    <div class="whats-table-wrap">
-      <table class="whats-table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Telefone</th>
-            <th>Função</th>
-            <th>Município</th>
-            <th>Bairro/Região</th>
-            <th>Responsável</th>
-            <th>Controle</th>
-            <th>WhatsApp</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="whatsLista"></tbody>
-      </table>
-    </div>
-  </div>
+  <div class="whats-card"><h3>Lista de transmissão</h3><div class="whats-table-wrap"><table class="whats-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Bairro/Região</th><th>Responsável</th><th>Controle</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody id="whatsLista"></tbody></table></div></div>
 </section>
 
 <section id="ajuda" class="page">
@@ -1622,7 +1586,6 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
-  try{renderWhatsApp();}catch(e){console.warn('WhatsApp render',e)}
   try{preencherSelectRelatorio233();}catch(e){}
   try{preencherSelectsPro();}catch(e){}
   try{garantirCamposAvancados();}catch(e){console.error('Campos avançados:',e);}
@@ -3184,7 +3147,33 @@ body{font-family:Arial,Helvetica,sans-serif;background:#fff;color:#0f172a;margin
 .report-table-pro{width:100%;border-collapse:collapse;margin-top:6px;font-size:10px}.report-table-pro th,.report-table-pro td{border:1px solid #ddd;padding:5px;text-align:left;vertical-align:top}.report-table-pro th{background:#f8fafc;color:#0b2e59;text-transform:uppercase;font-size:8px}tr{page-break-inside:avoid}
 .report-sign{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px}.report-sign div{border-top:1px solid #334155;text-align:center;padding-top:8px;font-weight:700}.report-footer{text-align:center;color:#64748b;font-size:10px;margin-top:20px}
 </style>
-</head><body>${alvo.innerHTML}<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},250)};<\/script></body></html>`);
+</head><body>${alvo.innerHTML}<script>window.onload=function(){setTimeout(function(){window.focus();window.print();},250)};<\/script><button id="whatsappShortcut" class="whatsapp-shortcut" onclick="openPage('whatsapp',this)">📲 WhatsApp</button>
+<script>
+
+/* FUNÇÃO WHATSAPP CORRIGIDA - v4.1.1 */
+var whatsResultados = [];
+function wGet(id){return document.getElementById(id);}
+function wVal(id){var e=wGet(id); return e ? e.value : "";}
+function garantirWhatsAppDB(){if(typeof db==="undefined")return;if(!db.whatsappControle)db.whatsappControle={};(db.pessoas||[]).forEach(function(p){if(!p.id)p.id=typeof uid==="function"?uid():("p"+Date.now()+Math.random());});if(typeof salvar==="function")salvar();}
+function normalizarTelefoneWhatsApp(tel){var n=String(tel||"").replace(/\D/g,"");if(!n)return"";if(n.length===10||n.length===11)n="55"+n;return n;}
+function textoControleWhatsApp(id){garantirWhatsAppDB();return(db.whatsappControle||{})[id]||"não enviado";}
+function badgeControleWhatsApp(status){var s=String(status||"não enviado").toLowerCase();var cls="gray";if(s.indexOf("enviada")>=0||s.indexOf("enviado")>=0)cls="blue";if(s.indexOf("respondeu")>=0||s.indexOf("confirmou")>=0)cls="green";if(s.indexOf("não")>=0)cls="red";if(s.indexOf("retornar")>=0)cls="gold";return '<span class="whats-badge '+cls+'">'+(status||"não enviado")+'</span>';}
+function preencherSelectsWhatsApp(){if(!wGet("whatsMunicipio")||typeof db==="undefined")return;var municipios=[];(db.municipios||[]).forEach(function(m){var v=m.nome||m.municipio||"";if(v&&municipios.indexOf(v)<0)municipios.push(v);});(db.pessoas||[]).forEach(function(p){var v=p.municipio||"";if(v&&municipios.indexOf(v)<0)municipios.push(v);});municipios.sort();var responsaveis=[];((db.usuarios||db.users||[])).forEach(function(u){var v=u.nome||u.login||"";if(v&&responsaveis.indexOf(v)<0)responsaveis.push(v);});(db.pessoas||[]).forEach(function(p){var v=p.responsavel||p.criadoPor||"";if(v&&responsaveis.indexOf(v)<0)responsaveis.push(v);});responsaveis.sort();var munAtual=wGet("whatsMunicipio").value||"";wGet("whatsMunicipio").innerHTML='<option value="">Todos</option>'+municipios.map(function(m){return '<option value="'+m+'">'+m+'</option>';}).join("");if(munAtual)wGet("whatsMunicipio").value=munAtual;var respAtual=wGet("whatsResponsavel").value||"";wGet("whatsResponsavel").innerHTML='<option value="">Todos</option>'+responsaveis.map(function(r){return '<option value="'+r+'">'+r+'</option>';}).join("");if(respAtual)wGet("whatsResponsavel").value=respAtual;}
+function getPessoasWhatsApp(){garantirWhatsAppDB();return(db.pessoas||[]).filter(function(p){return normalizarTelefoneWhatsApp(p.telefone||p.whatsapp||p.celular);});}
+function gerarListaWhatsApp(){garantirWhatsAppDB();preencherSelectsWhatsApp();var municipio=wVal("whatsMunicipio").toLowerCase();var bairro=wVal("whatsBairro").toLowerCase();var funcao=wVal("whatsFuncao").toLowerCase();var responsavel=wVal("whatsResponsavel").toLowerCase();var controle=wVal("whatsControle").toLowerCase();var busca=wVal("whatsBusca").toLowerCase();whatsResultados=getPessoasWhatsApp().filter(function(p){var pMunicipio=String(p.municipio||"").toLowerCase();var pBairro=String(p.bairro||p.regiao||p.endereco||"").toLowerCase();var pFuncao=String(p.funcao||"").toLowerCase();var pResp=String(p.responsavel||p.criadoPor||"").toLowerCase();var pControle=textoControleWhatsApp(p.id).toLowerCase();var pBusca=String((p.nome||"")+" "+(p.telefone||"")).toLowerCase();if(municipio&&pMunicipio!==municipio)return false;if(bairro&&pBairro.indexOf(bairro)<0)return false;if(funcao&&pFuncao!==funcao)return false;if(responsavel&&pResp!==responsavel)return false;if(controle&&pControle!==controle)return false;if(busca&&pBusca.indexOf(busca)<0)return false;return true;});renderListaWhatsApp();}
+function renderListaWhatsApp(){var tbody=wGet("whatsLista");if(!tbody)return;if(!whatsResultados.length){tbody.innerHTML='<tr><td colspan="9" class="empty">Nenhum contato encontrado. Ajuste os filtros e gere novamente.</td></tr>';}else{tbody.innerHTML=whatsResultados.map(function(p){var status=textoControleWhatsApp(p.id);var pid=String(p.id).replace(/"/g,"&quot;");return '<tr><td><strong>'+(p.nome||"-")+'</strong></td><td>'+(p.telefone||p.whatsapp||p.celular||"-")+'</td><td>'+(p.funcao||"-")+'</td><td>'+(p.municipio||"-")+'</td><td>'+(p.bairro||p.regiao||"-")+'</td><td>'+(p.responsavel||p.criadoPor||"-")+'</td><td>'+badgeControleWhatsApp(status)+'</td><td><button class="whats-btn green" onclick="abrirWhatsAppContato(&quot;'+pid+'&quot;)">Abrir WhatsApp</button></td><td><select onchange="marcarControleWhatsApp(&quot;'+pid+'&quot;,this.value)"><option value="">Marcar</option><option value="mensagem enviada">mensagem enviada</option><option value="respondeu">respondeu</option><option value="não respondeu">não respondeu</option><option value="confirmou presença">confirmou presença</option><option value="precisa retornar">precisa retornar</option></select></td></tr>';}).join("");}atualizarKpisWhatsApp();}
+function abrirWhatsAppContato(id){garantirWhatsAppDB();var p=(db.pessoas||[]).find(function(x){return String(x.id)===String(id);});if(!p){alert("Contato não encontrado.");return;}var tel=normalizarTelefoneWhatsApp(p.telefone||p.whatsapp||p.celular);if(!tel){alert("Telefone inválido ou vazio.");return;}var msgBase=wVal("whatsMensagem")||"";var msg=msgBase.replaceAll("{nome}",p.nome||"").replaceAll("{municipio}",p.municipio||"").replaceAll("{funcao}",p.funcao||"");db.whatsappControle[p.id]="mensagem enviada";if(typeof salvar==="function")salvar();renderListaWhatsApp();window.open("https://wa.me/"+tel+"?text="+encodeURIComponent(msg),"_blank");}
+function marcarControleWhatsApp(id,status){if(!status)return;garantirWhatsAppDB();db.whatsappControle[id]=status;if(typeof salvar==="function")salvar();renderListaWhatsApp();}
+function atualizarKpisWhatsApp(){garantirWhatsAppDB();var statusList=whatsResultados.map(function(p){return textoControleWhatsApp(p.id).toLowerCase();});if(wGet("whatsTotal"))wGet("whatsTotal").textContent=whatsResultados.length;if(wGet("whatsEnviadas"))wGet("whatsEnviadas").textContent=statusList.filter(function(s){return s.indexOf("enviada")>=0||s.indexOf("enviado")>=0;}).length;if(wGet("whatsResponderam"))wGet("whatsResponderam").textContent=statusList.filter(function(s){return s.indexOf("respondeu")>=0||s.indexOf("confirmou")>=0;}).length;if(wGet("whatsRetornar"))wGet("whatsRetornar").textContent=statusList.filter(function(s){return s.indexOf("retornar")>=0;}).length;}
+function copiarTelefonesWhatsApp(){var txt=whatsResultados.map(function(p){return p.telefone||p.whatsapp||p.celular||"";}).filter(Boolean).join("\\n");if(!txt){alert("Nenhum telefone para copiar.");return;}navigator.clipboard.writeText(txt).then(function(){alert("Lista de telefones copiada.");});}
+function copiarMensagemWhatsApp(){var txt=wVal("whatsMensagem")||"";if(!txt){alert("Mensagem vazia.");return;}navigator.clipboard.writeText(txt).then(function(){alert("Mensagem copiada.");});}
+function limparWhatsApp(){["whatsBairro","whatsBusca"].forEach(function(id){var e=wGet(id);if(e)e.value="";});["whatsMunicipio","whatsFuncao","whatsResponsavel","whatsControle"].forEach(function(id){var e=wGet(id);if(e)e.value="";});whatsResultados=getPessoasWhatsApp();renderListaWhatsApp();}
+function aplicarGrupoWhatsApp(grupo){preencherSelectsWhatsApp();["whatsBairro","whatsBusca"].forEach(function(id){var e=wGet(id);if(e)e.value="";});["whatsMunicipio","whatsFuncao","whatsResponsavel","whatsControle"].forEach(function(id){var e=wGet(id);if(e)e.value="";});if(grupo==="liderancas_arapongas"){if(wGet("whatsMunicipio"))wGet("whatsMunicipio").value="Arapongas";if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Liderança";if(wGet("whatsMensagem"))wGet("whatsMensagem").value="Olá {nome}, tudo bem? Você está na lista de lideranças de Arapongas. Vamos alinhar nossa mobilização e fortalecer a campanha no município.";}if(grupo==="apoiadores_zona_sul"){if(wGet("whatsBairro"))wGet("whatsBairro").value="Zona Sul";if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Apoiador";if(wGet("whatsMensagem"))wGet("whatsMensagem").value="Olá {nome}, tudo bem? Estamos organizando os apoiadores da Zona Sul e gostaríamos de contar com você nessa mobilização.";}if(grupo==="cabos"){if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Cabo Eleitoral";if(wGet("whatsMensagem"))wGet("whatsMensagem").value="Olá {nome}, tudo bem? Mensagem para nossa equipe de cabos eleitorais: vamos alinhar as ações da semana e fortalecer nossa presença nos bairros.";}if(grupo==="possiveis"){if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Possível Eleitor";if(wGet("whatsMensagem"))wGet("whatsMensagem").value="Olá {nome}, tudo bem? Gostaria de compartilhar uma mensagem importante e manter você informado sobre nosso projeto.";}if(grupo==="agenda"){if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Liderança";if(wGet("whatsMensagem"))wGet("whatsMensagem").value="Olá {nome}, tudo bem? Estamos organizando a agenda da campanha e precisamos confirmar sua disponibilidade para as próximas ações.";}gerarListaWhatsApp();}
+function renderWhatsApp(){if(!wGet("whatsapp")||typeof db==="undefined")return;garantirWhatsAppDB();preencherSelectsWhatsApp();if(!whatsResultados.length)whatsResultados=getPessoasWhatsApp();renderListaWhatsApp();}
+(function(){var oldOpenPage=window.openPage;window.openPage=function(page,btn){if(typeof oldOpenPage==="function")oldOpenPage(page,btn);if(page==="whatsapp")setTimeout(renderWhatsApp,80);};document.addEventListener("DOMContentLoaded",function(){setTimeout(function(){var btn=document.querySelector('[data-page="whatsapp"]');if(btn)btn.style.display="";renderWhatsApp();},700);});})();
+
+</script>
+</body></html>`);
   w.document.close();
 }
 
