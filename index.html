@@ -510,6 +510,34 @@ p{color:#64748b}
   .report-table-pro tr{break-inside:avoid}
 }
 
+
+/* FUNÇÃO WHATSAPP - v4.1 */
+.whats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.whats-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:18px}
+.whats-card h3{margin:0 0 12px;color:#0b2e59}
+.whats-kpi span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900}
+.whats-kpi strong{display:block;margin-top:7px;font-size:28px;color:#0b2e59}
+.whats-kpi.green strong{color:#16a34a}.whats-kpi.red strong{color:#dc2626}.whats-kpi.gold strong{color:#b77900}.whats-kpi.blue strong{color:#0b2e59}
+.whats-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.whats-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#64748b;font-weight:900;margin-bottom:6px}
+.whats-field input,.whats-field select,.whats-field textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#0f172a;font-weight:700}
+.whats-field textarea{min-height:95px;resize:vertical}
+.whats-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px}
+.whats-table-wrap{overflow:auto}
+.whats-table{width:100%;border-collapse:collapse;min-width:1100px}
+.whats-table th,.whats-table td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px;vertical-align:middle}
+.whats-table th{color:#0b2e59;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+.whats-badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#eff6ff;color:#0b2e59}
+.whats-badge.green{background:#dcfce7;color:#166534}.whats-badge.red{background:#fee2e2;color:#991b1b}.whats-badge.gold{background:#fef3c7;color:#92400e}.whats-badge.gray{background:#f3f4f6;color:#374151}
+.whats-btn{border:0;border-radius:10px;padding:8px 10px;font-weight:900;white-space:nowrap;cursor:pointer}
+.whats-btn.green{background:#22c55e;color:#fff}.whats-btn.blue{background:#0b2e59;color:#fff}.whats-btn.light{background:#e2e8f0;color:#0b2e59}.whats-btn.gold{background:#f2b300;color:#061532}.whats-btn.red{background:#fee2e2;color:#991b1b}
+.whats-groups{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.whats-group-btn{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:14px;text-align:left;box-shadow:0 8px 18px rgba(15,23,42,.05);cursor:pointer}
+.whats-group-btn strong{display:block;color:#0b2e59;margin-bottom:5px}
+.whats-group-btn span{color:#64748b;font-size:12px;font-weight:800}
+@media(max-width:1100px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:1fr}}
+
 </style>
 </head>
 
@@ -550,6 +578,7 @@ p{color:#64748b}
     <button data-page="inteligencia" data-roles="Administrador,Operador" onclick="openPage('inteligencia',this)"><span>🧠</span>Inteligência</button>
     <button data-page="relatorios" data-roles="Administrador,Operador" onclick="openPage('relatorios',this)"><span>📊</span>Relatórios</button>
     <button data-page="banco" data-roles="Administrador,Operador,Liderança" onclick="openPage('banco',this)"><span>🗂️</span>Banco de Dados</button>
+        <button data-page="whatsapp" onclick="openPage(\'whatsapp\',this)"><span>📲</span>WhatsApp</button>
     <button data-page="usuarios" data-roles="Administrador" onclick="openPage('usuarios',this)"><span>⚙️</span>Usuários</button>
     <button data-page="ajuda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('ajuda',this)"><span>📖</span>Central de Ajuda</button>
   </nav>
@@ -959,6 +988,75 @@ p{color:#64748b}
   <div id="relatorioCompleto" class="print-area"></div>
 </section>
 
+
+
+<section id="whatsapp" class="page">
+  <div class="page-head">
+    <div>
+      <h1>WhatsApp</h1>
+      <p>Listas de transmissão, mensagens prontas, grupos estratégicos e controle de retorno.</p>
+    </div>
+  </div>
+
+  <div class="whats-grid">
+    <div class="whats-card whats-kpi blue"><span>Contatos filtrados</span><strong id="whatsTotal">0</strong></div>
+    <div class="whats-card whats-kpi green"><span>Mensagens enviadas</span><strong id="whatsEnviadas">0</strong></div>
+    <div class="whats-card whats-kpi gold"><span>Responderam</span><strong id="whatsResponderam">0</strong></div>
+    <div class="whats-card whats-kpi red"><span>Precisa retornar</span><strong id="whatsRetornar">0</strong></div>
+  </div>
+
+  <div class="whats-card">
+    <h3>Grupos rápidos</h3>
+    <div class="whats-groups">
+      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('liderancas_arapongas')"><strong>Lideranças de Arapongas</strong><span>Função liderança + município Arapongas</span></button>
+      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('apoiadores_zona_sul')"><strong>Apoiadores Zona Sul</strong><span>Apoiadores da Zona Sul</span></button>
+      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('cabos')"><strong>Cabos Eleitorais</strong><span>Função cabo eleitoral</span></button>
+      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('possiveis')"><strong>Possíveis Eleitores</strong><span>Função possível eleitor</span></button>
+      <button class="whats-group-btn" onclick="aplicarGrupoWhatsApp('agenda')"><strong>Equipe de Agenda</strong><span>Usuários/equipe vinculada</span></button>
+    </div>
+  </div>
+
+  <div class="whats-card">
+    <h3>Filtros da lista de transmissão</h3>
+    <div class="whats-filters">
+      <div class="whats-field"><label>Município</label><select id="whatsMunicipio"></select></div>
+      <div class="whats-field"><label>Bairro / Região</label><input id="whatsBairro" placeholder="Ex: Zona Sul, Centro"></div>
+      <div class="whats-field"><label>Função</label><select id="whatsFuncao"><option value="">Todas</option><option>Apoiador</option><option>Liderança</option><option>Cabo Eleitoral</option><option>Possível Eleitor</option><option>Coordenador</option><option>Influenciador</option><option>Voluntário</option></select></div>
+      <div class="whats-field"><label>Responsável</label><select id="whatsResponsavel"></select></div>
+      <div class="whats-field"><label>Status do contato</label><select id="whatsControle"><option value="">Todos</option><option>mensagem enviada</option><option>respondeu</option><option>não respondeu</option><option>confirmou presença</option><option>precisa retornar</option></select></div>
+      <div class="whats-field"><label>Buscar nome/telefone</label><input id="whatsBusca" placeholder="Digite para buscar"></div>
+      <div class="whats-field" style="grid-column:span 2"><label>Mensagem pronta</label><textarea id="whatsMensagem">Olá, tudo bem? Passando para reforçar nosso convite e manter você informado pela equipe da campanha. Podemos contar com você?</textarea></div>
+    </div>
+    <div class="whats-actions">
+      <button class="btn light" onclick="limparWhatsApp()">Limpar</button>
+      <button class="btn gold" onclick="gerarListaWhatsApp()">Gerar Lista</button>
+      <button class="btn blue" onclick="copiarTelefonesWhatsApp()">Copiar Telefones</button>
+      <button class="btn blue" onclick="copiarMensagemWhatsApp()">Copiar Mensagem</button>
+    </div>
+  </div>
+
+  <div class="whats-card">
+    <h3>Lista de transmissão</h3>
+    <div class="whats-table-wrap">
+      <table class="whats-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Função</th>
+            <th>Município</th>
+            <th>Bairro/Região</th>
+            <th>Responsável</th>
+            <th>Controle</th>
+            <th>WhatsApp</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="whatsLista"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
 <section id="ajuda" class="page">
   <div class="page-head">
@@ -1524,6 +1622,7 @@ function municipioSelect(tipo,i,campo,valor){
 }
 
 function render(){
+  try{renderWhatsApp();}catch(e){console.warn('WhatsApp render',e)}
   try{preencherSelectRelatorio233();}catch(e){}
   try{preencherSelectsPro();}catch(e){}
   try{garantirCamposAvancados();}catch(e){console.error('Campos avançados:',e);}
