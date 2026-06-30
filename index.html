@@ -1575,6 +1575,146 @@ label,
   }
 }
 
+
+/* HOTFIX UX CAMPOS SOLICITADOS - v4.3.0 */
+/* Financeiro: remove competência */
+#finCompetencia,
+#financeiroCompetencia,
+[name="competencia"],
+[id*="Competencia"],
+[id*="competencia"],
+.form-field:has(#finCompetencia),
+.form-field:has(#financeiroCompetencia),
+.pro-field:has(#finCompetencia),
+.pro-field:has(#financeiroCompetencia),
+label[for="finCompetencia"],
+label[for="financeiroCompetencia"]{
+  display:none !important;
+}
+
+/* Território: remove prioridade de região/bairro */
+#regiaoPrioridade,
+#territorioPrioridade,
+[name="prioridade"],
+[id*="Prioridade"],
+[id*="prioridade"],
+.form-field:has(#regiaoPrioridade),
+.form-field:has(#territorioPrioridade),
+.pro-field:has(#regiaoPrioridade),
+.pro-field:has(#territorioPrioridade),
+label[for="regiaoPrioridade"],
+label[for="territorioPrioridade"]{
+  display:none !important;
+}
+
+/* Base de Apoio: remove status e influência */
+#baseStatus,
+#pessoaStatus,
+#apoioStatus,
+#baseInfluencia,
+#pessoaInfluencia,
+#apoioInfluencia,
+[name="statusBase"],
+[name="influencia"],
+[id*="Influencia"],
+[id*="influencia"],
+.form-field:has(#baseStatus),
+.form-field:has(#pessoaStatus),
+.form-field:has(#apoioStatus),
+.form-field:has(#baseInfluencia),
+.form-field:has(#pessoaInfluencia),
+.form-field:has(#apoioInfluencia),
+.pro-field:has(#baseStatus),
+.pro-field:has(#pessoaStatus),
+.pro-field:has(#apoioStatus),
+.pro-field:has(#baseInfluencia),
+.pro-field:has(#pessoaInfluencia),
+.pro-field:has(#apoioInfluencia),
+.user-field:has(#baseStatus),
+.user-field:has(#baseInfluencia),
+label[for="baseStatus"],
+label[for="pessoaStatus"],
+label[for="apoioStatus"],
+label[for="baseInfluencia"],
+label[for="pessoaInfluencia"],
+label[for="apoioInfluencia"]{
+  display:none !important;
+}
+
+/* Usuários: remove status */
+#userStatus,
+#usuarioStatus,
+#statusUsuario,
+[name="userStatus"],
+[name="usuarioStatus"],
+.form-field:has(#userStatus),
+.form-field:has(#usuarioStatus),
+.form-field:has(#statusUsuario),
+.pro-field:has(#userStatus),
+.pro-field:has(#usuarioStatus),
+.pro-field:has(#statusUsuario),
+.user-field:has(#userStatus),
+.user-field:has(#usuarioStatus),
+.user-field:has(#statusUsuario),
+label[for="userStatus"],
+label[for="usuarioStatus"],
+label[for="statusUsuario"]{
+  display:none !important;
+}
+
+/* Inteligência: frase de orientação com cor padrão */
+.ia-head p,
+#inteligencia p,
+.inteligencia p,
+.assistant-box p{
+  color:#0b2e59 !important;
+  opacity:1 !important;
+}
+
+/* Relatórios: remove linhas amarelas/sublinhados decorativos */
+.report-cover-info,
+.report-meta,
+.report-cover-top,
+.report-header-info{
+  border-top:0 !important;
+}
+
+.report-cover-info *,
+.report-meta *,
+.report-header-info *{
+  border-top-color:#e2e8f0 !important;
+}
+
+.report-cover,
+.report-cover-top,
+.report-header,
+.report-hero,
+.relatorio-header,
+.relatorio-capa{
+  border-top:0 !important;
+}
+
+.report-cover::before,
+.report-cover::after,
+.report-cover-top::before,
+.report-cover-top::after,
+.report-title::after,
+.report-section h2::after,
+.report-section-pro h2::after{
+  display:none !important;
+  content:none !important;
+}
+
+[style*="border-top:3px solid #f2b300"],
+[style*="border-top: 3px solid #f2b300"],
+[style*="border-bottom:3px solid #f2b300"],
+[style*="border-bottom: 3px solid #f2b300"],
+[style*="border-bottom:2px solid #f2b300"],
+[style*="border-bottom: 2px solid #f2b300"]{
+  border-top:0 !important;
+  border-bottom:0 !important;
+}
+
 </style>
 </head>
 
@@ -5357,6 +5497,117 @@ function mostrarLoaderLogin424(){
       btn.dataset.login424 = "1";
       btn.addEventListener("click",function(){salvarLoginLembrado424();});
     }
+  });
+})();
+
+</script>
+<script>
+
+/* HOTFIX UX CAMPOS SOLICITADOS - v4.3.0 */
+(function(){
+  function lowerText(el){return (el && (el.textContent || el.innerText || "") || "").trim().toLowerCase();}
+
+  function esconderCampoPorTexto(contextSelector, textos){
+    var contexts = document.querySelectorAll(contextSelector);
+    contexts.forEach(function(ctx){
+      var labels = ctx.querySelectorAll("label, .form-label, .field-label, th");
+      labels.forEach(function(label){
+        var t = lowerText(label);
+        var achou = textos.some(function(x){return t === x || t.indexOf(x) >= 0;});
+        if(!achou) return;
+
+        var box = label.closest(".form-field") || label.closest(".pro-field") || label.closest(".user-field") || label.closest(".whats-field") || label.parentElement;
+        if(box && box.tagName !== "TH") box.style.display = "none";
+      });
+    });
+  }
+
+  function removerColunaTabelaPorTexto(table, textos){
+    if(!table) return;
+    var headers = Array.from(table.querySelectorAll("thead th"));
+    var idxs = [];
+    headers.forEach(function(th,idx){
+      var t = lowerText(th);
+      if(textos.some(function(x){return t === x || t.indexOf(x) >= 0;})) idxs.push(idx);
+    });
+    if(!idxs.length) return;
+    Array.from(table.querySelectorAll("tr")).forEach(function(tr){
+      idxs.forEach(function(idx){
+        var cell = tr.children[idx];
+        if(cell) cell.style.display = "none";
+      });
+    });
+  }
+
+  function aplicarUXCampos430(){
+    /* Financeiro: competência */
+    esconderCampoPorTexto("#financeiro, .page#financeiro", ["competência","competencia"]);
+    document.querySelectorAll("#financeiro table, .page#financeiro table").forEach(function(t){
+      removerColunaTabelaPorTexto(t, ["competência","competencia"]);
+    });
+
+    /* Território: prioridade em região/bairro */
+    esconderCampoPorTexto("#territorio, .page#territorio", ["prioridade"]);
+    document.querySelectorAll("#territorio table, .page#territorio table").forEach(function(t){
+      removerColunaTabelaPorTexto(t, ["prioridade"]);
+    });
+
+    /* Base de Apoio: status e influência */
+    esconderCampoPorTexto("#base, #baseApoio, #base-de-apoio, .page#base, .page#baseApoio", ["status","influência","influencia"]);
+    document.querySelectorAll("#base table, #baseApoio table, #base-de-apoio table, .page#base table, .page#baseApoio table").forEach(function(t){
+      removerColunaTabelaPorTexto(t, ["status","influência","influencia"]);
+    });
+
+    /* Usuários: status */
+    esconderCampoPorTexto("#usuarios, .page#usuarios", ["status"]);
+    document.querySelectorAll("#usuarios table, .page#usuarios table").forEach(function(t){
+      removerColunaTabelaPorTexto(t, ["status"]);
+    });
+
+    /* Valores padrão preservados no banco mesmo sem aparecer no formulário */
+    ["regiaoPrioridade","territorioPrioridade"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.value = "Alta";
+    });
+    ["baseStatus","pessoaStatus","apoioStatus","userStatus","usuarioStatus","statusUsuario"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.value = "Ativo";
+    });
+
+    /* Inteligência: frase em azul/preto institucional */
+    document.querySelectorAll("#inteligencia p, .ia-head p, .assistant-box p").forEach(function(p){
+      if(lowerText(p).indexOf("pergunte sobre campanha") >= 0){
+        p.style.color = "#0b2e59";
+        p.style.opacity = "1";
+        p.style.fontWeight = "700";
+      }
+    });
+
+    /* Relatórios: remover linhas amarelas decorativas */
+    document.querySelectorAll("#relatorios [style], #relatorio [style], #relatorioCompleto [style], .report-pro [style], .report-box [style]").forEach(function(el){
+      var st = el.getAttribute("style") || "";
+      if(st.indexOf("#f2b300") >= 0 && (st.indexOf("border-top") >= 0 || st.indexOf("border-bottom") >= 0)){
+        el.style.borderTop = "0";
+        el.style.borderBottom = "0";
+      }
+    });
+  }
+
+  var oldRender = window.render;
+  window.render = function(){
+    if(typeof oldRender === "function") oldRender();
+    setTimeout(aplicarUXCampos430, 80);
+  };
+
+  var oldOpenPage = window.openPage;
+  window.openPage = function(page,btn){
+    if(typeof oldOpenPage === "function") oldOpenPage(page,btn);
+    setTimeout(aplicarUXCampos430, 100);
+  };
+
+  document.addEventListener("DOMContentLoaded", function(){
+    setTimeout(aplicarUXCampos430, 600);
+    setInterval(aplicarUXCampos430, 1200);
   });
 })();
 
