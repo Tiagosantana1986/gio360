@@ -675,6 +675,54 @@ p{color:#64748b}
   }
 }
 
+
+/* AGENDA UNIFICADA COM IMPRESSÃO - v4.2.1 */
+.agenda-print-unificada{
+  background:#fff;
+  border:1px solid #dbe3ef;
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 14px 34px rgba(15,23,42,.07);
+  margin-bottom:20px;
+}
+.agenda-print-unificada h3{margin:0 0 12px;color:#0b2e59}
+.agenda-print-filtros{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.agenda-print-filtros label{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900;margin-bottom:6px}
+.agenda-print-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.agenda-print-preview{display:none}
+@media(max-width:900px){.agenda-print-filtros{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.agenda-print-filtros{grid-template-columns:1fr}}
+@media print{
+  body *{visibility:hidden!important}
+  #agendaPrintAreaUnificada,#agendaPrintAreaUnificada *{visibility:visible!important}
+  #agendaPrintAreaUnificada{
+    display:block!important;
+    position:absolute!important;
+    left:0!important;
+    top:0!important;
+    width:100%!important;
+    background:#fff!important;
+    color:#000!important;
+    font-size:16px!important;
+    line-height:1.55!important;
+  }
+  #agendaPrintAreaUnificada h1{font-size:32px!important;color:#0b2e59!important}
+  #agendaPrintAreaUnificada h2{font-size:24px!important;color:#0b2e59!important}
+  #agendaPrintAreaUnificada table{width:100%!important;border-collapse:collapse!important}
+  #agendaPrintAreaUnificada th,#agendaPrintAreaUnificada td{
+    border:1px solid #d1d5db!important;
+    padding:10px!important;
+    font-size:15px!important;
+    color:#000!important;
+    vertical-align:top!important;
+  }
+  #agendaPrintAreaUnificada th{
+    background:#e5e7eb!important;
+    color:#0b2e59!important;
+    font-weight:900!important;
+  }
+}
+
 </style>
 </head>
 
@@ -711,7 +759,6 @@ p{color:#64748b}
     <button data-page="territorio" data-roles="Administrador,Operador,Liderança" onclick="openPage('territorio',this)"><span>📍</span>Território</button>
     <button data-page="base" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('base',this)"><span>👥</span>Base de Apoio</button>
     <button data-page="agenda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('agenda',this)"><span>📅</span>Agenda</button>
-    <button data-page="imprimirAgenda" data-roles="Administrador,Operador,Liderança" onclick="openPage('imprimirAgenda',this)"><span>🖨️</span>Imprimir Agenda</button>
     <button data-page="inteligencia" data-roles="Administrador,Operador" onclick="openPage('inteligencia',this)"><span>🧠</span>Inteligência</button>
     <button data-page="relatorios" data-roles="Administrador,Operador" onclick="openPage('relatorios',this)"><span>📊</span>Relatórios</button>
     <button data-page="banco" onclick="openPage('banco',this)" data-roles="Administrador"><span>🗂️</span>Banco de Dados</button>
@@ -4046,6 +4093,157 @@ function renderBotoesEditarUsuarios417(){
         aplicarFontePDFNoDocumento(document);
       }
     }, 1000);
+  });
+})();
+
+</script>
+<script>
+
+/* AGENDA UNIFICADA COM IMPRESSÃO - v4.2.1 */
+function agenda421DataBR(d){
+  if(!d) return "-";
+  var s = String(d);
+  if(s.indexOf("-") > -1){
+    var p = s.split("-");
+    if(p.length === 3) return p[2]+"/"+p[1]+"/"+p[0];
+  }
+  return s;
+}
+function agenda421Perfil(){
+  try{
+    if(typeof currentUser !== "undefined" && currentUser) return currentUser.perfil || currentUser.role || "";
+    if(typeof usuarioLogado !== "undefined" && usuarioLogado) return usuarioLogado.perfil || usuarioLogado.role || "";
+    if(typeof db !== "undefined" && db.session) return db.session.perfil || db.session.role || "";
+  }catch(e){}
+  return "";
+}
+function agenda421Usuario(){
+  try{
+    if(typeof currentUser !== "undefined" && currentUser) return currentUser.nome || currentUser.login || "";
+    if(typeof usuarioLogado !== "undefined" && usuarioLogado) return usuarioLogado.nome || usuarioLogado.login || "";
+    if(typeof db !== "undefined" && db.session) return db.session.nome || db.session.login || "";
+  }catch(e){}
+  return "";
+}
+function agenda421Municipios(){
+  var ms = [];
+  try{
+    (db.municipios||[]).forEach(function(m){var v=m.nome||m.municipio||""; if(v && ms.indexOf(v)<0) ms.push(v);});
+    (db.agenda||[]).forEach(function(a){var v=a.municipio||""; if(v && ms.indexOf(v)<0) ms.push(v);});
+  }catch(e){}
+  return ms.sort();
+}
+function inserirImpressaoNaAgenda421(){
+  var page = document.getElementById("agenda");
+  if(!page || document.getElementById("agendaPrintUnificada421")) return;
+
+  var box = document.createElement("div");
+  box.id = "agendaPrintUnificada421";
+  box.className = "agenda-print-unificada";
+  box.innerHTML =
+    '<h3>Imprimir Agenda</h3>'+
+    '<p>Gere e imprima a agenda diretamente por aqui, sem precisar abrir outra aba.</p>'+
+    '<div class="agenda-print-filtros">'+
+      '<div><label>Data inicial</label><input type="date" id="agendaPrintIni421"></div>'+
+      '<div><label>Data final</label><input type="date" id="agendaPrintFim421"></div>'+
+      '<div><label>Município</label><select id="agendaPrintMun421"><option value="">Todos</option></select></div>'+
+      '<div><label>Status</label><select id="agendaPrintStatus421"><option value="">Todos</option><option>Pendente</option><option>Confirmado</option><option>Realizado</option><option>Recusado</option><option>Cancelado</option></select></div>'+
+    '</div>'+
+    '<div class="agenda-print-actions">'+
+      '<button class="btn light" type="button" onclick="limparImpressaoAgenda421()">Limpar Filtros</button>'+
+      '<button class="btn gold" type="button" onclick="gerarPreviewAgenda421()">Gerar Agenda</button>'+
+      '<button class="btn blue" type="button" onclick="imprimirAgenda421()">Imprimir / Salvar PDF</button>'+
+    '</div>'+
+    '<div id="agendaPrintAreaUnificada" class="agenda-print-preview"></div>';
+
+  var head = page.querySelector(".page-head");
+  if(head && head.nextSibling) page.insertBefore(box, head.nextSibling);
+  else page.insertBefore(box, page.firstChild);
+
+  preencherMunicipiosAgenda421();
+}
+function preencherMunicipiosAgenda421(){
+  var sel = document.getElementById("agendaPrintMun421");
+  if(!sel) return;
+  var atual = sel.value || "";
+  sel.innerHTML = '<option value="">Todos</option>' + agenda421Municipios().map(function(m){return '<option value="'+m+'">'+m+'</option>';}).join("");
+  if(atual) sel.value = atual;
+}
+function filtrarAgenda421(){
+  var ini = document.getElementById("agendaPrintIni421") ? document.getElementById("agendaPrintIni421").value : "";
+  var fim = document.getElementById("agendaPrintFim421") ? document.getElementById("agendaPrintFim421").value : "";
+  var mun = document.getElementById("agendaPrintMun421") ? document.getElementById("agendaPrintMun421").value : "";
+  var st = document.getElementById("agendaPrintStatus421") ? document.getElementById("agendaPrintStatus421").value : "";
+  var lista = (typeof db !== "undefined" ? (db.agenda || []) : []);
+  return lista.filter(function(a){
+    if(ini && String(a.data||"") < ini) return false;
+    if(fim && String(a.data||"") > fim) return false;
+    if(mun && String(a.municipio||"") !== mun) return false;
+    if(st && String(a.status||"") !== st) return false;
+    return true;
+  }).sort(function(a,b){
+    return String(a.data||"").localeCompare(String(b.data||"")) || String(a.hora||"").localeCompare(String(b.hora||""));
+  });
+}
+function gerarHTMLAgenda421(){
+  var lista = filtrarAgenda421();
+  var emitido = new Date().toLocaleString("pt-BR");
+  var usuario = agenda421Usuario();
+  var rows = lista.length ? lista.map(function(a){
+    return '<tr>'+
+      '<td>'+agenda421DataBR(a.data)+'</td>'+
+      '<td>'+(a.hora||"-")+'</td>'+
+      '<td>'+(a.tipo||"Reunião")+'</td>'+
+      '<td>'+(a.municipio||"-")+'</td>'+
+      '<td>'+(a.local||"-")+'</td>'+
+      '<td>'+(a.status||a.aprovacaoStatus||"-")+'</td>'+
+      '<td>'+(a.solicitadoPor||a.criadoPor||"-")+'</td>'+
+      '<td>'+(a.descricao||"-")+'</td>'+
+    '</tr>';
+  }).join("") : '<tr><td colspan="8">Nenhum compromisso encontrado para os filtros selecionados.</td></tr>';
+  return '<div style="padding:24px;font-family:Arial,Helvetica,sans-serif">'+
+    '<div style="border-bottom:3px solid #d1d5db;padding-bottom:16px;margin-bottom:18px">'+
+      '<h1 style="margin:0;color:#0b2e59">Agenda Oficial</h1>'+
+      '<p style="margin:6px 0 0;color:#111827;font-weight:700">GIE360 - Gestão Inteligente Eleitoral</p>'+
+      '<p style="margin:4px 0 0;color:#374151">Emitido em: '+emitido+(usuario?' • Por: '+usuario:'')+'</p>'+
+    '</div>'+
+    '<h2 style="margin:0 0 12px;color:#0b2e59">Compromissos</h2>'+
+    '<table><thead><tr><th>Data</th><th>Hora</th><th>Tipo</th><th>Município</th><th>Local</th><th>Status</th><th>Solicitado por</th><th>Descrição</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div style="margin-top:28px;text-align:center;color:#64748b;font-size:13px">Documento gerado pelo GIE360</div>'+
+  '</div>';
+}
+function gerarPreviewAgenda421(){
+  inserirImpressaoNaAgenda421();
+  var area = document.getElementById("agendaPrintAreaUnificada");
+  if(!area) return;
+  area.innerHTML = gerarHTMLAgenda421();
+  area.style.display = "block";
+}
+function imprimirAgenda421(){
+  gerarPreviewAgenda421();
+  setTimeout(function(){ window.print(); }, 150);
+}
+function limparImpressaoAgenda421(){
+  ["agendaPrintIni421","agendaPrintFim421","agendaPrintMun421","agendaPrintStatus421"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+  var area = document.getElementById("agendaPrintAreaUnificada");
+  if(area){area.innerHTML="";area.style.display="none";}
+}
+(function(){
+  var oldRender = window.render;
+  window.render = function(){
+    if(typeof oldRender === "function") oldRender();
+    setTimeout(inserirImpressaoNaAgenda421,80);
+  };
+  var oldOpenPage = window.openPage;
+  window.openPage = function(page,btn){
+    if(typeof oldOpenPage === "function") oldOpenPage(page,btn);
+    if(page === "agenda") setTimeout(inserirImpressaoNaAgenda421,100);
+  };
+  document.addEventListener("DOMContentLoaded",function(){
+    setTimeout(inserirImpressaoNaAgenda421,800);
   });
 })();
 
