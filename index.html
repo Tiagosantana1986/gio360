@@ -511,19 +511,19 @@ p{color:#64748b}
 }
 
 
-/* WHATSAPP v4.1.2 */
-.whatsapp-shortcut{position:fixed;right:18px;bottom:18px;z-index:9999;background:#22c55e;color:#fff;border:0;border-radius:999px;padding:14px 18px;font-weight:900;box-shadow:0 14px 38px rgba(15,23,42,.24)}
+/* WHATSAPP v4.1.3 - MENU CORRETO */
 .whats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
 .whats-card{background:#fff;border:1px solid #dbe3ef;border-radius:22px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.07);margin-bottom:18px}
-.whats-card h3{margin:0 0 12px;color:#0b2e59}.whats-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}.whats-kpi strong{display:block;margin-top:7px;font-size:28px;color:#0b2e59}
+.whats-card h3{margin:0 0 12px;color:#0b2e59}
+.whats-kpi span{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900}.whats-kpi strong{display:block;margin-top:7px;font-size:28px;color:#0b2e59}
 .whats-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.whats-field label{display:block;font-size:11px;text-transform:uppercase;color:#64748b;font-weight:900;margin-bottom:6px}
 .whats-field input,.whats-field select,.whats-field textarea{width:100%;padding:12px 13px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;color:#0f172a;font-weight:700}.whats-field textarea{min-height:95px;resize:vertical}
 .whats-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:16px}.whats-table-wrap{overflow:auto}.whats-table{width:100%;border-collapse:collapse;min-width:1100px}
 .whats-table th,.whats-table td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}.whats-table th{color:#0b2e59;text-transform:uppercase;font-size:11px}
 .whats-badge{display:inline-flex;border-radius:999px;padding:5px 9px;font-weight:900;font-size:11px;background:#eff6ff;color:#0b2e59}.whats-badge.green{background:#dcfce7;color:#166534}.whats-badge.red{background:#fee2e2;color:#991b1b}.whats-badge.gold{background:#fef3c7;color:#92400e}.whats-badge.gray{background:#f3f4f6;color:#374151}.whats-badge.blue{background:#dbeafe;color:#0b2e59}
-.whats-btn{border:0;border-radius:10px;padding:8px 10px;font-weight:900;white-space:nowrap;cursor:pointer}.whats-btn.green{background:#22c55e;color:#fff}
-.whats-groups{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.whats-group-btn{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:14px;text-align:left;box-shadow:0 8px 18px rgba(15,23,42,.05);cursor:pointer}.whats-group-btn strong{display:block;color:#0b2e59;margin-bottom:5px}.whats-group-btn span{color:#64748b;font-size:12px;font-weight:800}
-@media(max-width:1100px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:1fr}.whatsapp-shortcut{right:12px;bottom:12px}}@media print{.whatsapp-shortcut{display:none!important}}
+.whats-btn{border:0;border-radius:10px;padding:8px 10px;font-weight:900;white-space:nowrap;cursor:pointer}.whats-btn.green{background:#22c55e;color:#fff}.whats-groups{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.whats-group-btn{background:#fff;border:1px solid #dbe3ef;border-radius:16px;padding:14px;text-align:left;box-shadow:0 8px 18px rgba(15,23,42,.05);cursor:pointer}.whats-group-btn strong{display:block;color:#0b2e59;margin-bottom:5px}.whats-group-btn span{color:#64748b;font-size:12px;font-weight:800}
+@media(max-width:1100px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:repeat(2,1fr)}}@media(max-width:720px){.whats-grid,.whats-filters,.whats-groups{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -566,8 +566,8 @@ p{color:#64748b}
     <button data-page="relatorios" data-roles="Administrador,Operador" onclick="openPage('relatorios',this)"><span>📊</span>Relatórios</button>
     <button data-page="banco" data-roles="Administrador,Operador,Liderança" onclick="openPage('banco',this)"><span>🗂️</span>Banco de Dados</button>
     <button data-page="usuarios" data-roles="Administrador" onclick="openPage('usuarios',this)"><span>⚙️</span>Usuários</button>
-    <button data-page="whatsapp" onclick="openPage('whatsapp',this)"><span>📲</span>WhatsApp</button>
-        <button data-page="ajuda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('ajuda',this)"><span>📖</span>Central de Ajuda</button>
+    <button data-page="whatsapp" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('whatsapp',this)"><span>📲</span>WhatsApp</button>
+    <button data-page="ajuda" data-roles="Administrador,Operador,Liderança,Apoiador" onclick="openPage('ajuda',this)"><span>📖</span>Central de Ajuda</button>
   </nav>
 </aside>
 
@@ -1006,7 +1006,6 @@ p{color:#64748b}
   </div>
   <div class="whats-card"><h3>Lista de transmissão</h3><div class="whats-table-wrap"><table class="whats-table"><thead><tr><th>Nome</th><th>Telefone</th><th>Função</th><th>Município</th><th>Bairro/Região</th><th>Responsável</th><th>Controle</th><th>WhatsApp</th><th>Ações</th></tr></thead><tbody id="whatsLista"></tbody></table></div></div>
 </section>
-
 <section id="ajuda" class="page">
   <div class="page-head">
     <div>
@@ -1604,6 +1603,7 @@ function render(){
   renderInteligencia();
   renderRelatorio();
   renderUsuarios();
+  try{renderWhatsApp();}catch(e){console.error("WhatsApp:",e);}
 }
 
 
@@ -3309,7 +3309,6 @@ try{
   console.warn("Não foi possível restaurar sessão:", e);
 }
 </script>
-<button id="whatsappShortcut" class="whatsapp-shortcut" onclick="openPage('whatsapp',this)">📲 WhatsApp</button>
 <script>
 
 var whatsResultados=[];
@@ -3330,7 +3329,6 @@ function copiarMensagemWhatsApp(){var t=wVal("whatsMensagem");if(!t){alert("Mens
 function limparWhatsApp(){["whatsBairro","whatsBusca"].forEach(function(id){var e=wGet(id);if(e)e.value=""});["whatsMunicipio","whatsFuncao","whatsResponsavel","whatsControle"].forEach(function(id){var e=wGet(id);if(e)e.value=""});whatsResultados=getPessoasWhatsApp();renderListaWhatsApp()}
 function aplicarGrupoWhatsApp(g){preencherSelectsWhatsApp();limparWhatsApp();if(g==="liderancas_arapongas"){if(wGet("whatsMunicipio"))wGet("whatsMunicipio").value="Arapongas";if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Liderança"}if(g==="apoiadores_zona_sul"){if(wGet("whatsBairro"))wGet("whatsBairro").value="Zona Sul";if(wGet("whatsFuncao"))wGet("whatsFuncao").value="Apoiador"}if(g==="cabos"&&wGet("whatsFuncao"))wGet("whatsFuncao").value="Cabo Eleitoral";if(g==="possiveis"&&wGet("whatsFuncao"))wGet("whatsFuncao").value="Possível Eleitor";if(g==="agenda"&&wGet("whatsFuncao"))wGet("whatsFuncao").value="Liderança";gerarListaWhatsApp()}
 function renderWhatsApp(){if(!wGet("whatsapp")||typeof db==="undefined")return;garantirWhatsAppDB();preencherSelectsWhatsApp();if(!whatsResultados.length)whatsResultados=getPessoasWhatsApp();renderListaWhatsApp()}
-(function(){var old=window.openPage;window.openPage=function(page,btn){if(typeof old==="function")old(page,btn);if(page==="whatsapp")setTimeout(renderWhatsApp,80)};document.addEventListener("DOMContentLoaded",function(){setTimeout(renderWhatsApp,700)})})();
 
 </script>
 </body>
