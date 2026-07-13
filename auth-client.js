@@ -118,11 +118,17 @@
         body: JSON.stringify({ token, newPassword }),
       });
       const data = await response.json();
-      if (!response.ok || !data.ok) throw new Error("reset_failed");
+      if (!response.ok || !data.ok) {
+        const reason = [data.reason, data.detail].filter(Boolean).join(" — ");
+        loginMsg.textContent = reason
+          ? `A redefinição foi recusada: ${reason}`
+          : "O link é inválido ou expirou. Solicite uma nova recuperação.";
+        return;
+      }
       history.replaceState({}, "", location.pathname);
       loginMsg.textContent = "Senha alterada. Agora você já pode entrar.";
     } catch {
-      loginMsg.textContent = "O link é inválido ou expirou. Solicite uma nova recuperação.";
+      loginMsg.textContent = "Não foi possível concluir a redefinição. Tente novamente.";
     }
   }
 
