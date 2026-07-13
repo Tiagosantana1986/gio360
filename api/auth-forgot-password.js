@@ -25,7 +25,7 @@ export default async function handler(request, response) {
       headers: jsonHeaders,
       body: JSON.stringify({
         email,
-        redirectTo: `${origin}/?reset-password=1`,
+        redirectTo: `${origin}/`,
       }),
     });
 
