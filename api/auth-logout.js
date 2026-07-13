@@ -4,10 +4,11 @@ export default async function handler(request, response) {
     return response.status(405).json({ ok: false, error: "method_not_allowed" });
   }
 
-  const baseUrl = process.env.NEON_AUTH_BASE_URL;
-  if (!baseUrl) {
+  const jwksUrl = process.env.NEON_AUTH_JWKS_URL;
+  if (!jwksUrl) {
     return response.status(503).json({ ok: false, error: "auth_not_configured" });
   }
+  const baseUrl = jwksUrl.replace(/\/\.well-known\/jwks\.json$/, "");
 
   try {
     const authResponse = await fetch(`${baseUrl}/sign-out`, {
