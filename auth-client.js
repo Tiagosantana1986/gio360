@@ -147,15 +147,30 @@
   window.sair = realLogout;
   window.esqueciSenha424 = realForgotPassword;
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", async function () {
     if (typeof loginUser !== "undefined") {
       loginUser.placeholder = "E-mail";
       loginUser.type = "email";
       loginUser.autocomplete = "email";
     }
-    restoreSession();
+
     const params = new URLSearchParams(location.search);
-    const resetToken = params.get("token");
-    if (resetToken) completePasswordReset(resetToken);
+    const hashParams = new URLSearchParams(location.hash.replace(/^#/, ""));
+    const resetToken = params.get("token") || hashParams.get("token");
+    const resetError = params.get("error") || hashParams.get("error");
+
+    if (resetError) {
+      showLogin("O link de recuperação é inválido ou expirou. Solicite um novo.");
+      history.replaceState({}, "", location.pathname);
+      return;
+    }
+
+    if (resetToken) {
+      showLogin("");
+      await completePasswordReset(resetToken);
+      return;
+    }
+
+    await restoreSession();
   });
 })();
