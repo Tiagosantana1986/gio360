@@ -17,7 +17,7 @@ export default async function handler(request, response) {
     return response.status(400).json({ ok: false, error: "invalid_reset_data" });
   }
 
-  const baseUrl = jwksUrl.replace(/\/\.well-known\/jwks\.json$/, "");
+  const baseUrl = jwksUrl.replace(/\/\.well-known\/jwks\.json$/, "").replace(/\/$/, "");
 
   try {
     const authResponse = await fetch(`${baseUrl}/reset-password`, {
@@ -27,7 +27,24 @@ export default async function handler(request, response) {
     });
 
     if (!authResponse.ok) {
-      return response.status(400).json({ ok: false, error: "invalid_or_expired_token" });
+      const contentType = authResponse.headers.get("content-type") || "";
+      const upstream = contentType.includes("application/json")
+        ? await authResponse.json().catch(() => ({}))
+        : { message: await authResponse.text().catch(() => "") };
+      const upstreamCode = String(
+        upstream?.code || upstream?.error?.code || upstream?.error || "reset_rejected"
+      ).slice(0, 80);
+      const upstreamMessage = String(upstream?.message || upstream?.error?.message || "")
+        .replace(/[\r\n]+/g, " ")
+        .slice(0, 240);
+
+      return response.status(400).json({
+        ok: false,
+        error: "reset_rejected",
+        reason: upstreamCode,
+        detail: upstreamMessage,
+        upstreamStatus: authResponse.status,
+      });
     }
 
     return response.status(200).json({ ok: true });
