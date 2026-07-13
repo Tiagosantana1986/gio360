@@ -1,4 +1,5 @@
-// Reimplantação após configurar NEON_AUTH_BASE_URLexport default async function handler(_request, response) {
+// Reimplantação após configurar NEON_AUTH_BASE_URL
+export default async function handler(_request, response) {
   const baseUrl = process.env.NEON_AUTH_BASE_URL;
 
   if (!baseUrl) {
