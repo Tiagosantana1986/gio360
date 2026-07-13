@@ -17,4 +17,10 @@ Após a implantação de pré-visualização, `/api/health` deve retornar:
 { "ok": true, "database": "connected" }
 ```
 
+O teste `/api/auth-health` deve retornar:
+
+```json
+{ "ok": true, "auth": "connected" }
+```
+
 Em seguida: revisar o esquema, integrar Neon Auth e migrar cadastro, agenda, base de apoio e relatórios módulo por módulo.
