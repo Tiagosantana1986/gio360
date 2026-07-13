@@ -11,7 +11,7 @@ export default async function handler(_request, response) {
 
   try {
     const authResponse = await fetch(
-      `${baseUrl}/.well-known/openid-configuration`,
+     `${baseUrl}/get-session`,
       { headers: { accept: "application/json" } }
     );
 
