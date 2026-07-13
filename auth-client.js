@@ -74,6 +74,58 @@
     }
   }
 
+  async function realForgotPassword() {
+    const email = String(loginUser.value || "").trim().toLowerCase();
+    if (!email) {
+      loginMsg.textContent = "Informe seu e-mail para recuperar a senha.";
+      loginUser.focus();
+      return;
+    }
+
+    loginMsg.textContent = "Enviando instruções...";
+    try {
+      const response = await fetch("/api/auth-forgot-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!response.ok) throw new Error("request_failed");
+      loginMsg.textContent = "Se o e-mail estiver cadastrado, você receberá o link para criar uma nova senha.";
+    } catch {
+      loginMsg.textContent = "Não foi possível enviar agora. Tente novamente.";
+    }
+  }
+
+  async function completePasswordReset(token) {
+    const newPassword = window.prompt("Digite uma nova senha com pelo menos 8 caracteres:");
+    if (newPassword === null) return;
+    if (newPassword.length < 8) {
+      loginMsg.textContent = "A nova senha precisa ter pelo menos 8 caracteres.";
+      return;
+    }
+
+    const confirmation = window.prompt("Digite novamente a nova senha:");
+    if (newPassword !== confirmation) {
+      loginMsg.textContent = "As senhas informadas não são iguais.";
+      return;
+    }
+
+    loginMsg.textContent = "Salvando a nova senha...";
+    try {
+      const response = await fetch("/api/auth-reset-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token, newPassword }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error("reset_failed");
+      history.replaceState({}, "", location.pathname);
+      loginMsg.textContent = "Senha alterada. Agora você já pode entrar.";
+    } catch {
+      loginMsg.textContent = "O link é inválido ou expirou. Solicite uma nova recuperação.";
+    }
+  }
+
   async function restoreSession() {
     try {
       const response = await fetch("/api/auth-session", {
@@ -93,6 +145,7 @@
 
   window.doLogin = realLogin;
   window.sair = realLogout;
+  window.esqueciSenha424 = realForgotPassword;
 
   document.addEventListener("DOMContentLoaded", function () {
     if (typeof loginUser !== "undefined") {
@@ -101,5 +154,8 @@
       loginUser.autocomplete = "email";
     }
     restoreSession();
+    const params = new URLSearchParams(location.search);
+    const resetToken = params.get("token");
+    if (resetToken) completePasswordReset(resetToken);
   });
 })();
