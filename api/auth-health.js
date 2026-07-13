@@ -11,7 +11,7 @@ export default async function handler(_request, response) {
 
   try {
     const authResponse = await fetch(
-     `${baseUrl}/get-session`,
+`${baseUrl}/.well-known/jwks.json`,
       { headers: { accept: "application/json" } }
     );
 
