@@ -11,7 +11,7 @@ export default async function handler(_request, response) {
 
   try {
     const authResponse = await fetch(
-`${baseUrl}/.well-known/jwks.json`,
+process.env.NEON_AUTH_JWKS_URL,
       { headers: { accept: "application/json" } }
     );
 
