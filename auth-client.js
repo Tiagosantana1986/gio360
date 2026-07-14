@@ -1,4 +1,5 @@
 (function () {
+  const AUTH_KEY = "gie360_auth";
   function showLogin(message) {
     localStorage.removeItem("gie360_auth");
     if (typeof loginPage !== "undefined") loginPage.style.display = "flex";
@@ -66,11 +67,23 @@
     try {
       await fetch("/api/auth-logout", {
         method: "POST",
-        credentials: "same-origin",
+        credentials: "include",
+        cache: "no-store",
       });
     } finally {
-      showLogin("");
-      location.reload();
+      localStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(AUTH_KEY);
+      window.currentUser = null;
+      window.currentRole = null;
+
+      const passwordInput = document.getElementById("loginPass");
+      if (passwordInput) passwordInput.value = "";
+
+      if (location.search || location.hash) {
+        history.replaceState({}, document.title, location.pathname);
+      }
+
+      showLogin("Sessão encerrada.");
     }
   }
 
