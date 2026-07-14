@@ -1,5 +1,21 @@
 const jsonHeaders = { "content-type": "application/json" };
 
+function getRequestOrigin(request) {
+  const incomingOrigin = String(request.headers.origin || "").replace(/\/$/, "");
+  if (incomingOrigin) return incomingOrigin;
+
+  const protocol = String(request.headers["x-forwarded-proto"] || "https")
+    .split(",")[0]
+    .trim();
+  const host = String(
+    request.headers["x-forwarded-host"] || request.headers.host || "",
+  )
+    .split(",")[0]
+    .trim();
+
+  return `${protocol}://${host}`;
+}
+
 function copyAuthCookies(source, response) {
   const cookies = source.headers.getSetCookie?.() || [];
   if (cookies.length) response.setHeader("Set-Cookie", cookies);
@@ -15,7 +31,10 @@ export default async function handler(request, response) {
   if (!jwksUrl) {
     return response.status(503).json({ ok: false, error: "auth_not_configured" });
   }
-  const baseUrl = jwksUrl.replace(/\/\.well-known\/jwks\.json$/, "");
+  const baseUrl = jwksUrl
+    .replace(/\/\.well-known\/jwks\.json$/, "")
+    .replace(/\/$/, "");
+  const origin = getRequestOrigin(request);
 
   const email = String(request.body?.email || "").trim().toLowerCase();
   const password = String(request.body?.password || "");
@@ -26,7 +45,7 @@ export default async function handler(request, response) {
   try {
     const authResponse = await fetch(`${baseUrl}/sign-in/email`, {
       method: "POST",
-      headers: jsonHeaders,
+      headers: { ...jsonHeaders, origin },
       body: JSON.stringify({ email, password }),
     });
 
