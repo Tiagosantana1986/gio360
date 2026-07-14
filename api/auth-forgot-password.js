@@ -1,5 +1,21 @@
 const jsonHeaders = { "content-type": "application/json" };
 
+function getRequestOrigin(request) {
+  const incomingOrigin = String(request.headers.origin || "").replace(/\/$/, "");
+  if (incomingOrigin) return incomingOrigin;
+
+  const protocol = String(request.headers["x-forwarded-proto"] || "https")
+    .split(",")[0]
+    .trim();
+  const host = String(
+    request.headers["x-forwarded-host"] || request.headers.host || "",
+  )
+    .split(",")[0]
+    .trim();
+
+  return `${protocol}://${host}`;
+}
+
 export default async function handler(request, response) {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
@@ -17,12 +33,12 @@ export default async function handler(request, response) {
   }
 
   const baseUrl = jwksUrl.replace(/\/\.well-known\/jwks\.json$/, "");
-  const origin = `https://${request.headers.host}`;
+  const origin = getRequestOrigin(request);
 
   try {
     await fetch(`${baseUrl}/request-password-reset`, {
       method: "POST",
-      headers: jsonHeaders,
+      headers: { ...jsonHeaders, origin },
       body: JSON.stringify({
         email,
         redirectTo: `${origin}/`,
