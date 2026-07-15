@@ -1,4 +1,5 @@
 (function () {
+  const AUTH_KEY = "gie360_auth";
   function showLogin(message) {
     localStorage.removeItem("gie360_auth");
     if (typeof loginPage !== "undefined") loginPage.style.display = "flex";
@@ -62,16 +63,30 @@
     }
   }
 
-  async function realLogout() {
+  async function realLogout(event) {
+    if (event) event.preventDefault();
     try {
       await fetch("/api/auth-logout", {
         method: "POST",
-        credentials: "same-origin",
+        credentials: "include",
+        cache: "no-store",
       });
     } finally {
-      showLogin("");
-      location.reload();
+      localStorage.removeItem(AUTH_KEY);
+      sessionStorage.removeItem(AUTH_KEY);
+      window.currentUser = null;
+      window.currentRole = null;
+
+      const passwordInput = document.getElementById("loginPass");
+      if (passwordInput) passwordInput.value = "";
+
+      if (location.search || location.hash) {
+        history.replaceState({}, document.title, location.pathname);
+      }
+
+      showLogin("Sessão encerrada.");
     }
+    return false;
   }
 
   async function realForgotPassword() {
@@ -150,8 +165,13 @@
   }
 
   window.doLogin = realLogin;
+  window.gie360Logout = realLogout;
   window.sair = realLogout;
   window.esqueciSenha424 = realForgotPassword;
+
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) restoreSession();
+  });
 
   document.addEventListener("DOMContentLoaded", async function () {
     if (typeof loginUser !== "undefined") {
