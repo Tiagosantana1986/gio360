@@ -1765,7 +1765,7 @@ label[for="statusUsuario"]{
 <main class="main">
 <header class="topbar">
   <div><strong id="tituloTopo">Painel Geral</strong><br><small>Gestão Inteligente Eleitoral</small></div>
-  <div class="top-actions"><span id="statusSave" class="saved"></span><button class="btn gold" onclick="salvarManual()">Salvar</button><button class="btn light" onclick="atualizarSistema()">Atualizar</button><button class="btn blue" onclick="sair()">Sair</button></div>
+        <div class="top-actions"><span id="statusSave" class="saved"></span><button class="btn gold" onclick="salvarManual()">Salvar</button><button class="btn light" onclick="atualizarSistema()">Atualizar</button><button class="btn blue" onclick="return gie360Logout(event)">Sair</button></div>
 </header>
 
 <section class="content">
@@ -2427,7 +2427,14 @@ function doLogin(){
   render();
 }
 
-function sair(){localStorage.removeItem(AUTH);location.reload();}
+function sair(event){
+  if(typeof window.gie360Logout === "function") return window.gie360Logout(event);
+  if(event) event.preventDefault();
+  localStorage.removeItem(AUTH);
+  sessionStorage.removeItem(AUTH);
+  location.replace(location.pathname);
+  return false;
+}
 
 function aplicarPermissoes(){
   document.querySelectorAll(".nav button").forEach(btn=>{

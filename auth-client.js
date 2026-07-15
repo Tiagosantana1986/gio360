@@ -63,7 +63,8 @@
     }
   }
 
-  async function realLogout() {
+  async function realLogout(event) {
+    if (event) event.preventDefault();
     try {
       await fetch("/api/auth-logout", {
         method: "POST",
@@ -85,6 +86,7 @@
 
       showLogin("Sessão encerrada.");
     }
+    return false;
   }
 
   async function realForgotPassword() {
@@ -163,8 +165,13 @@
   }
 
   window.doLogin = realLogin;
+  window.gie360Logout = realLogout;
   window.sair = realLogout;
   window.esqueciSenha424 = realForgotPassword;
+
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) restoreSession();
+  });
 
   document.addEventListener("DOMContentLoaded", async function () {
     if (typeof loginUser !== "undefined") {
